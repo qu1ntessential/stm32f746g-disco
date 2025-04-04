@@ -57,9 +57,10 @@ typedef uint32_t uintpixel_t;
 
 /* You can try to change buffer to internal ram by uncommenting line below and commenting
  * SDRAM one. */
-//static uintpixel_t my_fb[TFT_HOR_RES * TFT_VER_RES];
+static uintpixel_t my_fb[TFT_HOR_RES * TFT_VER_RES]
+        __attribute__((section(".lvgl_buffer"), aligned(4)));
 
-static __IO uintpixel_t *my_fb = (__IO uintpixel_t *) (0x60000000);
+//static __IO uintpixel_t *my_fb = (__IO uintpixel_t *) (0xC0701000);
 
 static DMA_HandleTypeDef DmaHandle;
 static int32_t x1_flush;
@@ -86,17 +87,14 @@ void tft_init(void) {
 
     DMA_Config();
 
-
-    static uint16_t buf1[TFT_HOR_RES * 68];
-    static uint16_t buf2[TFT_HOR_RES * 68];
+    static uint16_t buf1[TFT_HOR_RES * TFT_VER_RES]
+            __attribute__((section(".lvgl_buffer"), aligned(4)));
+    static uint16_t buf2[TFT_HOR_RES * TFT_VER_RES]
+            __attribute__((section(".lvgl_buffer"), aligned(4)));
     display = lv_display_create(TFT_HOR_RES, TFT_VER_RES);
-    lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_DIRECT);
     lv_display_set_flush_cb(display, flush_cb);
 }
-
-/**********************
- *   STATIC FUNCTIONS
- **********************/
 
 static void flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
     int32_t x1 = area->x1;
@@ -277,7 +275,7 @@ static uint8_t LCD_Init(void) {
     HAL_GPIO_WritePin(LCD_BL_CTRL_GPIO_PORT, LCD_BL_CTRL_PIN, GPIO_PIN_SET);
 
     BSP_SDRAM_Init();
-    HAL_EnableFMCMemorySwapping();
+    //HAL_EnableFMCMemorySwapping();
 
     uint32_t i;
     for (i = 0; i < (TFT_HOR_RES * TFT_VER_RES); i++) {
