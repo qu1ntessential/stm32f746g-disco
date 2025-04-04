@@ -21,6 +21,10 @@
 #include "lvgl_port_touchpad.h"
 // #include "lvgl_port_fatfs.h"
 
+#include "ui.h"
+#include "vars.h"
+#include "actions.h"
+
 #include "main.h"
 #include "adc.h"
 #include "crc.h"

@@ -59,10 +59,26 @@ _Min_Heap_Size = 0x4000;      /* required amount of heap  */
 _Min_Stack_Size = 0x2000; /* required amount of stack */
 
 /* Specify the memory areas */
+/* See RM0385 Page 70 */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 320K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
+    /* Internal instruction TCM RAM (for critical real-time routines) (accessible only by CPU)
+       ITCMRAM(16KB)  : 0x00000000 - 0x00003FFF */
+    ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 16K
+    /* Internal SRAM: DTCM (64KB) + SRAM1(240KB) + SRAM2(16KB)
+       DTCM (64KB)  : 0x20000000 - 0x2000FFFF
+       SRAM1(240KB) : 0x20010000 - 0x2004BFFF
+       SRAM2(16KB)  : 0x2004C000 - 0x2004FFFF */
+    RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 320K
+    /* Internal Flash
+       0x08000000 - 0x080FFFFF */
+    FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
+    /* External QSPIFLASH W25Q128JV: 16Mb */
+    QSPIFLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 16M             /* External QSPI Flash */
+    /* External SDRAM IS42S32400F-6BL: 1Mb x 32 x 4 Banks (used DQ[15..0])
+       0xD0000000 - 0xD07FFFFF */
+    SDRAM_DATA (xrw): ORIGIN = 0xC0000000, LENGTH = 8M - 0xFF000    /* External SDRAM */
+    SDRAM_LVGL (xrw): ORIGIN = 0xC0701000, LENGTH = 0xFF000         /* External SDRAM */
 }
 
 /* Define output sections */
@@ -173,7 +189,37 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  
+  /* External QSPI Flash section for code */
+  .extflash_text :
+  {
+    . = ALIGN(4);
+    *(.extflash_text)
+    *(.extflash_text*)
+    . = ALIGN(4);
+  } >QSPIFLASH
+
+  /* External SDRAM section for data */
+  .sdram_data (NOLOAD) :
+  {
+    . = ALIGN(4);
+    _ssdram = .;
+    *(.sdram_data)
+    *(.sdram_data*)
+    . = ALIGN(4);
+    _esdram = .;
+  } >SDRAM_DATA
+
+  /* External SDRAM section for lvgl_buffer1 and lvgl_buffer2 */
+  .sdram_lvgl (NOLOAD) :
+  {
+    KEEP(*(.lvgl_buffer))
+  } >SDRAM_LVGL
+
+  /* ITCMRAM for critical code */
+  .itcm_text :
+  {
+    *(.itcm_text*)
+  } >ITCMRAM
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

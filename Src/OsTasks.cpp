@@ -15,27 +15,14 @@
 #define UART_QUEUE_ITEM_SIZE sizeof(char)
 #define TX_BUF_SIZE 200
 
-#define PRE_RTOS_BUF_SIZE 500
-static char pre_rtos_buf[PRE_RTOS_BUF_SIZE];
-static size_t pre_rtos_index = 0;
-static bool rtos_started = false;
-
 TaskHandle_t LvglTaskHandle = nullptr;
-TaskHandle_t UartTaskHandle = nullptr;
 TaskHandle_t Task3Handle = nullptr;
-TaskHandle_t Task4Handle = nullptr;
 
 StaticTask_t LvglTaskBuffer;
 StackType_t LvglTaskStack[LVGL_TASK_STACK_SIZE];
 
-StaticTask_t UartTaskBuffer;
-StackType_t UartTaskStack[UART_TASK_STACK_SIZE];
-
 StaticTask_t Task3Buffer;
 StackType_t Stack3[STACK3_SIZE];
-
-StaticTask_t Task4Buffer;
-StackType_t Stack4[STACK4_SIZE];
 
 static StaticTask_t xIdleTaskTCBBuffer;
 static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
@@ -49,8 +36,7 @@ extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffe
 }
 
 extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
-    printf("Stack overflow in task: %s\n", pcTaskName);
-
+    print_log(ERROR_LOG, "Stack overflow in task: %s\n", pcTaskName);
     while (1) {}
 }
 
@@ -64,8 +50,8 @@ void LvglThread(void *argument) {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
     while (1) {
-        //lv_task_handler();
-        //ui_tick();
+        lv_task_handler();
+        ui_tick();
         vTaskDelayUntil(&xLastWakeTime, 5);
     }
 }
