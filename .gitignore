@@ -1,4 +1,6 @@
 .idea/
 doxygen/
 cmake-build-*/
-CoGen/
+CoGen/*
+!CoGen/CoGen.ioc
+!CoGen/Core/

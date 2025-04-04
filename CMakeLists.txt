@@ -48,11 +48,13 @@ add_subdirectory(${FREERTOS_KERNEL_PATH} FreeRTOS-Kernel)
 # ---------------------------------------------------------------------------------------------------------------------
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-        freertos_kernel
         bsp
+        freertos_kernel
+        lvgl
+        lvgl_demos
+        lvgl_examples
         # eez-project
         # lvgl_demos
-        # freertos_kernel
         # usb_msc
 )
 

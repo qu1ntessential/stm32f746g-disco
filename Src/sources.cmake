@@ -2,14 +2,14 @@
 file(GLOB_RECURSE SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/*.cpp
         ${CMAKE_CURRENT_LIST_DIR}/*.c
+
+        ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/*.c
 )
 
 # Исключаем указанные файлы
 set(EXCLUDE_FILES
-        ${CMAKE_CURRENT_LIST_DIR}/syscalls.c
-        ${CMAKE_CURRENT_LIST_DIR}/sysmem.c
-        ${CMAKE_CURRENT_LIST_DIR}/eth/eth.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/twi/i2c.c
+        ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/freertos.c
+        # ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/main.c
 )
 
 foreach (file ${EXCLUDE_FILES})
@@ -27,13 +27,16 @@ file(GLOB_RECURSE ALL_DIRS LIST_DIRECTORIES TRUE ${SRC_DIR}/*)
 
 # Добавляем только директории
 set(INCLUDE_DIRS "")
-foreach(item ${ALL_DIRS})
-    if(IS_DIRECTORY ${item})
+foreach (item ${ALL_DIRS})
+    if (IS_DIRECTORY ${item})
         list(APPEND INCLUDE_DIRS ${item})
-    endif()
-endforeach()
+    endif ()
+endforeach ()
 
 # Добавляем папки в target_include_directories
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
+        ${INCLUDE_DIRS}
+        ${CMAKE_SOURCE_DIR}/CoGen/Core/Inc/
+)
 
 add_compile_definitions(-DDEBUG)
