@@ -1,19 +1,7 @@
 #include "OsTasks.h"
 
 #define LVGL_TASK_STACK_SIZE 1024
-#define UART_TASK_STACK_SIZE 256
 #define STACK3_SIZE 1024
-#define STACK4_SIZE 1024
-
-#define UIEVENT_QUEUE_LENGTH    10
-#define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t)
-
-#define UICMD_QUEUE_LENGTH    10
-#define UICMD_QUEUE_ITEM_SIZE sizeof(UICmd_t)
-
-#define UART_QUEUE_LENGTH    400
-#define UART_QUEUE_ITEM_SIZE sizeof(char)
-#define TX_BUF_SIZE 200
 
 TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t Task3Handle = nullptr;

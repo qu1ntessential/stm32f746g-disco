@@ -229,6 +229,14 @@
                   "component": "propertiesPanel",
                   "enableClose": false,
                   "icon": "svg:properties"
+                },
+                {
+                  "type": "tab",
+                  "id": "COMPONENTS_PALETTE",
+                  "name": "Components Palette",
+                  "component": "componentsPalette",
+                  "enableClose": false,
+                  "icon": "svg:components"
                 }
               ]
             }
@@ -964,10 +972,10 @@
       },
       "transform": {
         "translate": {
-          "x": -400,
-          "y": -240
+          "x": -376.9642857142857,
+          "y": -207.14285714285714
         },
-        "scale": 1
+        "scale": 1.5
       },
       "timeline": {
         "isEditorActive": false,
@@ -993,6 +1001,6 @@
   "lvglExpandedPropertiesGroup": [],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
-  "flowZoom": 1,
+  "flowZoom": 1.5,
   "implementationLanguage": "C"
 }

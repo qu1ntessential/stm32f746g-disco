@@ -8,12 +8,10 @@ project(stm32h746g_disco LANGUAGES C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-# include(toolchains/iar/stm32_toolchain_iar.cmake)
-
 add_subdirectory(Drivers/CMSIS)
 add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
-# add_subdirectory(Drivers/FatFs)
+add_subdirectory(Drivers/FatFs)
 add_subdirectory(Drivers/lvgl-9.2.2)
 # add_subdirectory(Drivers/USB_Device)
 add_subdirectory(eez-ui)
