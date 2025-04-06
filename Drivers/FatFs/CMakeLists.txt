@@ -8,7 +8,7 @@ add_library(${LIBRARY_NAME} STATIC
         src/diskio.c
         src/option/syscall.c
         src/option/unicode.c
-        src/drivers/sd_diskio_dma_rtos_bspv1.c
+        src/drivers/sd_diskio_dma.c
 )
 
 target_include_directories(${LIBRARY_NAME} PUBLIC

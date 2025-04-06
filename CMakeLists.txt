@@ -48,6 +48,7 @@ add_subdirectory(${FREERTOS_KERNEL_PATH} FreeRTOS-Kernel)
 target_link_libraries(${PROJECT_NAME} PUBLIC
         bsp
         freertos_kernel
+        fatfs
         lvgl
         eez-ui
 )

@@ -51,7 +51,7 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern SD_HandleTypeDef uSdHandle;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -205,5 +205,25 @@ void DMA2D_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void SDMMC1_IRQHandler(void) {
+    HAL_SD_IRQHandler(&uSdHandle);
+}
 
+/**
+* @brief  This function handles DMA2 Stream 6 interrupt request.
+* @param  None
+* @retval None
+*/
+void DMA2_Stream6_IRQHandler(void) {
+    HAL_DMA_IRQHandler(uSdHandle.hdmatx);
+}
+
+/**
+* @brief  This function handles DMA2 Stream 3 interrupt request.
+* @param  None
+* @retval None
+*/
+void DMA2_Stream3_IRQHandler(void) {
+    HAL_DMA_IRQHandler(uSdHandle.hdmarx);
+}
 /* USER CODE END 1 */

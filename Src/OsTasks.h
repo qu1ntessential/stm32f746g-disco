@@ -15,6 +15,7 @@
 #include "semphr.h"
 
 #include "stm32746g_discovery.h"
+#include "stm32746g_discovery_sd.h"
 
 #include "lvgl.h"
 #include "lvgl_port_tft.h"
