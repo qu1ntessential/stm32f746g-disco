@@ -9,7 +9,7 @@
  * @brief Конструктор по умолчанию
  * @note Инициализирует все внутренние состояния в значения по умолчанию
  */
-FatFsWrapper::FatFsWrapper(Diskio_drvTypeDef *uSD_Driver) :
+FatFsWrapper::FatFsWrapper(const Diskio_drvTypeDef *uSD_Driver) :
         m_lastError(Result::OK),
         m_mounted(false),
         m_fileOpen(false),
@@ -17,6 +17,8 @@ FatFsWrapper::FatFsWrapper(Diskio_drvTypeDef *uSD_Driver) :
         m_currentDrive(DEFAULT_DRIVE),
         m_SD_Driver(uSD_Driver) {
     snprintf(m_path, sizeof(m_path), "%u:/", m_currentDrive);
+    print_log(DEBUG_LOG, "m_path: %s"
+                         "%u:/", m_path, m_currentDrive);
 }
 
 /**
@@ -562,56 +564,5 @@ void FatFsWrapper::LogResult(const char *operation, Result res) {
         print_log(ERROR_LOG, "%s failed: %s\r\n", operation, resultToString(res));
     } else {
         print_log(DEBUG_LOG, "%s succeeded\r\n", operation);
-    }
-}
-
-FatFsWrapper::Result FatFsWrapper::testFileOperations(const std::string &path) {
-    /// Статический буфер для надежности
-    static char buf[64];
-    FIL fp;
-    UINT bw;
-    FRESULT res;
-
-    /// 1. Запись тестовых данных
-    const char test_str[] = "Hello, FatFS! Test 123\n";
-
-    res = f_open(&fp, path.c_str(), FA_WRITE | FA_CREATE_ALWAYS);
-    if (res != FR_OK) {
-        print_log(ERROR_LOG, "f_open(write) error: %d\r\n", res);
-        return static_cast<Result>(res);
-    }
-
-    res = f_write(&fp, test_str, sizeof(test_str) - 1, &bw);
-    if (res != FR_OK || bw != sizeof(test_str) - 1) {
-        print_log(ERROR_LOG, "f_write error: %d, bytes: %u\r\n", res, bw);
-        f_close(&fp);
-        return static_cast<Result>(res);
-    }
-    f_close(&fp);
-
-    /// 2. Чтение данных
-    res = f_open(&fp, path.c_str(), FA_READ);
-    if (res != FR_OK) {
-        print_log(ERROR_LOG, "f_open(read) error: %d\r\n", res);
-        return static_cast<Result>(res);
-    }
-
-    /// Чтение с проверкой размера
-    res = f_read(&fp, buf, sizeof(buf) - 1, &bw);
-    if (res != FR_OK) {
-        print_log(ERROR_LOG, "f_read error: %d\r\n", res);
-        f_close(&fp);
-        return static_cast<Result>(res);
-    }
-    buf[bw] = '\0'; // Null-terminator
-    f_close(&fp);
-
-    /// 3. Проверка целостности
-    if (strncmp(buf, test_str, sizeof(test_str) - 1) == 0) {
-        print_log(INFO_LOG, "Data verification OK\r\n");
-        return Result::OK;
-    } else {
-        print_log(ERROR_LOG, "Data mismatch: '%s'\r\n", buf);
-        return Result::INT_ERR;
     }
 }

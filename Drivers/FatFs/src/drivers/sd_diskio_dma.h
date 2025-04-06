@@ -10,8 +10,6 @@ extern "C" {
 
 #define DISABLE_SD_INIT
 
-extern const Diskio_drvTypeDef SD_Driver;
-
 #ifdef __cplusplus
 }
 #endif

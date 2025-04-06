@@ -54,18 +54,17 @@ public:
         INVALID_PARAMETER = FR_INVALID_PARAMETER
     };
 
-    /// Конструктор класса (по умолчанию)
-    FatFsWrapper(Diskio_drvTypeDef *uSD_Driver);
-    /// Деструктор класса (обеспечивает корректное освобождение ресурсов)
-    ~FatFsWrapper();
-    /// Удаляем копирование
-    FatFsWrapper(const FatFsWrapper &) = delete;
-    /// Удаляем присваивание
-    FatFsWrapper &operator=(const FatFsWrapper &) = delete;
-    /// Получение внутреннего объекта FATFS (const)
-    inline const FATFS &getFsObj() const { return m_fs; }
-    /// Получение внутреннего объекта FIL (const)
-    inline const FIL &getFileObj() const { return m_file; }
+    FatFsWrapper(const Diskio_drvTypeDef *uSD_Driver); ///< Конструктор класса (по умолчанию)
+
+    ~FatFsWrapper(); ///< Деструктор класса (обеспечивает корректное освобождение ресурсов)
+
+    FatFsWrapper(const FatFsWrapper &) = delete; ///< Удаляем копирование
+
+    FatFsWrapper &operator=(const FatFsWrapper &) = delete; ///< Удаляем присваивание
+
+    inline const FATFS &getFsObj() const { return m_fs; } ///< Получение внутреннего объекта FATFS (const)
+
+    inline const FIL &getFileObj() const { return m_file; } ///< Получение внутреннего объекта FIL (const)
 
     /// Основные операции
     Result Init();
@@ -119,8 +118,6 @@ public:
 
     static std::string getFileName(const std::string &path);
 
-    FatFsWrapper::Result testFileOperations(const std::string &path);
-
 private:
     FATFS m_fs;                     ///< Объект файловой системы FatFs
     FIL m_file;                     ///< Объект файла
@@ -131,7 +128,7 @@ private:
     bool m_dirOpen;                 ///< Флаг открытой директории
     char m_path[4];                 ///< Текущий путь
     uint8_t m_currentDrive;         ///< Текущий активный диск
-    Diskio_drvTypeDef *m_SD_Driver; ///< Указатель на структуру низкоуровневого драйвера диска
+    const Diskio_drvTypeDef *m_SD_Driver; ///< Указатель на структуру низкоуровневого драйвера диска
     static constexpr uint8_t DEFAULT_DRIVE = 0; ///< Диск по умолчанию
     uint8_t m_workBuffer[_MAX_SS];              ///< Рабочий буфер для операций ФС
     BSP_SD_CardInfo m_CardInfo;                 ///< Информация о SD-карте

@@ -1,6 +1,7 @@
 {
   "navigation": {
     "selectedUserPageObject": "[eez-ui.eez-project]:/userPages/0",
+    "selectedActionObject": "[eez-ui.eez-project]:/actions/0",
     "subnavigationSelectedItems": {}
   },
   "layoutModel": {
@@ -21,7 +22,8 @@
           },
           {
             "type": "border",
-            "size": 240,
+            "selected": 2,
+            "size": 431.5,
             "location": "right",
             "children": [
               {
@@ -115,7 +117,7 @@
             {
               "type": "row",
               "id": "#8bf0e2d5-8f3b-4bec-aff3-4cdb6900a036",
-              "weight": 15,
+              "weight": 20.730897009966778,
               "children": [
                 {
                   "type": "tabset",
@@ -152,7 +154,7 @@
                 {
                   "type": "tabset",
                   "id": "#cd54c132-5b9d-47c9-a8fb-12d0bb43782e",
-                  "weight": 1,
+                  "weight": 1.2957110609480813,
                   "enableClose": false,
                   "children": [
                     {
@@ -168,7 +170,7 @@
                 {
                   "type": "tabset",
                   "id": "#6ee989ee-d597-4e15-abea-5ad3724e0180",
-                  "weight": 1,
+                  "weight": 0.7042889390519187,
                   "enableClose": false,
                   "children": [
                     {
@@ -186,7 +188,7 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 65,
+              "weight": 54.43698433957779,
               "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
@@ -220,7 +222,7 @@
             {
               "type": "tabset",
               "id": "#284528d8-8b3e-4df3-8ad8-b7041cea3207",
-              "weight": 20,
+              "weight": 24.83211865045543,
               "children": [
                 {
                   "type": "tab",
@@ -968,12 +970,14 @@
   "objects": {
     "[eez-ui.eez-project]:/userPages/0[flow-state]": {
       "selection": {
-        "0": {}
+        "0": {
+          "0": {}
+        }
       },
       "transform": {
         "translate": {
           "x": -376.9642857142857,
-          "y": -207.14285714285714
+          "y": -207.1428571428571
         },
         "scale": 1.5
       },
