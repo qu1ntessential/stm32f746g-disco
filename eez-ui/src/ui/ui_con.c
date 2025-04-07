@@ -25,10 +25,6 @@ void setWidgetsUserData(objects_t *objs) {
             {&objs->btn_bicoag_pwr_dec,    ID_BTN_BICOAG_PWR_DEC},
             {&objs->btn_bicoag_mode_sel,   ID_BTN_BICOAG_MODE_SEL},
 
-            // LEDs
-            {&objs->led_pwr_active,        ID_LED_PWR_ACTIVE},
-            {&objs->led_ne,                ID_LED_NE},
-
             // Labels
             {&objs->label_mono_bi_sel,     ID_LABEL_MONO_BI_SEL},
             {&objs->label_cut_mix_pwr,     ID_LABEL_CUT_MIX_PWR},

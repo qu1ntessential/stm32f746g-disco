@@ -10,10 +10,10 @@ extern "C" {
 
 /**
  * @struct UIEvent
- * @brief —труктура дл€ передачи событий в задачу обработки логики прибора
+ * @brief
  */
 typedef struct {
-    lv_event_code_t event_code; /**< “ип событи€ */
+    lv_event_code_t event_code;
     uint32_t widget_id;
     union {
         int32_t int_val;

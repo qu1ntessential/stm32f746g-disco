@@ -1,12 +1,13 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <string>
+#include <cstring>
 #include "I2C.hpp"
+#include "ui_con.h"
 
 #define LL_COM_LOG 0
 
-class Master {
+class ESG {
     typedef struct {
         uint16_t alarm: 8;           ///< Alarm code
         uint16_t isNE: 1;            ///< Neutral electrode is connected
@@ -58,7 +59,7 @@ class Master {
     static inline uint16_t checkPowers(uint16_t power, uint8_t mode);
 
 public:
-    explicit Master(I2C *twi) : m_twi(twi) {}
+    explicit ESG(I2C *twi) : m_twi(twi) {}
 
 
 

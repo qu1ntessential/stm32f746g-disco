@@ -14,7 +14,7 @@ extern QueueHandle_t uiCmdQueue;
  * @param length Количество данных в пакете
  * @return Значение контрольной суммы
  */
-uint8_t Master::crc8(uint8_t *buffer, uint8_t length) {
+uint8_t ESG::crc8(uint8_t *buffer, uint8_t length) {
     uint8_t crc = 0x82;
 
     while (length--) {
@@ -29,24 +29,24 @@ uint8_t Master::crc8(uint8_t *buffer, uint8_t length) {
 /**
  * @brief Включение платы генератора (подача питания на ПГ)
  */
-void Master::powerOn() {
+void ESG::powerOn() {
 
 }
 
 /**
  * @brief Выключение платы генератора (отключение питания ПГ)
  */
-void Master::powerOff() {
+void ESG::powerOff() {
 
 }
 
-void Master::changeMonoBiSel() {
+void ESG::changeMonoBiSel() {
     m_param.isMonoBi = !m_param.isMonoBi;
     //updateLabelText(uiCmdQueue, ID_LABEL_MONO_BI_SEL, m_param.isMonoBi ? "MONO" : "BI");
     print_log(INFO_LOG, "isMonoBi value - %d\r\n", m_param.isMonoBi);
 }
 
-uint16_t Master::checkPowers(uint16_t power, uint8_t mode) {
+uint16_t ESG::checkPowers(uint16_t power, uint8_t mode) {
     if (power > 300 || mode > 2) {
         return 0xFF00;
     }
@@ -59,7 +59,7 @@ uint16_t Master::checkPowers(uint16_t power, uint8_t mode) {
     return data;
 }
 
-bool Master::setMonoCutPower(uint16_t power, uint8_t mode) {
+bool ESG::setMonoCutPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -70,7 +70,7 @@ bool Master::setMonoCutPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_CUT_POWER, data);
 }
 
-bool Master::setMonoCoagPower(uint16_t power, uint8_t mode) {
+bool ESG::setMonoCoagPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -81,7 +81,7 @@ bool Master::setMonoCoagPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_COAG_POWER, data);
 }
 
-bool Master::setBiCutPower(uint16_t power, uint8_t mode) {
+bool ESG::setBiCutPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -92,7 +92,7 @@ bool Master::setBiCutPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_BCUT_POWER, data);
 }
 
-bool Master::setBiCoagPower(uint16_t power, uint8_t mode) {
+bool ESG::setBiCoagPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -103,7 +103,7 @@ bool Master::setBiCoagPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_BCOAG_POWER, data);
 }
 
-bool Master::setMonoMixPower(uint16_t power, uint8_t mode) {
+bool ESG::setMonoMixPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -114,7 +114,7 @@ bool Master::setMonoMixPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_MIX_POWER, data);
 }
 
-bool Master::setBiMixPower(uint16_t power, uint8_t mode) {
+bool ESG::setBiMixPower(uint16_t power, uint8_t mode) {
     uint16_t data = checkPowers(power, mode);
 
     if (data == 0xFF00) {
@@ -125,11 +125,11 @@ bool Master::setBiMixPower(uint16_t power, uint8_t mode) {
     return m_twi->putData(I2C::SET_BMIX_POWER, data);
 }
 
-bool Master::setTimeout(uint16_t timeout) {
+bool ESG::setTimeout(uint16_t timeout) {
     return m_twi->putData(I2C::SET_TIMEOUT, timeout);
 }
 
-bool Master::getState() {
+bool ESG::getState() {
     uint8_t buf[10] = {0};
     if (!(m_twi->getData(I2C::GET_STATE, &buf[1], &buf[0]))) {
 #if (LL_COM_LOG == 1)
@@ -151,7 +151,7 @@ bool Master::getState() {
     return true;
 }
 
-void Master::receiveUiEvents(QueueHandle_t &queue) {
+void ESG::receiveUiEvents(QueueHandle_t &queue) {
     UIEvent_t event;
 
     if (xQueueReceive(queue, &event, 0)) {
@@ -217,7 +217,7 @@ void Master::receiveUiEvents(QueueHandle_t &queue) {
     }
 }
 
-void Master::updateLabelText(QueueHandle_t &queue, uint32_t widget_id, const char *text) {
+void ESG::updateLabelText(QueueHandle_t &queue, uint32_t widget_id, const char *text) {
     UICmd_t cmd;
 
     cmd.cmd_type = UI_CMD_UPDATE_LABEL;

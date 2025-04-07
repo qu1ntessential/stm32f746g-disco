@@ -9,8 +9,6 @@ extern "C" {
 
 typedef struct _objects_t {
     lv_obj_t *main;
-    lv_obj_t *led_pwr_active;
-    lv_obj_t *led_ne;
     lv_obj_t *label_cut;
     lv_obj_t *label_mono;
     lv_obj_t *label_cut_mix_pwr;

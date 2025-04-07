@@ -21,7 +21,7 @@ static size_t pre_rtos_index = 0;
 static bool rtos_started = false;
 
 extern FatFsWrapper eMMCFatFS;
-extern Master ESG15;
+extern ESG ESG15;
 
 TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t UartTaskHandle = nullptr;
@@ -107,7 +107,7 @@ void UartThread(void *argument) {
 
             /// Отправляем буфер, если он заполнен или получен символ новой строки
             if (index >= TX_BUF_SIZE || ch == '\n') {
-                HAL_UART_Transmit(&hcom_uart[COM1], buf, index, COM_POLL_TIMEOUT);
+                HAL_UART_Transmit(&huart1, buf, index, HAL_MAX_DELAY);
                 index = 0;
             }
         }

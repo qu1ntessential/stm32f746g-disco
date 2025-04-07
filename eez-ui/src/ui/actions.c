@@ -12,7 +12,9 @@ extern objects_t objects;
 extern QueueHandle_t uiEventQueue;
 extern QueueHandle_t uiCmdQueue;
 
+
 static void prepareEventItem(lv_event_t *e) {
+    /*
     if (!e || !e->target) {
         print_log(ERROR_LOG, "Invalid event\r\n");
         return;
@@ -34,6 +36,7 @@ static void prepareEventItem(lv_event_t *e) {
     if (xQueueSend(uiEventQueue, &event, pdMS_TO_TICKS(100)) != pdPASS) {
         print_log(ERROR_LOG, "Queue full for widget %d\r\n", event.widget_id);
     }
+    */
 }
 
 void action_cut_mix_pwr_inc(lv_event_t *e) {

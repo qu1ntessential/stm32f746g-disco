@@ -13,14 +13,6 @@
 objects_t objects;
 lv_obj_t *tick_value_change_obj;
 
-static void event_handler_cb_main_led_pwr_active(lv_event_t *e) {
-    lv_event_code_t event = lv_event_get_code(e);
-}
-
-static void event_handler_cb_main_led_ne(lv_event_t *e) {
-    lv_event_code_t event = lv_event_get_code(e);
-}
-
 void create_screen_main() {
     lv_obj_t *obj = lv_obj_create(0);
     objects.main = obj;
@@ -34,8 +26,8 @@ void create_screen_main() {
             objects.label_cut = obj;
             lv_obj_set_pos(obj, 10, 30);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text(obj, "Резание");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "Cut");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // label_mono
@@ -43,8 +35,8 @@ void create_screen_main() {
             objects.label_mono = obj;
             lv_obj_set_pos(obj, 130, 60);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text(obj, "МОНО");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "MONO");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // label_cut_mix_pwr
@@ -53,7 +45,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 10, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_text(obj, "");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // label_monocoag_pwr
@@ -62,7 +54,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 130, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_text(obj, "");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // btn_cut_mix_pwr_inc
@@ -149,37 +141,13 @@ void create_screen_main() {
             }
         }
         {
-            // led_pwr_active
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.led_pwr_active = obj;
-            lv_obj_set_pos(obj, 0, 0);
-            lv_obj_set_size(obj, 70, 30);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_led_pwr_active, LV_EVENT_ALL, 0);
-        }
-        {
-            // led_ne
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.led_ne = obj;
-            lv_obj_set_pos(obj, 70, 0);
-            lv_obj_set_size(obj, 70, 30);
-            lv_led_set_color(obj, lv_color_hex(0xffff0000));
-            lv_obj_add_event_cb(obj, event_handler_cb_main_led_ne, LV_EVENT_ALL, 0);
-        }
-        {
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 89, -2);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text(obj, "НЭ");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
-        {
             // label_bicoag_pwr
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_bicoag_pwr = obj;
             lv_obj_set_pos(obj, 280, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_text(obj, "");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // btn_bicoag_pwr_inc
@@ -231,8 +199,8 @@ void create_screen_main() {
             objects.label_bi = obj;
             lv_obj_set_pos(obj, 280, 60);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text(obj, "БИ");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "BI");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // label_coag
@@ -240,8 +208,8 @@ void create_screen_main() {
             objects.label_coag = obj;
             lv_obj_set_pos(obj, 210, 30);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text(obj, "Коагуляция");
-            lv_obj_set_style_text_font(obj, &ui_font_gost_type_b_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "Coag");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // btn_cut_mode_sel
@@ -375,37 +343,6 @@ void tick_screen_main() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.label_monocoag_pwr;
             lv_label_set_text(objects.label_monocoag_pwr, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        int32_t new_val = get_var_led_pwr_active_color();
-        uint32_t cur_val = lv_color_to32(((lv_led_t *)objects.led_pwr_active)->color);
-        if (new_val != cur_val) {
-            tick_value_change_obj = objects.led_pwr_active;
-            lv_led_set_color(objects.led_pwr_active, lv_color_hex(new_val));
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        int32_t new_val = get_var_led_pwr_active_br();
-        if (new_val < 0) new_val = 0;
-        else if (new_val > 255) new_val = 255;
-        int32_t cur_val = lv_led_get_brightness(objects.led_pwr_active);
-        if (new_val != cur_val) {
-            tick_value_change_obj = objects.led_pwr_active;
-            lv_led_set_brightness(objects.led_pwr_active, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        int32_t new_val = get_var_led_ne_br();
-        if (new_val < 0) new_val = 0;
-        else if (new_val > 255) new_val = 255;
-        int32_t cur_val = lv_led_get_brightness(objects.led_ne);
-        if (new_val != cur_val) {
-            tick_value_change_obj = objects.led_ne;
-            lv_led_set_brightness(objects.led_ne, new_val);
             tick_value_change_obj = NULL;
         }
     }

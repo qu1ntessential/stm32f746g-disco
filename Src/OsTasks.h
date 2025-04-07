@@ -26,6 +26,7 @@
 #include "lvgl_port_touchpad.h"
 
 #include "ui.h"
+#include "ui_con.h"
 #include "vars.h"
 #include "actions.h"
 

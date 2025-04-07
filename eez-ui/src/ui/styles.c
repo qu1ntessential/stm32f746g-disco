@@ -16,7 +16,7 @@ void init_style_selected_MAIN_DEFAULT(lv_style_t *style) {
 lv_style_t *get_style_selected_MAIN_DEFAULT() {
     static lv_style_t *style;
     if (!style) {
-        style = lv_mem_alloc(sizeof(lv_style_t));
+        style = lv_malloc(sizeof(lv_style_t));
         lv_style_init(style);
         init_style_selected_MAIN_DEFAULT(style);
     }
