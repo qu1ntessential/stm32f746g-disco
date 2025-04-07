@@ -5,13 +5,13 @@
 #define STACK3_SIZE 1024
 #define STACK4_SIZE 1024
 
-#define UIEVENT_QUEUE_LENGTH    10
+#define UIEVENT_QUEUE_LENGTH 10
 #define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t)
 
-#define UICMD_QUEUE_LENGTH    10
+#define UICMD_QUEUE_LENGTH 10
 #define UICMD_QUEUE_ITEM_SIZE sizeof(UICmd_t)
 
-#define UART_QUEUE_LENGTH    400
+#define UART_QUEUE_LENGTH 400
 #define UART_QUEUE_ITEM_SIZE sizeof(char)
 #define TX_BUF_SIZE 200
 
@@ -20,7 +20,7 @@ static char pre_rtos_buf[PRE_RTOS_BUF_SIZE];
 static size_t pre_rtos_index = 0;
 static bool rtos_started = false;
 
-extern FatFsWrapper eMMCFatFS;
+extern FatFsWrapper uSD;
 extern ESG ESG15;
 
 TaskHandle_t LvglTaskHandle = nullptr;
@@ -58,6 +58,12 @@ StackType_t Stack4[STACK4_SIZE];
 static StaticTask_t xIdleTaskTCBBuffer;
 static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
 
+/**
+ * @brief Функция, предоставляющая FreeRTOS память для статического создания задачи IDLE
+ * @param xIdleTaskTCBBuffer Указатель на буфер для TCB (Task Control Block)
+ * @param uxIdleTaskStack Указатель на стек задачи IDLE
+ * @param IdleTaskStackSize Размер стека
+ */
 extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
                                               StackType_t **ppxIdleTaskStackBuffer,
                                               uint32_t *pulIdleTaskStackSize) {
@@ -66,6 +72,11 @@ extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffe
     *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
 }
 
+/**
+ * @brief Функция-обработчик, вызываемая FreeRTOS при обнаружении переполнения стека в любой задаче
+ * @param xTask Handle задачи, где произошло переполнение
+ * @param pcTaskName Имя задачи, у которой переполнился стек
+ */
 extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
     print_log(ERROR_LOG, "Stack overflow in task: %s\n", pcTaskName);
     while (1) {}
@@ -133,6 +144,39 @@ void Task4Thread(void *argument) {
 }
 
 void FreeRTOS_Resources_Init() {
+    twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
+
+    if (twiSemaphore == nullptr) {
+        print_log(ERROR_LOG, "Error creating twiSemaphore\n\r");
+    }
+
+    uiEventQueue = xQueueCreateStatic(UIEVENT_QUEUE_LENGTH,
+                                      UIEVENT_QUEUE_ITEM_SIZE,
+                                      ucUiEventQueueStorageArea,
+                                      &xUiEventQueueStruct);
+
+    if (uiEventQueue == nullptr) {
+        print_log(ERROR_LOG, "Error creating uiEventQueue\n\r");
+    }
+
+    uiCmdQueue = xQueueCreateStatic(UICMD_QUEUE_LENGTH,
+                                    UICMD_QUEUE_ITEM_SIZE,
+                                    ucUiCmdQueueStorageArea,
+                                    &xUiCmdQueueStruct);
+
+    if (uiCmdQueue == nullptr) {
+        print_log(ERROR_LOG, "Error creating uiCmdQueue\n\r");
+    }
+
+    uartQueue = xQueueCreateStatic(UART_QUEUE_LENGTH,
+                                   UART_QUEUE_ITEM_SIZE,
+                                   ucUartQueueStorageArea,
+                                   &xUartQueueStruct);
+
+    if (uartQueue == nullptr) {
+        print_log(ERROR_LOG, "Error creating uiCmdQueue\n\r");
+    }
+
     LvglTaskHandle = xTaskCreateStatic(LvglThread,
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
@@ -143,18 +187,42 @@ void FreeRTOS_Resources_Init() {
 
     if (LvglTaskHandle == nullptr) {
         print_log(ERROR_LOG, "Error creating Task1\r\n");
+    }
 
-        Task3Handle = xTaskCreateStatic(Task3Thread,
-                                        "Task3",
-                                        STACK3_SIZE,
-                                        nullptr,
-                                        5,
-                                        Stack3,
-                                        &Task3Buffer);
+    UartTaskHandle = xTaskCreateStatic(UartThread,
+                                       "Task for UART",
+                                       UART_TASK_STACK_SIZE,
+                                       nullptr,
+                                       2,
+                                       UartTaskStack,
+                                       &UartTaskBuffer);
 
-        if (Task3Handle == nullptr) {
-            print_log(ERROR_LOG, "Error creating Task3\r\n");
-        }
+    if (UartTaskHandle == nullptr) {
+        print_log(ERROR_LOG, "Error creating Task2\r\n");
+    }
+
+    Task3Handle = xTaskCreateStatic(Task3Thread,
+                                    "Task3",
+                                    STACK3_SIZE,
+                                    nullptr,
+                                    5,
+                                    Stack3,
+                                    &Task3Buffer);
+
+    if (Task3Handle == nullptr) {
+        print_log(ERROR_LOG, "Error creating Task3\r\n");
+    }
+
+    Task4Handle = xTaskCreateStatic(Task4Thread,
+                                    "Task4",
+                                    STACK4_SIZE,
+                                    nullptr,
+                                    5,
+                                    Stack4,
+                                    &Task4Buffer);
+
+    if (Task4Handle == nullptr) {
+        print_log(ERROR_LOG, "Error creating Task4\r\n");
     }
 }
 
