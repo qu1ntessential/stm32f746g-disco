@@ -1,5 +1,5 @@
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef ESG_DEVICE_HPP
+#define ESG_DEVICE_HPP
 
 #include <cstring>
 #include "I2C.hpp"
@@ -67,6 +67,18 @@ public:
 
     bool setBiMixPower(uint16_t power, uint8_t mode);
 
+    void getMonoCutPower(char *buf, uint8_t len);
+
+    bool getMonoCoagPower();
+
+    bool getMonoMixPower();
+
+    bool getBiCutPower();
+
+    bool getBiCoagPower();
+
+    bool getBiMixPower();
+
     bool setTimeout(uint16_t timeout);
 
     bool getState();
@@ -78,4 +90,4 @@ public:
 
 };
 
-#endif // DEVICE_H
+#endif // ESG_DEVICE_HPP

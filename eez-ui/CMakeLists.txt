@@ -5,6 +5,7 @@ set(LIBRARY_NAME eez-project)
 # Найти все C-файлы в директории
 file(GLOB_RECURSE ALL_C_SOURCES
         src/*.c
+        src/*.cpp
 )
 
 # Исключить некоторые файлы

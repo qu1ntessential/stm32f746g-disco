@@ -82,8 +82,6 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskNa
     while (1) {}
 }
 
-uint8_t s_x = 0, s_y = 0;
-
 /**
  * @brief Поток для обработки UI
  * @note LVGL не является потокобезопасной библиотекой!
@@ -96,7 +94,6 @@ void LvglThread(void *argument) {
     while (1) {
         lv_task_handler();
         ui_tick();
-        lv_obj_set_pos(objects.label_cut, s_x, s_y);
         vTaskDelayUntil(&xLastWakeTime, 5);
     }
 }
@@ -140,10 +137,8 @@ void Task4Thread(void *argument) {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
     while (true) {
-        ESG15.receiveUiEvents(uiEventQueue);
-        s_x += 1;
-        s_y += 1;
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
+        ESG15.setBiCoagPower(300, 0);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10000));
     }
 }
 

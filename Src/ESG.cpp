@@ -42,114 +42,72 @@ void ESG::powerOff() {
 
 void ESG::changeMonoBiSel() {
     isMonoBi = !isMonoBi;
+#if (LL_COM_LOG == 1)
     print_log(INFO_LOG, "isMonoBi value - %d\r\n", isMonoBi);
+#endif
 }
 
 bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data) {
-    if (power > 300 || mode > 2 || order < 2 || order > 7) {
-        print_log(ERROR_LOG, "Incorrect power, mode or order\r\n");
+    /// Проверка на nullptr
+    if (!data) {
+#if (LL_COM_LOG == 1)
+        print_log(ERROR_LOG, "Received nullptr\r\n");
+#endif
         return false;
     }
 
-    // Проверка мощности в зависимости от режима
-    bool powerValid = false;
-
-    switch (order) {
-        case I2C::SET_MONO_CUT_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= MONOCUT0_MIN_PWR && power <= MONOCUT0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= MONOCUT1_MIN_PWR && power <= MONOCUT1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= MONOCUT2_MIN_PWR && power <= MONOCUT2_MAX_PWR);
-                    break;
-            }
-            break;
-        case I2C::SET_MONO_MIX_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= MONOMIX0_MIN_PWR && power <= MONOMIX0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= MONOMIX1_MIN_PWR && power <= MONOMIX1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= MONOMIX2_MIN_PWR && power <= MONOMIX2_MAX_PWR);
-                    break;
-            }
-            break;
-        case I2C::SET_MONO_COAG_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= MONOCOAG0_MIN_PWR && power <= MONOCOAG0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= MONOCOAG1_MIN_PWR && power <= MONOCOAG1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= MONOCOAG2_MIN_PWR && power <= MONOCOAG2_MAX_PWR);
-                    break;
-            }
-            break;
-        case I2C::SET_BI_CUT_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= BICUT0_MIN_PWR && power <= BICUT0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= BICUT1_MIN_PWR && power <= BICUT1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= BICUT2_MIN_PWR && power <= BICUT2_MAX_PWR);
-                    break;
-            }
-            break;
-        case I2C::SET_BI_MIX_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= BIMIX0_MIN_PWR && power <= BIMIX0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= BIMIX1_MIN_PWR && power <= BIMIX1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= BIMIX2_MIN_PWR && power <= BIMIX2_MAX_PWR);
-                    break;
-            }
-            break;
-        case I2C::SET_BI_COAG_PWR:
-            switch (mode) {
-                case 0:
-                    powerValid = (power >= BICOAG0_MIN_PWR && power <= BICOAG0_MAX_PWR);
-                    break;
-                case 1:
-                    powerValid = (power >= BICOAG1_MIN_PWR && power <= BICOAG1_MAX_PWR);
-                    break;
-                case 2:
-                    powerValid = (power >= BICOAG2_MIN_PWR && power <= BICOAG2_MAX_PWR);
-                    break;
-            }
-            break;
+    /// Проверка допустимости режима
+    if (mode > 2) {
+#if (LL_COM_LOG == 1)
+        print_log(ERROR_LOG, "Incorrect mode (must be 0, 1, or 2)\r\n");
+#endif
+        return false;
     }
+
+    /// Lookup-таблицы для минимальных и максимальных значений мощности
+    static constexpr uint16_t MIN_PWR[6][3] = {
+            {MONOCUT0_MIN_PWR,  MONOCUT1_MIN_PWR,  MONOCUT2_MIN_PWR},
+            {MONOMIX0_MIN_PWR,  MONOMIX1_MIN_PWR,  MONOMIX2_MIN_PWR},
+            {MONOCOAG0_MIN_PWR, MONOCOAG1_MIN_PWR, MONOCOAG2_MIN_PWR},
+            {BICUT0_MIN_PWR,    BICUT1_MIN_PWR,    BICUT2_MIN_PWR},
+            {BIMIX0_MIN_PWR,    BIMIX1_MIN_PWR,    BIMIX2_MIN_PWR},
+            {BICOAG0_MIN_PWR,   BICOAG1_MIN_PWR,   BICOAG2_MIN_PWR}
+    };
+
+    static constexpr uint16_t MAX_PWR[6][3] = {
+            {MONOCUT0_MAX_PWR,  MONOCUT1_MAX_PWR,  MONOCUT2_MAX_PWR},
+            {MONOMIX0_MAX_PWR,  MONOMIX1_MAX_PWR,  MONOMIX2_MAX_PWR},
+            {MONOCOAG0_MAX_PWR, MONOCOAG1_MAX_PWR, MONOCOAG2_MAX_PWR},
+            {BICUT0_MAX_PWR,    BICUT1_MAX_PWR,    BICUT2_MAX_PWR},
+            {BIMIX0_MAX_PWR,    BIMIX1_MAX_PWR,    BIMIX2_MAX_PWR},
+            {BICOAG0_MAX_PWR,   BICOAG1_MAX_PWR,   BICOAG2_MAX_PWR}
+    };
+
+    /// Проверка мощности
+    if (order < I2C::SET_MONO_CUT_PWR || order > I2C::SET_BI_COAG_PWR) {
+#if (LL_COM_LOG == 1)
+        print_log(ERROR_LOG, "Invalid order\r\n");
+#endif
+        return false;
+    }
+
+    uint8_t order_index = order - I2C::SET_MONO_CUT_PWR;
+    bool powerValid = (power >= MIN_PWR[order_index][mode]) &&
+                      (power <= MAX_PWR[order_index][mode]);
 
     if (!powerValid) {
-        print_log(ERROR_LOG, "Power out of range\r\n");
+#if (LL_COM_LOG == 1)
+        print_log(ERROR_LOG, "Power %d out of range for mode %d and order %d\r\n",
+                  power, mode, order);
+#endif
         return false;
     }
 
+    /// Маскирование и упаковка данных
     power = power & 0x0FFF;
     mode = mode & 0x0F;
-
-    if (!data) {
-        print_log(ERROR_LOG, "Received nullptr\r\n");
-        return false;
-    } else {
-        *data = (static_cast<uint16_t>(mode) << 12) | power;
-        return true;
-    }
+    *data = (static_cast<uint16_t>(mode) << 12) | power;
+    return true;
 }
 
 bool ESG::setMonoCutPower(uint16_t power, uint8_t mode) {
@@ -235,6 +193,34 @@ bool ESG::setBiMixPower(uint16_t power, uint8_t mode) {
     } else {
         return false;
     }
+}
+
+void ESG::getMonoCutPower(char *buf, uint8_t len) {
+    int written = snprintf(buf, len, "%u", (unsigned int) monoCutPwr);
+    if (written >= len) {
+        /// Обработка переполнения
+        buf[len - 1] = '\0';
+    }
+}
+
+bool ESG::getMonoCoagPower() {
+
+}
+
+bool ESG::getMonoMixPower() {
+
+}
+
+bool ESG::getBiCutPower() {
+
+}
+
+bool ESG::getBiCoagPower() {
+
+}
+
+bool ESG::getBiMixPower() {
+
 }
 
 bool ESG::setTimeout(uint16_t timeout) {

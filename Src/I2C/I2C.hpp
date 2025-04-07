@@ -1,5 +1,5 @@
-#ifndef I2C_CXX_H
-#define I2C_CXX_H
+#ifndef I2C_HPP
+#define I2C_HPP
 
 #include <functional>
 
@@ -150,4 +150,4 @@ public:
     bool getData(Orders order, uint8_t *value, uint8_t *length, uint8_t addr = slaveAddr);
 };
 
-#endif //I2C_CXX_H
+#endif //I2C_HPP

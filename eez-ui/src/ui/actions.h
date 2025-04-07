@@ -19,8 +19,6 @@ extern void action_monocoag_mode_sel(lv_event_t * e);
 extern void action_bicoag_mode_sel(lv_event_t * e);
 extern void action_mono_bi_sel(lv_event_t * e);
 
-void checkMode(void);
-
 #ifdef __cplusplus
 }
 #endif
