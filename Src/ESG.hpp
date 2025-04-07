@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include "I2C.hpp"
+#include "config.h"
 #include "ui_con.h"
 
 #define LL_COM_LOG 0
@@ -20,48 +21,33 @@ class ESG {
         uint16_t isBiActive: 1;
     } States_t;
 
-    typedef struct {
-        bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
-        bool isCutMix;          ///< Флаг выбора режима Резание/Смесь
-        bool isMonoBiCoag;      ///< Флаг выбора активности в текущий момент МОНО/БИ коагуляции
-        uint8_t cutMode;        ///< Режимы резания
-        uint8_t mixMode;        ///< Режимы смеси
-        uint8_t monoCoagMode;   ///< Режимы МОНО коагуляции
-        uint8_t biCoagMode;     ///< Режимы БИ коагуляции
-        /// Мощности режимов (18 штук)
-        uint16_t monoCut0;
-        uint16_t monoCut1;
-        uint16_t monoCut2;
-        uint16_t biCut0;
-        uint16_t biCut1;
-        uint16_t biCut2;
-        uint16_t monoMix0;
-        uint16_t monoMix1;
-        uint16_t monoMix2;
-        uint16_t biMix0;
-        uint16_t biMix1;
-        uint16_t biMix2;
-        uint16_t monoCoag0;
-        uint16_t monoCoag1;
-        uint16_t monoCoag2;
-        uint16_t biCoag0;
-        uint16_t biCoag1;
-        uint16_t biCoag2;
-    } Params_t;
+    bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
+    bool isCutMix;          ///< Флаг выбора режима Резание/Смесь
+    bool isMonoBiCoag;      ///< Флаг выбора активности в текущий момент МОНО/БИ коагуляции
+    uint8_t monoCutMode;    ///< Режимы МОНО резания
+    uint8_t biCutMode;      ///< Режимы БИ резания
+    uint8_t monoMixMode;    ///< Режимы МОНО смеси
+    uint8_t biMixMode;      ///< Режимы БИ смеси
+    uint8_t monoCoagMode;   ///< Режимы МОНО коагуляции
+    uint8_t biCoagMode;     ///< Режимы БИ коагуляции
+    /// Мощности режимов (18 штук)
+    uint16_t monoCutPwr[3];
+    uint16_t biCutPwr[3];
+    uint16_t monoMixPwr[3];
+    uint16_t biMixPwr[3];
+    uint16_t monoCoagPwr[3];
+    uint16_t biCoagPwr[3];
 
     States_t m_state; ///< Структура текущего состояния прибора (активность педалей, ошибки и т.д.)
-    Params_t m_param; ///< Структура текущих параметров прибора (мощности режимов, активность режимов)
 
     I2C *m_twi; ///< Указатель на класс, инкапсулирущий работу с I2C
 
     static uint8_t crc8(uint8_t *buffer, uint8_t length);
 
-    static inline uint16_t checkPowers(uint16_t power, uint8_t mode);
+    static inline bool convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data);
 
 public:
     explicit ESG(I2C *twi) : m_twi(twi) {}
-
-
 
     void powerOn();
 

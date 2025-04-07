@@ -62,8 +62,8 @@ void create_screen_main() {
             objects.btn_cut_mix_pwr_inc = obj;
             lv_obj_set_pos(obj, 70, 100);
             lv_obj_set_size(obj, 40, 40);
-            lv_obj_add_event_cb(obj, action_cut_mix_pwr_inc, LV_EVENT_PRESSED, (void *)1002);
-            lv_obj_add_event_cb(obj, action_cut_mix_pwr_inc, LV_EVENT_LONG_PRESSED_REPEAT, (void *)1003);
+            lv_obj_add_event_cb(obj, action_cut_mix_pwr_inc, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_add_event_cb(obj, action_cut_mix_pwr_inc, LV_EVENT_LONG_PRESSED_REPEAT, (void *)0);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
             {
                 lv_obj_t *parent_obj = obj;

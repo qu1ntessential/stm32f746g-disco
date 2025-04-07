@@ -41,88 +41,200 @@ void ESG::powerOff() {
 }
 
 void ESG::changeMonoBiSel() {
-    m_param.isMonoBi = !m_param.isMonoBi;
-    //updateLabelText(uiCmdQueue, ID_LABEL_MONO_BI_SEL, m_param.isMonoBi ? "MONO" : "BI");
-    print_log(INFO_LOG, "isMonoBi value - %d\r\n", m_param.isMonoBi);
+    isMonoBi = !isMonoBi;
+    print_log(INFO_LOG, "isMonoBi value - %d\r\n", isMonoBi);
 }
 
-uint16_t ESG::checkPowers(uint16_t power, uint8_t mode) {
-    if (power > 300 || mode > 2) {
-        return 0xFF00;
+bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data) {
+    if (power > 300 || mode > 2 || order < 2 || order > 7) {
+        print_log(ERROR_LOG, "Incorrect power, mode or order\r\n");
+        return false;
+    }
+
+    // Проверка мощности в зависимости от режима
+    bool powerValid = false;
+
+    switch (order) {
+        case I2C::SET_MONO_CUT_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= MONOCUT0_MIN_PWR && power <= MONOCUT0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= MONOCUT1_MIN_PWR && power <= MONOCUT1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= MONOCUT2_MIN_PWR && power <= MONOCUT2_MAX_PWR);
+                    break;
+            }
+            break;
+        case I2C::SET_MONO_MIX_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= MONOMIX0_MIN_PWR && power <= MONOMIX0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= MONOMIX1_MIN_PWR && power <= MONOMIX1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= MONOMIX2_MIN_PWR && power <= MONOMIX2_MAX_PWR);
+                    break;
+            }
+            break;
+        case I2C::SET_MONO_COAG_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= MONOCOAG0_MIN_PWR && power <= MONOCOAG0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= MONOCOAG1_MIN_PWR && power <= MONOCOAG1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= MONOCOAG2_MIN_PWR && power <= MONOCOAG2_MAX_PWR);
+                    break;
+            }
+            break;
+        case I2C::SET_BI_CUT_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= BICUT0_MIN_PWR && power <= BICUT0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= BICUT1_MIN_PWR && power <= BICUT1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= BICUT2_MIN_PWR && power <= BICUT2_MAX_PWR);
+                    break;
+            }
+            break;
+        case I2C::SET_BI_MIX_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= BIMIX0_MIN_PWR && power <= BIMIX0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= BIMIX1_MIN_PWR && power <= BIMIX1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= BIMIX2_MIN_PWR && power <= BIMIX2_MAX_PWR);
+                    break;
+            }
+            break;
+        case I2C::SET_BI_COAG_PWR:
+            switch (mode) {
+                case 0:
+                    powerValid = (power >= BICOAG0_MIN_PWR && power <= BICOAG0_MAX_PWR);
+                    break;
+                case 1:
+                    powerValid = (power >= BICOAG1_MIN_PWR && power <= BICOAG1_MAX_PWR);
+                    break;
+                case 2:
+                    powerValid = (power >= BICOAG2_MIN_PWR && power <= BICOAG2_MAX_PWR);
+                    break;
+            }
+            break;
+    }
+
+    if (!powerValid) {
+        print_log(ERROR_LOG, "Power out of range\r\n");
+        return false;
     }
 
     power = power & 0x0FFF;
     mode = mode & 0x0F;
 
-    uint16_t data = (static_cast<uint16_t>(mode) << 12) | power;
-
-    return data;
+    if (!data) {
+        print_log(ERROR_LOG, "Received nullptr\r\n");
+        return false;
+    } else {
+        *data = (static_cast<uint16_t>(mode) << 12) | power;
+        return true;
+    }
 }
 
 bool ESG::setMonoCutPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
+    const I2C::Orders order = I2C::SET_MONO_CUT_PWR;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setMonoCutPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_MONO_CUT_PWR, data)) {
+        monoCutPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_CUT_POWER, data);
 }
 
 bool ESG::setMonoCoagPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setMonoCoagPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_MONO_COAG_PWR, data)) {
+        monoCoagPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_COAG_POWER, data);
 }
 
 bool ESG::setBiCutPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setBiCutPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_BI_CUT_PWR, data)) {
+        biCutPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_BCUT_POWER, data);
 }
 
 bool ESG::setBiCoagPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setBiCoagPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_BI_COAG_PWR, data)) {
+        biCoagPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_BCOAG_POWER, data);
 }
 
 bool ESG::setMonoMixPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setMonoMixPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_MONO_MIX_PWR, data)) {
+        monoMixPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_MIX_POWER, data);
 }
 
 bool ESG::setBiMixPower(uint16_t power, uint8_t mode) {
-    uint16_t data = checkPowers(power, mode);
+    uint16_t data = 0;
 
-    if (data == 0xFF00) {
-        print_log(ERROR_LOG, "setBiMixPower received incorrect value or mode\r\n");
+    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
+        return false;
+
+    if (m_twi->putData(I2C::SET_BI_MIX_PWR, data)) {
+        biMixPwr[mode] = power;
+        return true;
+    } else {
         return false;
     }
-
-    return m_twi->putData(I2C::SET_BMIX_POWER, data);
 }
 
 bool ESG::setTimeout(uint16_t timeout) {

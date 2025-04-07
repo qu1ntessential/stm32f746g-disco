@@ -38,6 +38,8 @@ int main() {
     //lv_fs_fatfs_init();
     ui_init();
 
+    print_log(DEBUG_LOG, "1234\r\n");
+
     FreeRTOS_Resources_Init();
     vTaskStartScheduler();
 

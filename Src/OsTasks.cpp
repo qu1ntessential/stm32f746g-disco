@@ -5,8 +5,8 @@
 #define STACK3_SIZE 1024
 #define STACK4_SIZE 1024
 
-#define UIEVENT_QUEUE_LENGTH 10
-#define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t)
+#define UIEVENT_QUEUE_LENGTH 10                   ///< Длина очереди UIEvent
+#define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t) ///< Размер элемента очереди UIEvent
 
 #define UICMD_QUEUE_LENGTH 10
 #define UICMD_QUEUE_ITEM_SIZE sizeof(UICmd_t)
@@ -82,6 +82,8 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskNa
     while (1) {}
 }
 
+uint8_t s_x = 0, s_y = 0;
+
 /**
  * @brief Поток для обработки UI
  * @note LVGL не является потокобезопасной библиотекой!
@@ -94,7 +96,7 @@ void LvglThread(void *argument) {
     while (1) {
         lv_task_handler();
         ui_tick();
-
+        lv_obj_set_pos(objects.label_cut, s_x, s_y);
         vTaskDelayUntil(&xLastWakeTime, 5);
     }
 }
@@ -139,6 +141,8 @@ void Task4Thread(void *argument) {
     xLastWakeTime = xTaskGetTickCount();
     while (true) {
         ESG15.receiveUiEvents(uiEventQueue);
+        s_x += 1;
+        s_y += 1;
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
     }
 }

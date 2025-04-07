@@ -509,14 +509,14 @@
                   "eventName": "PRESSED",
                   "handlerType": "action",
                   "action": "cut_mix_pwr_inc",
-                  "userData": 1002
+                  "userData": 0
                 },
                 {
                   "objID": "85b205ff-190b-4bdc-a354-b4d7542d1d8d",
                   "eventName": "LONG_PRESSED_REPEAT",
                   "handlerType": "action",
                   "action": "cut_mix_pwr_inc",
-                  "userData": 1003
+                  "userData": 0
                 }
               ],
               "identifier": "btn_cut_mix_pwr_inc",
