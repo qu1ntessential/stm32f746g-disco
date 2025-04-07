@@ -20,13 +20,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-//#include "cmsis_os.h"
 #include "adc.h"
 #include "crc.h"
 #include "dcmi.h"
 #include "dma2d.h"
 #include "eth.h"
-//#include "fatfs.h"
 #include "i2c.h"
 #include "ltdc.h"
 #include "quadspi.h"
@@ -37,7 +35,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-//#include "usb_host.h"
 #include "gpio.h"
 #include "fmc.h"
 
@@ -70,7 +67,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */

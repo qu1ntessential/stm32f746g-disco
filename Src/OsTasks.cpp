@@ -1,16 +1,59 @@
 #include "OsTasks.h"
 
 #define LVGL_TASK_STACK_SIZE 1024
+#define UART_TASK_STACK_SIZE 256
 #define STACK3_SIZE 1024
+#define STACK4_SIZE 1024
+
+#define UIEVENT_QUEUE_LENGTH    10
+#define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t)
+
+#define UICMD_QUEUE_LENGTH    10
+#define UICMD_QUEUE_ITEM_SIZE sizeof(UICmd_t)
+
+#define UART_QUEUE_LENGTH    400
+#define UART_QUEUE_ITEM_SIZE sizeof(char)
+#define TX_BUF_SIZE 200
+
+#define PRE_RTOS_BUF_SIZE 500
+static char pre_rtos_buf[PRE_RTOS_BUF_SIZE];
+static size_t pre_rtos_index = 0;
+static bool rtos_started = false;
+
+extern FatFsWrapper eMMCFatFS;
+extern Master ESG15;
 
 TaskHandle_t LvglTaskHandle = nullptr;
+TaskHandle_t UartTaskHandle = nullptr;
 TaskHandle_t Task3Handle = nullptr;
+TaskHandle_t Task4Handle = nullptr;
+
+SemaphoreHandle_t twiSemaphore = nullptr;
+static StaticSemaphore_t twiSemaphoreBuffer;
+
+QueueHandle_t uiEventQueue = nullptr;
+static StaticQueue_t xUiEventQueueStruct;
+static uint8_t ucUiEventQueueStorageArea[UIEVENT_QUEUE_LENGTH * UIEVENT_QUEUE_ITEM_SIZE];
+
+QueueHandle_t uiCmdQueue = nullptr;
+static StaticQueue_t xUiCmdQueueStruct;
+static uint8_t ucUiCmdQueueStorageArea[UICMD_QUEUE_LENGTH * UICMD_QUEUE_ITEM_SIZE];
+
+QueueHandle_t uartQueue = nullptr;
+static StaticQueue_t xUartQueueStruct;
+static uint8_t ucUartQueueStorageArea[UART_QUEUE_LENGTH * UART_QUEUE_ITEM_SIZE];
 
 StaticTask_t LvglTaskBuffer;
 StackType_t LvglTaskStack[LVGL_TASK_STACK_SIZE];
 
+StaticTask_t UartTaskBuffer;
+StackType_t UartTaskStack[UART_TASK_STACK_SIZE];
+
 StaticTask_t Task3Buffer;
 StackType_t Stack3[STACK3_SIZE];
+
+StaticTask_t Task4Buffer;
+StackType_t Stack4[STACK4_SIZE];
 
 static StaticTask_t xIdleTaskTCBBuffer;
 static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
@@ -40,7 +83,34 @@ void LvglThread(void *argument) {
     while (1) {
         lv_task_handler();
         ui_tick();
+
         vTaskDelayUntil(&xLastWakeTime, 5);
+    }
+}
+
+void UartThread(void *argument) {
+    rtos_started = true;
+
+    // Отправляем буфер с ранними сообщениями
+    for (size_t i = 0; i < pre_rtos_index; i++) {
+        xQueueSend(uartQueue, &pre_rtos_buf[i], portMAX_DELAY);
+    }
+    pre_rtos_index = 0;
+
+    uint8_t buf[TX_BUF_SIZE];
+    uint8_t index = 0;
+
+    while (1) {
+        uint8_t ch;
+        if (xQueueReceive(uartQueue, &ch, portMAX_DELAY) == pdTRUE) {
+            buf[index++] = ch;
+
+            /// Отправляем буфер, если он заполнен или получен символ новой строки
+            if (index >= TX_BUF_SIZE || ch == '\n') {
+                HAL_UART_Transmit(&hcom_uart[COM1], buf, index, COM_POLL_TIMEOUT);
+                index = 0;
+            }
+        }
     }
 }
 
@@ -50,6 +120,15 @@ void Task3Thread(void *argument) {
     while (1) {
         BSP_LED_Toggle(LED_GREEN);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(300));
+    }
+}
+
+void Task4Thread(void *argument) {
+    portTickType xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+    while (true) {
+        ESG15.receiveUiEvents(uiEventQueue);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
     }
 }
 
@@ -77,4 +156,29 @@ void FreeRTOS_Resources_Init() {
             print_log(ERROR_LOG, "Error creating Task3\r\n");
         }
     }
+}
+
+extern "C" int __io_putchar(int ch) {
+    if (!rtos_started) {
+        if (pre_rtos_index < PRE_RTOS_BUF_SIZE) {
+            pre_rtos_buf[pre_rtos_index++] = ch;
+        }
+        return ch;
+    }
+
+    if (uartQueue == nullptr) {
+        return EOF;
+    }
+
+    auto c = (uint8_t) ch;
+    if (xPortIsInsideInterrupt()) {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xQueueSendFromISR(uartQueue, &c, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    } else {
+        if (xQueueSend(uartQueue, &c, 10 / portTICK_PERIOD_MS) != pdTRUE) {
+            return EOF;
+        }
+    }
+    return ch;
 }

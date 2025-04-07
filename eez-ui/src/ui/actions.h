@@ -7,8 +7,19 @@
 extern "C" {
 #endif
 
-extern void action_button_action(lv_event_t * e);
+extern void action_cut_mix_pwr_inc(lv_event_t * e);
+extern void action_cut_mix_pwr_dec(lv_event_t * e);
+extern void action_monocoag_pwr_inc(lv_event_t * e);
+extern void action_monocoag_pwr_dec(lv_event_t * e);
+extern void action_bicoag_pwr_inc(lv_event_t * e);
+extern void action_bicoag_pwr_dec(lv_event_t * e);
+extern void action_cut_mode_sel(lv_event_t * e);
+extern void action_mix_mode_sel(lv_event_t * e);
+extern void action_monocoag_mode_sel(lv_event_t * e);
+extern void action_bicoag_mode_sel(lv_event_t * e);
+extern void action_mono_bi_sel(lv_event_t * e);
 
+void checkMode(void);
 
 #ifdef __cplusplus
 }

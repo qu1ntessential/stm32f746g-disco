@@ -1,0 +1,60 @@
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define MONOCUT0_MAX_PWR 300
+#define MONOCUT1_MAX_PWR 300
+#define MONOCUT2_MAX_PWR 200
+
+#define MONOCUT0_MIN_PWR 0
+#define MONOCUT1_MIN_PWR 0
+#define MONOCUT2_MIN_PWR 0
+
+#define MONOMIX0_MAX_PWR 220
+#define MONOMIX1_MAX_PWR 180
+#define MONOMIX2_MAX_PWR 140
+
+#define MONOMIX0_MIN_PWR 0
+#define MONOMIX1_MIN_PWR 0
+#define MONOMIX2_MIN_PWR 0
+
+#define MONOCOAG0_MAX_PWR 120
+#define MONOCOAG1_MAX_PWR 120
+#define MONOCOAG2_MAX_PWR 120
+
+#define MONOCOAG0_MIN_PWR 0
+#define MONOCOAG1_MIN_PWR 0
+#define MONOCOAG2_MIN_PWR 0
+
+#define BICUT0_MAX_PWR 300
+#define BICUT1_MAX_PWR 300
+#define BICUT2_MAX_PWR 200
+
+#define BICUT0_MIN_PWR 0
+#define BICUT1_MIN_PWR 0
+#define BICUT2_MIN_PWR 0
+
+#define BIMIX0_MAX_PWR 220
+#define BIMIX1_MAX_PWR 180
+#define BIMIX2_MAX_PWR 140
+
+#define BIMIX0_MIN_PWR 0
+#define BIMIX1_MIN_PWR 0
+#define BIMIX2_MIN_PWR 0
+
+#define BICOAG0_MAX_PWR 200
+#define BICOAG1_MAX_PWR 150
+#define BICOAG2_MAX_PWR 150
+
+#define BICOAG0_MIN_PWR 0
+#define BICOAG1_MIN_PWR 0
+#define BICOAG2_MIN_PWR 0
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // CONFIG_H_

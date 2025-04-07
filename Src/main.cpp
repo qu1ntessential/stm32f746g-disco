@@ -10,17 +10,12 @@
 
 extern "C" void SystemClock_Config(void);
 extern "C" void PeriphCommonClock_Config(void);
-extern "C" int __io_putchar(int ch) {
-    HAL_UART_Transmit(&huart1, (uint8_t *) &ch, 1, HAL_MAX_DELAY);
-    return ch;
-}
 
 extern const Diskio_drvTypeDef SD_Driver;
 FatFsWrapper uSD(&SD_Driver);
 
 int main() {
     HAL_Init();
-
     SystemClock_Config();
     PeriphCommonClock_Config();
 
@@ -29,6 +24,7 @@ int main() {
 
     BSP_LED_Init(LED_GREEN);
     MX_USART1_UART_Init();
+    MX_I2C1_Init();
 
     uSD.Init();
 

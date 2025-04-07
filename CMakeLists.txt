@@ -13,8 +13,8 @@ add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
 add_subdirectory(Drivers/lvgl-9.2.2)
-# add_subdirectory(Drivers/USB_Device)
 add_subdirectory(eez-ui)
+add_subdirectory(Drivers/FreeRTOS-Plus-CLI)
 
 add_executable(${PROJECT_NAME})
 
@@ -50,7 +50,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         freertos_kernel
         fatfs
         lvgl
-        eez-ui
+        eez-project
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

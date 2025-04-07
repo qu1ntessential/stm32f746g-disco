@@ -71,7 +71,7 @@
 /* #define HAL_SMARTCARD_MODULE_ENABLED */
 /* #define HAL_WWDG_MODULE_ENABLED */
 /* #define HAL_PCD_MODULE_ENABLED */
-#define HAL_HCD_MODULE_ENABLED
+/* #define HAL_HCD_MODULE_ENABLED */
 /* #define HAL_DFSDM_MODULE_ENABLED */
 /* #define HAL_DSI_MODULE_ENABLED */
 /* #define HAL_JPEG_MODULE_ENABLED */
@@ -146,7 +146,7 @@
   * @brief This is the HAL system configuration section
   */
 #define  VDD_VALUE                    3300U /*!< Value of VDD in mv */
-#define  TICK_INT_PRIORITY            ((uint32_t)0U) /*!< tick interrupt priority */
+#define  TICK_INT_PRIORITY            ((uint32_t)15U) /*!< tick interrupt priority */
 #define  USE_RTOS                     0U
 #define  PREFETCH_ENABLE              0U
 #define  ART_ACCELERATOR_ENABLE        0U /* To enable instruction cache and prefetch */
@@ -163,7 +163,7 @@
 #define  USE_HAL_ETH_REGISTER_CALLBACKS         0U /* ETH register callback disabled       */
 #define  USE_HAL_HASH_REGISTER_CALLBACKS        0U /* HASH register callback disabled      */
 #define  USE_HAL_HCD_REGISTER_CALLBACKS         0U /* HCD register callback disabled       */
-#define  USE_HAL_I2C_REGISTER_CALLBACKS         0U /* I2C register callback disabled       */
+#define  USE_HAL_I2C_REGISTER_CALLBACKS         1U /* I2C register callback enabled       */
 #define  USE_HAL_I2S_REGISTER_CALLBACKS         0U /* I2S register callback disabled       */
 #define  USE_HAL_IRDA_REGISTER_CALLBACKS        0U /* IRDA register callback disabled      */
 #define  USE_HAL_JPEG_REGISTER_CALLBACKS        0U /* JPEG register callback disabled      */

@@ -13,6 +13,10 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "timers.h"
+
+#include "FatFsWrapper.hpp"
+#include "ESG.hpp"
 
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_sd.h"
@@ -20,7 +24,6 @@
 #include "lvgl.h"
 #include "lvgl_port_tft.h"
 #include "lvgl_port_touchpad.h"
-// #include "lvgl_port_fatfs.h"
 
 #include "ui.h"
 #include "vars.h"
@@ -47,8 +50,29 @@
 
 void FreeRTOS_Resources_Init();
 
+/**
+ * @brief Поток для обработки UI
+ * @note Все изменения интерфейса должны осуществляться в этом потоке!
+ * @param argument
+ */
 void LvglThread(void *argument);
 
+/**
+ * @brief Поток для печати отладочных сообщений в UART (используя очередь FreeRTOS)
+ * @param argument
+ */
+void UartThread(void *argument);
+
+/**
+ * @brief
+ * @param argument
+ */
 void Task3Thread(void *argument);
+
+/**
+ * @brief
+ * @param argument
+ */
+void Task4Thread(void *argument);
 
 #endif // OSTASKS_H
