@@ -37,6 +37,7 @@ class ESG {
     uint16_t biMixPwr[3];
     uint16_t monoCoagPwr[3];
     uint16_t biCoagPwr[3];
+    uint8_t timeout;
 
     States_t m_state; ///< Структура текущего состояния прибора (активность педалей, ошибки и т.д.)
 
@@ -55,7 +56,7 @@ public:
 
     void powerOff();
 
-    void changeMonoBiSel();
+    void invMonoBiSel();
 
     bool setMonoCutPower(uint16_t power, uint8_t mode);
 
@@ -69,6 +70,9 @@ public:
 
     bool setBiMixPower(uint16_t power, uint8_t mode);
 
+    /**
+     * @defgroup Взаимодействие с UI
+     */
     [[nodiscard]] uint16_t getCutMixPower() const;
 
     [[nodiscard]] uint16_t getMonoCoagPower() const;
@@ -85,15 +89,19 @@ public:
 
     [[nodiscard]] bool getMonoBiFlag() const;
 
-    bool setTimeout(uint16_t timeout);
+    void changeCutMode();
+
+    void changeMixMode();
+
+    void changeMonoCoagMode();
+
+    void changeBiCoagMode();
+
+    void monoCoagPwrChange(bool isIncDec);
+
+    bool setTimeout(uint16_t timeOut);
 
     bool getState();
-
-    void receiveUiEvents(QueueHandle_t &queue);
-
-    void updateLabelText(QueueHandle_t &queue, uint32_t widget_id, const char *text);
-
-
 };
 
 #endif // ESG_DEVICE_HPP

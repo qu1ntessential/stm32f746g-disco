@@ -27,6 +27,9 @@ uint8_t ESG::crc8(uint8_t *buffer, uint8_t length) {
 }
 
 void ESG::Init() {
+    /** Здесь должна быть реализация, инициализирующая нижеследующие поля значениями из памяти
+        (QSPI или EEPROM)
+     */
     isMonoBi = true;
     isCutMix = false;
     isMonoBiCoag = true;
@@ -54,6 +57,7 @@ void ESG::Init() {
     biCoagPwr[0] = 16;
     biCoagPwr[1] = 17;
     biCoagPwr[2] = 18;
+    timeout = 10;
 }
 
 /**
@@ -70,11 +74,13 @@ void ESG::powerOff() {
 
 }
 
-void ESG::changeMonoBiSel() {
+void ESG::invMonoBiSel() {
     isMonoBi = !isMonoBi;
-#if (LL_COM_LOG == 1)
-    print_log(INFO_LOG, "isMonoBi value - %d\r\n", isMonoBi);
-#endif
+    if (!isMonoBi) { /// Выбран биполярный режим
+        isMonoBiCoag = false;
+    } else {
+        isMonoBiCoag = true;
+    }
 }
 
 bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data) {
@@ -142,7 +148,6 @@ bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t 
 
 bool ESG::setMonoCutPower(uint16_t power, uint8_t mode) {
     uint16_t data = 0;
-    const I2C::Orders order = I2C::SET_MONO_CUT_PWR;
 
     if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
         return false;
@@ -277,7 +282,71 @@ uint8_t ESG::getBiCoagMode() const {
     return isMonoBi;
 }
 
-bool ESG::setTimeout(uint16_t timeout) {
+void ESG::changeCutMode() {
+    if (isCutMix) {
+        if (isMonoBi) { /// Текущий режим монополярное резание
+            if (++monoCutMode > 2)
+                monoCutMode = 0;
+        } else { /// Текущий режим биполярное резание
+            if (++biCutMode > 2)
+                biCutMode = 0;
+        }
+    } else {
+        isCutMix = true; /// Переключаем текущий режим на резание
+    }
+}
+
+void ESG::changeMixMode() {
+    if (!isCutMix) {
+        if (isMonoBi) { /// Текущий режим монополярная смесь
+            if (++monoMixMode > 2)
+                monoMixMode = 0;
+        } else { /// Текущий режим биполярная смесь
+            if (++biMixMode > 2)
+                biMixMode = 0;
+        }
+    } else {
+        isCutMix = false; /// Переключаем текущий режим на смесь
+    }
+}
+
+void ESG::changeMonoCoagMode() {
+    if (isMonoBi) {
+        if (isMonoBiCoag) { /// Текущий режим монополярная коагуляция
+            if (++monoCoagMode > 2)
+                monoCoagMode = 0;
+        } else { /// Текущий режим биполярная коагуляция
+            isMonoBiCoag = true; /// Переключаем текущий режим на монополярную коагуляцию
+        }
+    }
+    /**
+     * Нет ветви else, т.к. в режиме БПР не предусмотрено
+     * использование монополярной коагуляции
+     */
+}
+
+void ESG::changeBiCoagMode() {
+    if (isMonoBi) {
+        if (isMonoBiCoag) { /// Текущий режим монополярная коагуляция
+            isMonoBiCoag = false; /// Переключаем текущий режим на биполярную коагуляцию
+        } else { /// Текущий режим биполярная коагуляция
+            if (++biCoagMode > 2)
+                biCoagMode = 0;
+        }
+    } else {
+        isMonoBiCoag = false;
+        if (++biCoagMode > 2)
+            biCoagMode = 0;
+    }
+}
+
+void ESG::monoCoagPwrChange(bool isIncDec) {
+
+}
+
+bool ESG::setTimeout(uint16_t timeOut) {
+    if (timeOut > MAX_TIMEOUT) return false;
+    timeout = timeOut;
     return m_twi->putData(I2C::SET_TIMEOUT, timeout);
 }
 
@@ -301,84 +370,4 @@ bool ESG::getState() {
     m_state.isBiActive = buf[2] & 128;
 
     return true;
-}
-
-void ESG::receiveUiEvents(QueueHandle_t &queue) {
-    UIEvent_t event;
-
-    if (xQueueReceive(queue, &event, 0)) {
-        switch (event.widget_id) {
-            case ID_BTN_MONO_BI_SEL:
-                changeMonoBiSel();
-                break;
-            case ID_BTN_CUT_MIX_PWR_INC:
-                break;
-            case ID_BTN_CUT_MIX_PWR_DEC:
-                break;
-            case ID_BTN_CUT_MODE_SEL:
-                break;
-            case ID_BTN_MIX_MODE_SEL:
-                break;
-            case ID_BTN_MONOCOAG_PWR_INC:
-                break;
-            case ID_BTN_MONOCOAG_PWR_DEC:
-                break;
-            case ID_BTN_MONOCOAG_MODE_SEL:
-                break;
-            case ID_BTN_BICOAG_PWR_INC:
-                break;
-            case ID_BTN_BICOAG_PWR_DEC:
-                break;
-            case ID_BTN_BICOAG_MODE_SEL:
-                break;
-            case ID_LABEL_CUT_MIX_PWR:
-                break;
-            case ID_LABEL_MONOCOAG_PWR:
-                break;
-            case ID_LABEL_BICOAG_PWR:
-                break;
-            case ID_LABEL_MONO_BI_SEL:
-
-                break;
-                /*
-            case ID_LABEL_CUT_MIX_PWR_INC:
-                break;
-            case ID_LABEL_CUT_MIX_PWR_DEC:
-                break;
-            case ID_LABEL_CUT_MODE_SEL:
-                break;
-            case ID_LABEL_MIX_MODE_SEL:
-                break;
-            case ID_LABEL_MONOCOAG_PWR_INC:
-                break;
-            case ID_LABEL_MONOCOAG_PWR_DEC:
-                break;
-            case ID_LABEL_MONOCOAG_MODE_SEL:
-                break;
-            case ID_LABEL_BICOAG_PWR_INC:
-                break;
-            case ID_LABEL_BICOAG_PWR_DEC:
-                break;
-            case ID_LABEL_BICOAG_MODE_SEL:
-                break;
-            default:
-                print_log(ERROR_LOG, "Unknown widget ID: %d\r\n", m_event.widget_id);
-                break;
-                 */
-        }
-    }
-}
-
-void ESG::updateLabelText(QueueHandle_t &queue, uint32_t widget_id, const char *text) {
-    UICmd_t cmd;
-
-    cmd.cmd_type = UI_CMD_UPDATE_LABEL;
-    cmd.widget_id = widget_id;
-
-    strncpy(cmd.data.text, text, sizeof(cmd.data.text) - 1);
-    cmd.data.text[sizeof(cmd.data.text) - 1] = '\0';
-
-    if (xQueueSend(uiCmdQueue, &cmd, pdMS_TO_TICKS(100)) != pdPASS) {
-        print_log(ERROR_LOG, "UI cmd queue full!\r\n");
-    }
 }

@@ -53,6 +53,8 @@ extern "C" {
 #define BICOAG1_MIN_PWR 0
 #define BICOAG2_MIN_PWR 0
 
+#define MAX_TIMEOUT 100
+
 #ifdef __cplusplus
 }
 #endif
