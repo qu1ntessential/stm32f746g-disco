@@ -116,16 +116,16 @@ public:
     };
 
     enum Orders {
-        GET_VERSION = 1,        ///< 2 bytes (version number)
+        GET_VERSION = 1,      ///< 2 bytes (version number)
         SET_MONO_CUT_PWR,     ///< 2 bytes (the Powers struct)
         SET_MONO_MIX_PWR,
         SET_MONO_COAG_PWR,
         SET_BI_CUT_PWR,
         SET_BI_MIX_PWR,
         SET_BI_COAG_PWR,
-        SET_TIMEOUT,            ///< 2 bytes (in seconds)
-        GET_STATE,              ///< 2 byte (States struct)
-        GET_RESET_CODE,         ///< 1 byte (MCUCSR value)
+        SET_TIMEOUT,          ///< 2 bytes (in seconds)
+        GET_STATE,            ///< 2 byte (States struct)
+        GET_RESET_CODE,       ///< 1 byte (MCUCSR value)
         ORDER_END
     };
 

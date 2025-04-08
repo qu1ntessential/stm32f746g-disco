@@ -5,27 +5,6 @@
 
 #include "ESG.hpp"
 
-extern QueueHandle_t uiEventQueue;
-extern QueueHandle_t uiCmdQueue;
-
-/**
- * @brief Алгоритм вычисления контольной суммы CRC8
- * @param buffer Указатель на пакет данных для расчета CRC
- * @param length Количество данных в пакете
- * @return Значение контрольной суммы
- */
-uint8_t ESG::crc8(uint8_t *buffer, uint8_t length) {
-    uint8_t crc = 0x82;
-
-    while (length--) {
-        crc ^= *buffer++;
-
-        for (uint8_t i = 0; i < 8; i++)
-            crc = (crc & 1) ? (crc >> 1) ^ 0x8C : crc >> 1;
-    }
-    return crc;
-}
-
 void ESG::Init() {
     /** Здесь должна быть реализация, инициализирующая нижеследующие поля значениями из памяти
         (QSPI или EEPROM)
@@ -146,88 +125,41 @@ bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t 
     return true;
 }
 
-bool ESG::setMonoCutPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
-
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_MONO_CUT_PWR, data)) {
-        monoCutPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+uint16_t ESG::createData(uint16_t power, uint8_t mode) {
+    /// Маскирование и упаковка данных
+    power = power & 0x0FFF;
+    mode = mode & 0x0F;
+    return ((static_cast<uint16_t>(mode) << 12) | power);
 }
 
-bool ESG::setMonoCoagPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
-
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_MONO_COAG_PWR, data)) {
-        monoCoagPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+bool ESG::setMonoCutPower() const {
+    uint16_t data = createData(monoCutPwr[monoCutMode], monoCutMode);
+    return m_twi->putData(I2C::SET_MONO_CUT_PWR, data);
 }
 
-bool ESG::setBiCutPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
-
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_BI_CUT_PWR, data)) {
-        biCutPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+bool ESG::setMonoCoagPower() const {
+    uint16_t data = createData(monoCoagPwr[monoCoagMode], monoCoagMode);
+    return m_twi->putData(I2C::SET_MONO_COAG_PWR, data);
 }
 
-bool ESG::setBiCoagPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
-
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_BI_COAG_PWR, data)) {
-        biCoagPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+bool ESG::setBiCutPower() const {
+    uint16_t data = createData(biCutPwr[biCutMode], biCutMode);
+    return m_twi->putData(I2C::SET_BI_CUT_PWR, data);
 }
 
-bool ESG::setMonoMixPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
-
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_MONO_MIX_PWR, data)) {
-        monoMixPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+bool ESG::setBiCoagPower() const {
+    uint16_t data = createData(biCoagPwr[biCoagMode], biCoagMode);
+    return m_twi->putData(I2C::SET_BI_COAG_PWR, data);
 }
 
-bool ESG::setBiMixPower(uint16_t power, uint8_t mode) {
-    uint16_t data = 0;
+bool ESG::setMonoMixPower() const {
+    uint16_t data = createData(monoMixPwr[monoMixMode], monoMixMode);
+    return m_twi->putData(I2C::SET_MONO_MIX_PWR, data);
+}
 
-    if (!convertData(power, mode, I2C::SET_BI_MIX_PWR, &data))
-        return false;
-
-    if (m_twi->putData(I2C::SET_BI_MIX_PWR, data)) {
-        biMixPwr[mode] = power;
-        return true;
-    } else {
-        return false;
-    }
+bool ESG::setBiMixPower() const {
+    uint16_t data = createData(biMixPwr[biMixMode], biMixMode);
+    return m_twi->putData(I2C::SET_BI_MIX_PWR, data);
 }
 
 uint16_t ESG::getCutMixPower() const {
@@ -280,6 +212,18 @@ uint8_t ESG::getBiCoagMode() const {
 
 [[nodiscard]] bool ESG::getMonoBiFlag() const {
     return isMonoBi;
+}
+
+void ESG::changeCutMixPwr(bool incDec) {
+    if ()
+}
+
+void ESG::changeMonoCoagPwr(bool incDec) {
+
+}
+
+void ESG::changeBiCoagPwr(bool incDec) {
+
 }
 
 void ESG::changeCutMode() {
@@ -338,10 +282,6 @@ void ESG::changeBiCoagMode() {
         if (++biCoagMode > 2)
             biCoagMode = 0;
     }
-}
-
-void ESG::monoCoagPwrChange(bool isIncDec) {
-
 }
 
 bool ESG::setTimeout(uint16_t timeOut) {

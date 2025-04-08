@@ -43,9 +43,9 @@ class ESG {
 
     I2C *m_twi; ///< Указатель на класс, инкапсулирущий работу с I2C
 
-    static uint8_t crc8(uint8_t *buffer, uint8_t length);
-
     static inline bool convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data);
+
+    static inline uint16_t createData(uint16_t power, uint8_t mode);
 
 public:
     explicit ESG(I2C *twi) : m_twi(twi) {}
@@ -58,20 +58,24 @@ public:
 
     void invMonoBiSel();
 
-    bool setMonoCutPower(uint16_t power, uint8_t mode);
+    /**
+     * @defgroup Функции установки мощности и активного режима согласно текущим
+     *           переменным класса (подразумевается, что методы корректные)
+     */
+    [[nodiscard]] bool setMonoCutPower() const;
 
-    bool setMonoCoagPower(uint16_t power, uint8_t mode);
+    [[nodiscard]] bool setMonoCoagPower() const;
 
-    bool setMonoMixPower(uint16_t power, uint8_t mode);
+    [[nodiscard]] bool setMonoMixPower() const;
 
-    bool setBiCutPower(uint16_t power, uint8_t mode);
+    [[nodiscard]] bool setBiCutPower() const;
 
-    bool setBiCoagPower(uint16_t power, uint8_t mode);
+    [[nodiscard]] bool setBiCoagPower() const;
 
-    bool setBiMixPower(uint16_t power, uint8_t mode);
+    [[nodiscard]] bool setBiMixPower() const;
 
     /**
-     * @defgroup Взаимодействие с UI
+     * @defgroup Методы для передачи мощности и активного режима в UI
      */
     [[nodiscard]] uint16_t getCutMixPower() const;
 
@@ -89,6 +93,12 @@ public:
 
     [[nodiscard]] bool getMonoBiFlag() const;
 
+    void changeCutMixPwr(bool incDec);
+
+    void changeMonoCoagPwr(bool incDec);
+
+    void changeBiCoagPwr(bool incDec);
+
     void changeCutMode();
 
     void changeMixMode();
@@ -96,8 +106,6 @@ public:
     void changeMonoCoagMode();
 
     void changeBiCoagMode();
-
-    void monoCoagPwrChange(bool isIncDec);
 
     bool setTimeout(uint16_t timeOut);
 

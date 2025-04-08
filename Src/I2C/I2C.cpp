@@ -4,6 +4,12 @@
 
 extern SemaphoreHandle_t twiSemaphore; ///<
 
+/**
+ * @brief Алгоритм вычисления контольной суммы CRC8
+ * @param buffer Указатель на пакет данных для расчета CRC
+ * @param length Количество данных в пакете
+ * @return Значение контрольной суммы
+ */
 uint8_t I2C::crc8(uint8_t *buffer, uint8_t length) {
     uint8_t crc = 0x82;
 
@@ -49,6 +55,13 @@ void I2C::ErrorCallback() {
     //print_log(ERROR_LOG, "I2C error occurred!\r\n");
 }
 
+/**
+ * @brief Функция передачи ESG
+ * @param order Команда из протокола обмена с ЭХВЧ
+ * @param value Два байта параметра команды в пакете I2C
+ * @param addr Slave address I2C (default address = 0x90)
+ * @return True - получены корректные данные, false- произошла ошибка
+ */
 bool I2C::putData(Orders order, uint16_t value, uint8_t addr) {
     if (order < 2 || order > 8) {
 #if (LL_COM_LOG == 1)
@@ -109,6 +122,14 @@ bool I2C::putData(Orders order, uint16_t value, uint8_t addr) {
     return true;
 }
 
+/**
+ * @brief Функция запроса версии или состояния ЭХВЧ с платы процессора по I2C
+ * @param order Команда из протокола обмена с ЭХВЧ
+ * @param value Указатель на
+ * @param length
+ * @param addr Slave address I2C (default address = 0x90)
+ * @return True - получены корректные данные, false- произошла ошибка
+ */
 bool I2C::getData(Orders order, uint8_t *value, uint8_t *length, uint8_t addr) {
     if (order != GET_VERSION && order != GET_STATE) {
 #if (LL_COM_LOG == 1)
@@ -168,6 +189,7 @@ bool I2C::getData(Orders order, uint8_t *value, uint8_t *length, uint8_t addr) {
         return false;
     }
 
+    /// Проверка, что в посылке 3 байта полезных данных
     if (data_rx[1] != 3) {
 #if (LL_COM_LOG == 1)
         print_log(ERROR_LOG, "Received packet's length incorrect\r\n");
