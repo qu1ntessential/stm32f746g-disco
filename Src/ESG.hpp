@@ -49,6 +49,8 @@ class ESG {
 public:
     explicit ESG(I2C *twi) : m_twi(twi) {}
 
+    void Init();
+
     void powerOn();
 
     void powerOff();
@@ -67,17 +69,21 @@ public:
 
     bool setBiMixPower(uint16_t power, uint8_t mode);
 
-    void getMonoCutPower(char *buf, uint8_t len);
+    [[nodiscard]] uint16_t getCutMixPower() const;
 
-    bool getMonoCoagPower();
+    [[nodiscard]] uint16_t getMonoCoagPower() const;
 
-    bool getMonoMixPower();
+    [[nodiscard]] uint16_t getBiCoagPower() const;
 
-    bool getBiCutPower();
+    [[nodiscard]] uint8_t getCutMode() const;
 
-    bool getBiCoagPower();
+    [[nodiscard]] uint8_t getMixMode() const;
 
-    bool getBiMixPower();
+    [[nodiscard]] uint8_t getMonoCoagMode() const;
+
+    [[nodiscard]] uint8_t getBiCoagMode() const;
+
+    [[nodiscard]] bool getMonoBiFlag() const;
 
     bool setTimeout(uint16_t timeout);
 

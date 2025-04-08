@@ -26,6 +26,36 @@ uint8_t ESG::crc8(uint8_t *buffer, uint8_t length) {
     return crc;
 }
 
+void ESG::Init() {
+    isMonoBi = true;
+    isCutMix = false;
+    isMonoBiCoag = true;
+    monoCutMode = 0;
+    biCutMode = 1;
+    monoMixMode = 2;
+    biMixMode = 0;
+    monoCoagMode = 1;
+    biCoagMode = 2;
+    monoCutPwr[0] = 1;
+    monoCutPwr[1] = 2;
+    monoCutPwr[2] = 3;
+    monoMixPwr[0] = 4;
+    monoMixPwr[1] = 5;
+    monoMixPwr[2] = 300;
+    monoCoagPwr[0] = 7;
+    monoCoagPwr[1] = 8;
+    monoCoagPwr[2] = 9;
+    biCutPwr[0] = 10;
+    biCutPwr[1] = 11;
+    biCutPwr[2] = 12;
+    biMixPwr[0] = 13;
+    biMixPwr[1] = 14;
+    biMixPwr[2] = 15;
+    biCoagPwr[0] = 16;
+    biCoagPwr[1] = 17;
+    biCoagPwr[2] = 18;
+}
+
 /**
  * @brief Включение платы генератора (подача питания на ПГ)
  */
@@ -195,32 +225,56 @@ bool ESG::setBiMixPower(uint16_t power, uint8_t mode) {
     }
 }
 
-void ESG::getMonoCutPower(char *buf, uint8_t len) {
-    int written = snprintf(buf, len, "%u", (unsigned int) monoCutPwr);
-    if (written >= len) {
-        /// Обработка переполнения
-        buf[len - 1] = '\0';
+uint16_t ESG::getCutMixPower() const {
+    if (isMonoBi) {
+        if (isCutMix) {
+            return monoCutPwr[monoCutMode];
+        } else {
+            return monoMixPwr[monoMixMode];
+        }
+    } else {
+        if (isCutMix) {
+            return biCutPwr[biCutMode];
+        } else {
+            return biMixPwr[biMixMode];
+        }
     }
 }
 
-bool ESG::getMonoCoagPower() {
-
+uint16_t ESG::getMonoCoagPower() const {
+    return monoCoagPwr[monoCoagMode];
 }
 
-bool ESG::getMonoMixPower() {
-
+uint16_t ESG::getBiCoagPower() const {
+    return biCoagPwr[biCoagMode];
 }
 
-bool ESG::getBiCutPower() {
-
+uint8_t ESG::getCutMode() const {
+    if (isMonoBi) {
+        return monoCutMode;
+    } else {
+        return biCutMode;
+    }
 }
 
-bool ESG::getBiCoagPower() {
-
+uint8_t ESG::getMixMode() const {
+    if (isMonoBi) {
+        return monoMixMode;
+    } else {
+        return biMixMode;
+    }
 }
 
-bool ESG::getBiMixPower() {
+uint8_t ESG::getMonoCoagMode() const {
+    return monoCoagMode;
+}
 
+uint8_t ESG::getBiCoagMode() const {
+    return biCoagMode;
+}
+
+[[nodiscard]] bool ESG::getMonoBiFlag() const {
+    return isMonoBi;
 }
 
 bool ESG::setTimeout(uint16_t timeout) {

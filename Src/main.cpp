@@ -18,6 +18,7 @@ I2C twi1(&hi2c1);
 ESG ESG15(&twi1);
 
 int main() {
+    __HAL_DBGMCU_FREEZE_TIM6(); ///< Cortex-M7 erratum 3092511
     HAL_Init();
     SystemClock_Config();
     PeriphCommonClock_Config();
@@ -30,6 +31,7 @@ int main() {
     MX_I2C1_Init();
     twi1.Init();
 
+    ESG15.Init();
     //uSD.Init();
 
     lv_init();
@@ -41,9 +43,5 @@ int main() {
     FreeRTOS_Resources_Init();
     vTaskStartScheduler();
 
-    while (1) {
-        BSP_LED_Toggle(LED_GREEN);
-        lv_task_handler();
-        HAL_Delay(5);
-    }
+    while (1) {}
 }

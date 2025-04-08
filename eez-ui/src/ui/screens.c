@@ -303,8 +303,8 @@ void create_screen_main() {
             // btn_mono_bi_sel
             lv_obj_t *obj = lv_btn_create(parent_obj);
             objects.btn_mono_bi_sel = obj;
-            lv_obj_set_pos(obj, 400, 0);
-            lv_obj_set_size(obj, 80, 40);
+            lv_obj_set_pos(obj, 360, 0);
+            lv_obj_set_size(obj, 120, 40);
             lv_obj_add_event_cb(obj, action_mono_bi_sel, LV_EVENT_PRESSED, (void *)0);
             lv_obj_add_event_cb(obj, action_mono_bi_sel, LV_EVENT_LONG_PRESSED_REPEAT, (void *)0);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
