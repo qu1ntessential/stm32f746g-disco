@@ -16,26 +16,45 @@ extern uint32_t SystemCoreClock;
 #define configUSE_PREEMPTION                     1 ///< Кооперативная или вытесняющая многозадачность
 #define configSUPPORT_STATIC_ALLOCATION          1
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
+/**
+ * Позволяет определить пользовательскую функцию void vApplicationIdleHook(void),
+ * которая будет вызываться в цикле idle-задачи (когда нет других активных задач)
+ */
 #define configUSE_IDLE_HOOK                      0
+/**
+ * Позволяет определить функцию void vApplicationTickHook(void),
+ * которая вызывается в каждом прерывании системного таймера (tick interrupt)
+ */
 #define configUSE_TICK_HOOK                      0
 #define configCPU_CLOCK_HZ                       200000000
 #define configTICK_RATE_HZ                       ((TickType_t) 1000)
-#define configMAX_PRIORITIES                     7
+#define configMAX_PRIORITIES                     4
 #define configMINIMAL_STACK_SIZE                 ((uint16_t) 256)
-#define configTOTAL_HEAP_SIZE                    ((size_t) 32 * 1024)
+#define configTOTAL_HEAP_SIZE                    ((size_t) 16 * 1024)
 #define configMAX_TASK_NAME_LEN                  16
-#define configUSE_16_BIT_TICKS                   0
+#define configUSE_16_BIT_TICKS                   0 ///< TickType_t - uint16_t (maxTime ~ 65sec), не актуально для Cortex-M
 #define configUSE_MUTEXES                        1
 #define configQUEUE_REGISTRY_SIZE                8 ///< vQueueAddToRegistry() назначает имя очереди, семафору, мьютексу
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION  1 ///< Оптимизированный алгоритм выбора следующей задачи
+/**
+ * Включает квантование времени (time slicing) для задач с одинаковым приоритетом.
+ * Если несколько задач готовы к выполнению и имеют одинаковый приоритет,
+ * планировщик будет переключать их по истечении кванта времени (portTICK_PERIOD_MS)
+ */
 #define configUSE_TIME_SLICING                   1
 #define configUSE_TRACE_FACILITY                 1 ///< Отображение номеров задач и типов очередей
 #define configRECORD_STACK_HIGH_ADDRESS          1 ///< Отображение информации о стеке задачи
 #define configGENERATE_RUN_TIME_STATS            1 ///< Сбор информации о времени выполнения
-#define configUSE_STATS_FORMATTING_FUNCTIONS     1
+#define configUSE_STATS_FORMATTING_FUNCTIONS     1 ///< Включает дополнительные функции форматирования для сбора и вывода статистики
 
+/**
+ * Использование 32-bit таймера для сбора статистики FreeRTOS (configGENERATE_RUN_TIME_STATS == 1)
+ */
 extern void ConfigureTimerForRunTimeStats(void);
 
+/**
+ * @return Возвращает значение 32-bit таймера (используется планировщиком)
+ */
 extern uint32_t GetRuntimeCounterValue(void);
 
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() ConfigureTimerForRunTimeStats()
@@ -49,8 +68,8 @@ extern uint32_t GetRuntimeCounterValue(void);
  */
 
 /* Co-routine definitions. */
-#define configUSE_CO_ROUTINES                    0
-#define configMAX_CO_ROUTINE_PRIORITIES          2
+#define configUSE_CO_ROUTINES                    0 ///< Поддержка co-routine (облегченные задачи, не актуально для Cortex-M)
+#define configMAX_CO_ROUTINE_PRIORITIES          2 ///< Максимальное число приоритетов co-routine
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
