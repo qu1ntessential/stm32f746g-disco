@@ -26,8 +26,27 @@ extern uint32_t SystemCoreClock;
 #define configMAX_TASK_NAME_LEN                  16
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
-#define configQUEUE_REGISTRY_SIZE                8
+#define configQUEUE_REGISTRY_SIZE                8 ///< vQueueAddToRegistry() назначает имя очереди, семафору, мьютексу
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
+#define configUSE_TIME_SLICING                   1
+#define configUSE_TRACE_FACILITY                 1 ///< Отображение номеров задач и типов очередей
+#define configRECORD_STACK_HIGH_ADDRESS          1 ///< Отображение информации о стеке задачи
+#define configGENERATE_RUN_TIME_STATS            1 ///< Сбор информации о времени выполнения
+#define configUSE_STATS_FORMATTING_FUNCTIONS     1
+
+extern void ConfigureTimerForRunTimeStats(void);
+
+extern uint32_t GetRuntimeCounterValue(void);
+
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() ConfigureTimerForRunTimeStats()
+#define portGET_RUN_TIME_COUNTER_VALUE()         GetRuntimeCounterValue()
+
+/*
+#define configUSE_TIMERS                         1
+#define configTIMER_TASK_PRIORITY                (configMAX_PRIORITIES - 1)
+#define configTIMER_TASK_STACK_DEPTH             configMINIMAL_STACK_SIZE
+#define configTIMER_QUEUE_LENGTH                 10
+ */
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0

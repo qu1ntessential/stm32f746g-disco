@@ -2,8 +2,8 @@
 
 #define LVGL_TASK_STACK_SIZE 1024
 #define UART_TASK_STACK_SIZE 256
-#define TWI_TASK_STACK_SIZE 1024
-#define STACK4_SIZE 1024
+#define TWI_TASK_STACK_SIZE 512
+#define STACK4_SIZE 256
 
 #define UIEVENT_QUEUE_LENGTH 10                   ///< Длина очереди UIEvent
 #define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t) ///< Размер элемента очереди UIEvent
@@ -82,6 +82,22 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskNa
     while (1) {}
 }
 
+/*
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
+                                    StackType_t **ppxTimerTaskStackBuffer,
+                                    uint32_t *pulTimerTaskStackSize) {
+    /// Статический буфер для TCB (Task Control Block)
+    static StaticTask_t xTimerTaskTCB;
+
+    /// Статический стек для задачи таймеров
+    static StackType_t uxTimerTaskStack[configTIMER_TASK_STACK_DEPTH];
+
+    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+*/
+
 /**
  * @brief Поток для обработки UI (задача с периодом 5 мс)
  * @note LVGL не является потокобезопасной библиотекой!
@@ -158,6 +174,8 @@ void FreeRTOS_Resources_Init() {
 
     if (uiEventQueue == nullptr) {
         print_log(ERROR_LOG, "Error creating uiEventQueue\n\r");
+    } else {
+        vQueueAddToRegistry(uiEventQueue, "uiEventQueue");
     }
 
     uiCmdQueue = xQueueCreateStatic(UICMD_QUEUE_LENGTH,
@@ -167,6 +185,8 @@ void FreeRTOS_Resources_Init() {
 
     if (uiCmdQueue == nullptr) {
         print_log(ERROR_LOG, "Error creating uiCmdQueue\n\r");
+    } else {
+        vQueueAddToRegistry(uiCmdQueue, "uiCmdQueue");
     }
 
     uartQueue = xQueueCreateStatic(UART_QUEUE_LENGTH,
@@ -176,6 +196,8 @@ void FreeRTOS_Resources_Init() {
 
     if (uartQueue == nullptr) {
         print_log(ERROR_LOG, "Error creating uiCmdQueue\n\r");
+    } else {
+        vQueueAddToRegistry(uartQueue, "uartQueue");
     }
 
     LvglTaskHandle = xTaskCreateStatic(LvglThread,

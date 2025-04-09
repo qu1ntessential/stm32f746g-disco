@@ -40,8 +40,21 @@ int main() {
     //lv_fs_fatfs_init();
     ui_init();
 
+    ConfigureTimerForRunTimeStats();
     FreeRTOS_Resources_Init();
     vTaskStartScheduler();
 
     while (1) {}
+}
+
+/**
+ * Использование 32-bit таймера для сбора статистики FreeRTOS (configGENERATE_RUN_TIME_STATS == 1)
+ */
+void ConfigureTimerForRunTimeStats(void) {
+    MX_TIM2_Init();
+    HAL_TIM_Base_Start(&htim2);
+}
+
+uint32_t GetRuntimeCounterValue(void) {
+    return __HAL_TIM_GET_COUNTER(&htim2);
 }

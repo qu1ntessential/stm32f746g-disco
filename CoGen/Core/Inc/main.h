@@ -81,8 +81,6 @@ void Error_Handler(void);
 #define SPDIF_RX0_GPIO_Port GPIOD
 #define SDMMC_CK_Pin GPIO_PIN_12
 #define SDMMC_CK_GPIO_Port GPIOC
-#define ARDUINO_PWM_D9_Pin GPIO_PIN_15
-#define ARDUINO_PWM_D9_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
