@@ -26,7 +26,6 @@ class I2C {
 
     void ErrorCallback();
 
-    // ������� ��� callback-�������
     static void MasterTxCpltCallbackWrapper(I2C_HandleTypeDef *hi2c) {
         I2C *twi = reinterpret_cast<I2C *>(hi2c->pBuffPtr);
         if (twi) {

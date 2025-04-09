@@ -41,18 +41,16 @@ void I2C::MasterTxCpltCallback() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(twiSemaphore, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    //print_log(DEBUG_LOG, "Transmission complete!\r\n");
 }
 
 void I2C::MasterRxCpltCallback() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(twiSemaphore, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    //print_log(DEBUG_LOG, "Reception complete!\r\n");
 }
 
 void I2C::ErrorCallback() {
-    //print_log(ERROR_LOG, "I2C error occurred!\r\n");
+
 }
 
 /**
@@ -87,7 +85,8 @@ bool I2C::putData(Orders order, uint16_t value, uint8_t addr) {
 #endif
     }
 
-    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(100)) != pdTRUE) {
+    /// Ожидаем взятия семафора 500 мс (семафор выставляется в callback-функции завершения передачи)
+    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(50)) != pdPASS) {
 #if (LL_COM_LOG == 1)
         print_log(ERROR_LOG, "I2C TX timeout\r\n");
 #endif
@@ -102,7 +101,8 @@ bool I2C::putData(Orders order, uint16_t value, uint8_t addr) {
 #endif
     }
 
-    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(100)) != pdTRUE) {
+    /// Ожидаем взятия семафора 500 мс
+    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(500)) != pdTRUE) {
         print_log(ERROR_LOG, "I2C RX timeout\r\n");
         return false;
     }
@@ -154,7 +154,7 @@ bool I2C::getData(Orders order, uint8_t *value, uint8_t *length, uint8_t addr) {
 #endif
     }
 
-    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(100)) != pdTRUE) {
+    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(500)) != pdTRUE) {
 #if (LL_COM_LOG == 1)
         print_log(ERROR_LOG, "I2C TX timeout\r\n");
 #endif
@@ -169,7 +169,7 @@ bool I2C::getData(Orders order, uint8_t *value, uint8_t *length, uint8_t addr) {
 #endif
     }
 
-    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(100)) != pdTRUE) {
+    if (xSemaphoreTake(twiSemaphore, pdMS_TO_TICKS(500)) != pdTRUE) {
 #if (LL_COM_LOG == 1)
         print_log(ERROR_LOG, "I2C RX timeout\r\n");
 #endif

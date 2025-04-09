@@ -289,8 +289,12 @@ bool ESG::setTimeout(uint16_t timeOut) {
     return m_twi->putData(I2C::SET_TIMEOUT, timeout);
 }
 
+/**
+ * @brief Функция обновления состояния прибора
+ * @return True - получены корректные данные, false - произошла ошибка
+ */
 bool ESG::getState() {
-    uint8_t buf[10] = {0};
+    uint8_t buf[5] = {0};
     if (!(m_twi->getData(I2C::GET_STATE, &buf[1], &buf[0]))) {
 #if (LL_COM_LOG == 1)
         print_log(ERROR_LOG, "getData error\r\n");

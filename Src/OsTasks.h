@@ -68,7 +68,7 @@ void UartThread(void *argument);
  * @brief
  * @param argument
  */
-void Task3Thread(void *argument);
+void TwiThread(void *argument);
 
 /**
  * @brief

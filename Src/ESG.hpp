@@ -43,8 +43,6 @@ class ESG {
 
     I2C *m_twi; ///< Указатель на класс, инкапсулирущий работу с I2C
 
-    static inline bool convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data);
-
     static inline uint16_t createData(uint16_t power, uint8_t mode);
 
     static void adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase);
@@ -62,7 +60,7 @@ public:
 
     /**
      * @defgroup Функции установки мощности и активного режима согласно текущим
-     *           переменным класса (подразумевается, что методы корректные)
+     *           переменным класса (подразумевается, что данные корректные)
      */
     [[nodiscard]] bool setMonoCutPower() const;
 
@@ -95,6 +93,9 @@ public:
 
     [[nodiscard]] bool getMonoBiFlag() const;
 
+    /**
+     * @defgroup Методы для передачи зменения мощности и режима в UI
+     */
     void changeCutMixPwr(bool increase);
 
     void changeMonoCoagPwr(bool increase);

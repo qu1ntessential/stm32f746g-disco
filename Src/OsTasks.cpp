@@ -2,7 +2,7 @@
 
 #define LVGL_TASK_STACK_SIZE 1024
 #define UART_TASK_STACK_SIZE 256
-#define STACK3_SIZE 1024
+#define TWI_TASK_STACK_SIZE 1024
 #define STACK4_SIZE 1024
 
 #define UIEVENT_QUEUE_LENGTH 10                   ///< Длина очереди UIEvent
@@ -25,7 +25,7 @@ extern ESG ESG15;
 
 TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t UartTaskHandle = nullptr;
-TaskHandle_t Task3Handle = nullptr;
+TaskHandle_t TwiTaskHandle = nullptr;
 TaskHandle_t Task4Handle = nullptr;
 
 SemaphoreHandle_t twiSemaphore = nullptr;
@@ -49,8 +49,8 @@ StackType_t LvglTaskStack[LVGL_TASK_STACK_SIZE];
 StaticTask_t UartTaskBuffer;
 StackType_t UartTaskStack[UART_TASK_STACK_SIZE];
 
-StaticTask_t Task3Buffer;
-StackType_t Stack3[STACK3_SIZE];
+StaticTask_t TwiTaskBuffer;
+StackType_t TwiTaskStack[TWI_TASK_STACK_SIZE];
 
 StaticTask_t Task4Buffer;
 StackType_t Stack4[STACK4_SIZE];
@@ -83,21 +83,24 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskNa
 }
 
 /**
- * @brief Поток для обработки UI
+ * @brief Поток для обработки UI (задача с периодом 5 мс)
  * @note LVGL не является потокобезопасной библиотекой!
  *       Все изменения, касающиеся UI, должны выполняться в этом потоке!
  * @param argument
  */
 void LvglThread(void *argument) {
-    portTickType xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+    portTickType xLastWakeTime = xTaskGetTickCount();
     while (1) {
         lv_task_handler();
         ui_tick();
-        vTaskDelayUntil(&xLastWakeTime, 5);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }
 
+/**
+ * @brief Задача для вывода информационных сообщений в UART (использует очередь)
+ * @param argument
+ */
 void UartThread(void *argument) {
     rtos_started = true;
 
@@ -124,20 +127,20 @@ void UartThread(void *argument) {
     }
 }
 
-void Task3Thread(void *argument) {
-    portTickType xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+void TwiThread(void *argument) {
+    portTickType xLastWakeTime = xTaskGetTickCount();
     while (1) {
-        BSP_LED_Toggle(LED_GREEN);
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(300));
+        ESG15.getState();
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(50));
     }
 }
 
 void Task4Thread(void *argument) {
-    portTickType xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+    portTickType xLastWakeTime = xTaskGetTickCount();
     while (true) {
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10000));
+        BSP_LED_Toggle(LED_GREEN);
+        print_log(INFO_LOG, "LED_GREEN toggled\r\n");
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
 
@@ -179,7 +182,7 @@ void FreeRTOS_Resources_Init() {
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
                                        nullptr,
-                                       5,
+                                       2,
                                        LvglTaskStack,
                                        &LvglTaskBuffer);
 
@@ -191,7 +194,7 @@ void FreeRTOS_Resources_Init() {
                                        "Task for UART",
                                        UART_TASK_STACK_SIZE,
                                        nullptr,
-                                       2,
+                                       1,
                                        UartTaskStack,
                                        &UartTaskBuffer);
 
@@ -199,15 +202,15 @@ void FreeRTOS_Resources_Init() {
         print_log(ERROR_LOG, "Error creating Task2\r\n");
     }
 
-    Task3Handle = xTaskCreateStatic(Task3Thread,
-                                    "Task3",
-                                    STACK3_SIZE,
-                                    nullptr,
-                                    5,
-                                    Stack3,
-                                    &Task3Buffer);
+    TwiTaskHandle = xTaskCreateStatic(TwiThread,
+                                      "Task for TWI communication",
+                                      TWI_TASK_STACK_SIZE,
+                                      nullptr,
+                                      3,
+                                      TwiTaskStack,
+                                      &TwiTaskBuffer);
 
-    if (Task3Handle == nullptr) {
+    if (TwiTaskHandle == nullptr) {
         print_log(ERROR_LOG, "Error creating Task3\r\n");
     }
 
@@ -215,7 +218,7 @@ void FreeRTOS_Resources_Init() {
                                     "Task4",
                                     STACK4_SIZE,
                                     nullptr,
-                                    5,
+                                    1,
                                     Stack4,
                                     &Task4Buffer);
 
