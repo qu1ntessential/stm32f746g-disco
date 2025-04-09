@@ -5,55 +5,27 @@
 extern "C" {
 #endif
 
-#define MONOCUT0_MAX_PWR 300
-#define MONOCUT1_MAX_PWR 300
-#define MONOCUT2_MAX_PWR 200
+#define MONOCUT_MAX_PWR {300, 300, 200}
+#define MONOCUT_MIN_PWR {0, 0, 0}
 
-#define MONOCUT0_MIN_PWR 0
-#define MONOCUT1_MIN_PWR 0
-#define MONOCUT2_MIN_PWR 0
+#define MONOMIX_MAX_PWR {220, 180, 140}
+#define MONOMIX_MIN_PWR {0, 0, 0}
 
-#define MONOMIX0_MAX_PWR 220
-#define MONOMIX1_MAX_PWR 180
-#define MONOMIX2_MAX_PWR 140
+#define MONOCOAG_MAX_PWR {120, 120, 120}
+#define MONOCOAG_MIN_PWR {0, 0, 0}
 
-#define MONOMIX0_MIN_PWR 0
-#define MONOMIX1_MIN_PWR 0
-#define MONOMIX2_MIN_PWR 0
+#define BICUT_MAX_PWR {300, 300, 200}
+#define BICUT_MIN_PWR {0, 0, 0};
 
-#define MONOCOAG0_MAX_PWR 120
-#define MONOCOAG1_MAX_PWR 120
-#define MONOCOAG2_MAX_PWR 120
+#define BIMIX_MAX_PWR {220, 180, 140}
+#define BIMIX_MIN_PWR {0, 0, 0}
 
-#define MONOCOAG0_MIN_PWR 0
-#define MONOCOAG1_MIN_PWR 0
-#define MONOCOAG2_MIN_PWR 0
-
-#define BICUT0_MAX_PWR 300
-#define BICUT1_MAX_PWR 300
-#define BICUT2_MAX_PWR 200
-
-#define BICUT0_MIN_PWR 0
-#define BICUT1_MIN_PWR 0
-#define BICUT2_MIN_PWR 0
-
-#define BIMIX0_MAX_PWR 220
-#define BIMIX1_MAX_PWR 180
-#define BIMIX2_MAX_PWR 140
-
-#define BIMIX0_MIN_PWR 0
-#define BIMIX1_MIN_PWR 0
-#define BIMIX2_MIN_PWR 0
-
-#define BICOAG0_MAX_PWR 200
-#define BICOAG1_MAX_PWR 150
-#define BICOAG2_MAX_PWR 150
-
-#define BICOAG0_MIN_PWR 0
-#define BICOAG1_MIN_PWR 0
-#define BICOAG2_MIN_PWR 0
+#define BICOAG_MAX_PWR {200, 150, 150}
+#define BICOAG_MIN_PWR {0, 0, 0}
 
 #define MAX_TIMEOUT 100
+
+#define PWR_STEP 10
 
 #ifdef __cplusplus
 }

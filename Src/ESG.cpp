@@ -12,30 +12,30 @@ void ESG::Init() {
     isMonoBi = true;
     isCutMix = false;
     isMonoBiCoag = true;
-    monoCutMode = 0;
+    monoCutMode = 1;
     biCutMode = 1;
-    monoMixMode = 2;
-    biMixMode = 0;
+    monoMixMode = 1;
+    biMixMode = 1;
     monoCoagMode = 1;
-    biCoagMode = 2;
-    monoCutPwr[0] = 1;
-    monoCutPwr[1] = 2;
-    monoCutPwr[2] = 3;
-    monoMixPwr[0] = 4;
-    monoMixPwr[1] = 5;
-    monoMixPwr[2] = 300;
-    monoCoagPwr[0] = 7;
-    monoCoagPwr[1] = 8;
-    monoCoagPwr[2] = 9;
-    biCutPwr[0] = 10;
-    biCutPwr[1] = 11;
-    biCutPwr[2] = 12;
-    biMixPwr[0] = 13;
-    biMixPwr[1] = 14;
-    biMixPwr[2] = 15;
-    biCoagPwr[0] = 16;
-    biCoagPwr[1] = 17;
-    biCoagPwr[2] = 18;
+    biCoagMode = 1;
+    monoCutPwr[0] = 0;
+    monoCutPwr[1] = 0;
+    monoCutPwr[2] = 0;
+    monoMixPwr[0] = 0;
+    monoMixPwr[1] = 0;
+    monoMixPwr[2] = 0;
+    monoCoagPwr[0] = 0;
+    monoCoagPwr[1] = 0;
+    monoCoagPwr[2] = 0;
+    biCutPwr[0] = 0;
+    biCutPwr[1] = 0;
+    biCutPwr[2] = 0;
+    biMixPwr[0] = 0;
+    biMixPwr[1] = 0;
+    biMixPwr[2] = 0;
+    biCoagPwr[0] = 0;
+    biCoagPwr[1] = 0;
+    biCoagPwr[2] = 0;
     timeout = 10;
 }
 
@@ -60,69 +60,6 @@ void ESG::invMonoBiSel() {
     } else {
         isMonoBiCoag = true;
     }
-}
-
-bool ESG::convertData(uint16_t power, uint8_t mode, I2C::Orders order, uint16_t *data) {
-    /// Проверка на nullptr
-    if (!data) {
-#if (LL_COM_LOG == 1)
-        print_log(ERROR_LOG, "Received nullptr\r\n");
-#endif
-        return false;
-    }
-
-    /// Проверка допустимости режима
-    if (mode > 2) {
-#if (LL_COM_LOG == 1)
-        print_log(ERROR_LOG, "Incorrect mode (must be 0, 1, or 2)\r\n");
-#endif
-        return false;
-    }
-
-    /// Lookup-таблицы для минимальных и максимальных значений мощности
-    static constexpr uint16_t MIN_PWR[6][3] = {
-            {MONOCUT0_MIN_PWR,  MONOCUT1_MIN_PWR,  MONOCUT2_MIN_PWR},
-            {MONOMIX0_MIN_PWR,  MONOMIX1_MIN_PWR,  MONOMIX2_MIN_PWR},
-            {MONOCOAG0_MIN_PWR, MONOCOAG1_MIN_PWR, MONOCOAG2_MIN_PWR},
-            {BICUT0_MIN_PWR,    BICUT1_MIN_PWR,    BICUT2_MIN_PWR},
-            {BIMIX0_MIN_PWR,    BIMIX1_MIN_PWR,    BIMIX2_MIN_PWR},
-            {BICOAG0_MIN_PWR,   BICOAG1_MIN_PWR,   BICOAG2_MIN_PWR}
-    };
-
-    static constexpr uint16_t MAX_PWR[6][3] = {
-            {MONOCUT0_MAX_PWR,  MONOCUT1_MAX_PWR,  MONOCUT2_MAX_PWR},
-            {MONOMIX0_MAX_PWR,  MONOMIX1_MAX_PWR,  MONOMIX2_MAX_PWR},
-            {MONOCOAG0_MAX_PWR, MONOCOAG1_MAX_PWR, MONOCOAG2_MAX_PWR},
-            {BICUT0_MAX_PWR,    BICUT1_MAX_PWR,    BICUT2_MAX_PWR},
-            {BIMIX0_MAX_PWR,    BIMIX1_MAX_PWR,    BIMIX2_MAX_PWR},
-            {BICOAG0_MAX_PWR,   BICOAG1_MAX_PWR,   BICOAG2_MAX_PWR}
-    };
-
-    /// Проверка мощности
-    if (order < I2C::SET_MONO_CUT_PWR || order > I2C::SET_BI_COAG_PWR) {
-#if (LL_COM_LOG == 1)
-        print_log(ERROR_LOG, "Invalid order\r\n");
-#endif
-        return false;
-    }
-
-    uint8_t order_index = order - I2C::SET_MONO_CUT_PWR;
-    bool powerValid = (power >= MIN_PWR[order_index][mode]) &&
-                      (power <= MAX_PWR[order_index][mode]);
-
-    if (!powerValid) {
-#if (LL_COM_LOG == 1)
-        print_log(ERROR_LOG, "Power %d out of range for mode %d and order %d\r\n",
-                  power, mode, order);
-#endif
-        return false;
-    }
-
-    /// Маскирование и упаковка данных
-    power = power & 0x0FFF;
-    mode = mode & 0x0F;
-    *data = (static_cast<uint16_t>(mode) << 12) | power;
-    return true;
 }
 
 uint16_t ESG::createData(uint16_t power, uint8_t mode) {
@@ -214,16 +151,78 @@ uint8_t ESG::getBiCoagMode() const {
     return isMonoBi;
 }
 
-void ESG::changeCutMixPwr(bool incDec) {
-    if ()
+void ESG::adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase) {
+    if (increase) {
+        if (currentPower + PWR_STEP <= maxPower) {
+            currentPower += PWR_STEP;
+        } else {
+            currentPower = maxPower;
+        }
+    } else {
+        if (currentPower >= PWR_STEP + minPower) {
+            currentPower -= PWR_STEP;
+        } else {
+            currentPower = minPower;
+        }
+    }
 }
 
-void ESG::changeMonoCoagPwr(bool incDec) {
-
+void ESG::changeCutMixPwr(bool increase) {
+    if (isCutMix) {
+        if (isMonoBi) { /// Текущий режим монополярное резание
+            const uint16_t monoCutMin[] = MONOCUT_MIN_PWR;
+            const uint16_t monoCutMax[] = MONOCUT_MAX_PWR;
+            adjustPower(monoCutPwr[monoCutMode],
+                        monoCutMin[monoCutMode],
+                        monoCutMax[monoCutMode],
+                        increase);
+        } else { /// Текущий режим биполярное резание
+            const uint16_t biCutMin[] = BICUT_MIN_PWR;
+            const uint16_t biCutMax[] = BICUT_MAX_PWR;
+            adjustPower(biCutPwr[biCutMode],
+                        biCutMin[biCutMode],
+                        biCutMax[biCutMode],
+                        increase);
+        }
+    } else {
+        if (isMonoBi) { /// Текущий режим монополярная смесь
+            const uint16_t monoMixMin[] = MONOMIX_MIN_PWR;
+            const uint16_t monoMixMax[] = MONOMIX_MAX_PWR;
+            adjustPower(monoMixPwr[monoMixMode],
+                        monoMixMin[monoMixMode],
+                        monoMixMax[monoMixMode],
+                        increase);
+        } else { /// Текущий режим биполярная смесь
+            const uint16_t biMixMin[] = BIMIX_MIN_PWR;
+            const uint16_t biMixMax[] = BIMIX_MAX_PWR;
+            adjustPower(biMixPwr[biMixMode],
+                        biMixMin[biMixMode],
+                        biMixMax[biMixMode],
+                        increase);
+        }
+    }
 }
 
-void ESG::changeBiCoagPwr(bool incDec) {
+void ESG::changeMonoCoagPwr(bool increase) {
+    if (isMonoBi && isMonoBiCoag) { /// Текущий режим монополярная коагуляция
+        const uint16_t monoCoagMin[] = MONOCOAG_MIN_PWR;
+        const uint16_t monoCoagMax[] = MONOCOAG_MAX_PWR;
+        adjustPower(monoCoagPwr[monoCoagMode],
+                    monoCoagMin[monoCoagMode],
+                    monoCoagMax[monoCoagMode],
+                    increase);
+    }
+}
 
+void ESG::changeBiCoagPwr(bool increase) {
+    if (!isMonoBiCoag) { /// Текущий режим монополярная коагуляция
+        const uint16_t biCoagMin[] = BICOAG_MIN_PWR;
+        const uint16_t biCoagMax[] = BICOAG_MAX_PWR;
+        adjustPower(biCoagPwr[biCoagMode],
+                    biCoagMin[biCoagMode],
+                    biCoagMax[biCoagMode],
+                    increase);
+    }
 }
 
 void ESG::changeCutMode() {

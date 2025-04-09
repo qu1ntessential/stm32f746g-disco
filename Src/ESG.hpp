@@ -47,6 +47,8 @@ class ESG {
 
     static inline uint16_t createData(uint16_t power, uint8_t mode);
 
+    static void adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase);
+
 public:
     explicit ESG(I2C *twi) : m_twi(twi) {}
 
@@ -93,11 +95,11 @@ public:
 
     [[nodiscard]] bool getMonoBiFlag() const;
 
-    void changeCutMixPwr(bool incDec);
+    void changeCutMixPwr(bool increase);
 
-    void changeMonoCoagPwr(bool incDec);
+    void changeMonoCoagPwr(bool increase);
 
-    void changeBiCoagPwr(bool incDec);
+    void changeBiCoagPwr(bool increase);
 
     void changeCutMode();
 

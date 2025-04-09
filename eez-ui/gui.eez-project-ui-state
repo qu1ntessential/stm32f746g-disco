@@ -1,10 +1,9 @@
 {
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
-    "selectedActionObject": "[gui.eez-project]:/actions/2",
-    "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/7",
+    "selectedActionObject": "[gui.eez-project]:/actions/3",
+    "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/0",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
-    "selectedFontObject": "[gui.eez-project]:/fonts/-1",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -123,7 +122,7 @@
             {
               "type": "row",
               "id": "#74883b04-4f76-4a8a-8f06-fdef6ba7362a",
-              "weight": 21.270972308052688,
+              "weight": 14.891231616808694,
               "children": [
                 {
                   "type": "tabset",
@@ -194,13 +193,13 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 45.08486106489471,
+              "weight": 62.72277014908421,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#efa24eb6-f037-4d44-8dda-9e9008399b68",
+                  "id": "#a880efb6-3751-4624-9a81-d4b4ac75dc06",
                   "name": "Main",
                   "component": "editor",
                   "config": {
@@ -215,7 +214,7 @@
             {
               "type": "tabset",
               "id": "#6bd09a84-ea85-4b87-824a-6460dc2be901",
-              "weight": 38.64416662705261,
+              "weight": 27.38599823410719,
               "children": [
                 {
                   "type": "tab",
@@ -997,20 +996,11 @@
           "11": {},
           "12": {},
           "13": {},
-          "15": {
-            "$selected": true
-          },
+          "15": {},
           "16": {
             "0": {}
           },
-          "17": {},
-          "18": {},
-          "19": {
-            "0": {}
-          },
-          "20": {
-            "0": {}
-          }
+          "17": {}
         }
       },
       "transform": {
@@ -1145,12 +1135,10 @@
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
   "lvglExpandedPropertiesGroup": [
-    "TEXT",
-    "MARGIN",
-    "BACKGROUND"
+    "POSITION AND SIZE"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
   "flowZoom": 1.1,
-  "implementationLanguage": "C"
+  "implementationLanguage": "C++"
 }

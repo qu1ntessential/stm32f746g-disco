@@ -137,7 +137,6 @@ void Task4Thread(void *argument) {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
     while (true) {
-        ESG15.setBiCoagPower(300, 0);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10000));
     }
 }

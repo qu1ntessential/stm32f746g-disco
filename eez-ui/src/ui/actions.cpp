@@ -5,27 +5,27 @@
 extern ESG ESG15;
 
 void action_cut_mix_pwr_inc(lv_event_t *e) {
-
+    ESG15.changeCutMixPwr(true);
 }
 
 void action_cut_mix_pwr_dec(lv_event_t *e) {
-
+    ESG15.changeCutMixPwr(false);
 }
 
 void action_monocoag_pwr_inc(lv_event_t *e) {
-    ESG15.monoCoagPwrChange(true);
+    ESG15.changeMonoCoagPwr(true);
 }
 
 void action_monocoag_pwr_dec(lv_event_t *e) {
-    ESG15.monoCoagPwrChange(false);
+    ESG15.changeMonoCoagPwr(false);
 }
 
 void action_bicoag_pwr_inc(lv_event_t *e) {
-
+    ESG15.changeBiCoagPwr(true);
 }
 
 void action_bicoag_pwr_dec(lv_event_t *e) {
-
+    ESG15.changeBiCoagPwr(false);
 }
 
 void action_cut_mode_sel(lv_event_t *e) {
