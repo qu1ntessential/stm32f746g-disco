@@ -146,7 +146,7 @@ void UartThread(void *argument) {
 void TwiThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     while (1) {
-        ESG15.getState();
+        ESG15.getStateTwi();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(50));
     }
 }

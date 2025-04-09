@@ -48,3 +48,12 @@ const char *get_var_mono_bi_sel_str() {
         return str;
     }
 }
+
+int32_t get_var_led_cut_br() {
+    int32_t flash = 0;
+    flash = ESG15.getStateUI().isCutActive;
+
+    if (flash) return 255;
+
+    else return 0;
+}

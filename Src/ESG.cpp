@@ -37,6 +37,39 @@ void ESG::Init() {
     biCoagPwr[1] = 0;
     biCoagPwr[2] = 0;
     timeout = 10;
+
+    //setTimeout();
+}
+
+void ESG::setDefaultParams() {
+    isMonoBi = true;
+    isCutMix = false;
+    isMonoBiCoag = true;
+    monoCutMode = 1;
+    biCutMode = 1;
+    monoMixMode = 1;
+    biMixMode = 1;
+    monoCoagMode = 1;
+    biCoagMode = 1;
+    monoCutPwr[0] = 0;
+    monoCutPwr[1] = 0;
+    monoCutPwr[2] = 0;
+    monoMixPwr[0] = 0;
+    monoMixPwr[1] = 0;
+    monoMixPwr[2] = 0;
+    monoCoagPwr[0] = 0;
+    monoCoagPwr[1] = 0;
+    monoCoagPwr[2] = 0;
+    biCutPwr[0] = 0;
+    biCutPwr[1] = 0;
+    biCutPwr[2] = 0;
+    biMixPwr[0] = 0;
+    biMixPwr[1] = 0;
+    biMixPwr[2] = 0;
+    biCoagPwr[0] = 0;
+    biCoagPwr[1] = 0;
+    biCoagPwr[2] = 0;
+    timeout = 20;
 }
 
 /**
@@ -293,7 +326,7 @@ bool ESG::setTimeout(uint16_t timeOut) {
  * @brief Функция обновления состояния прибора
  * @return True - получены корректные данные, false - произошла ошибка
  */
-bool ESG::getState() {
+bool ESG::getStateTwi() {
     uint8_t buf[5] = {0};
     if (!(m_twi->getData(I2C::GET_STATE, &buf[1], &buf[0]))) {
 #if (LL_COM_LOG == 1)
@@ -313,4 +346,30 @@ bool ESG::getState() {
     m_state.isBiActive = buf[2] & 128;
 
     return true;
+}
+
+ESG::States_t ESG::getStateUI() const {
+    return m_state;
+}
+
+void ESG::checkStateUI() const {
+    /*
+    if (m_state.isCutActive) {
+        lv_obj_clear_flag(objects.led_cut, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(objects.led_cut, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    if (m_state.isMixActive) {
+        lv_obj_clear_flag(objects.led_mix, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(objects.led_mix, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    if (m_state.isCoagActive) {
+        lv_obj_clear_flag(objects.led_coag, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(objects.led_coag, LV_OBJ_FLAG_HIDDEN);
+    }
+     */
 }

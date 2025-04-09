@@ -9,7 +9,7 @@ file(GLOB_RECURSE SOURCES
 # Исключаем указанные файлы
 set(EXCLUDE_FILES
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/freertos.c
-        # ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/main.c
+        ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
 )
 
 foreach (file ${EXCLUDE_FILES})

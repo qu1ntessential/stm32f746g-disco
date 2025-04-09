@@ -27,6 +27,7 @@ int main() {
     SCB_EnableDCache();
 
     BSP_LED_Init(LED_GREEN);
+    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
     MX_USART1_UART_Init();
     MX_I2C1_Init();
     twi1.Init();

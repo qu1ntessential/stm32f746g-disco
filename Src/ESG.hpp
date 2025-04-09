@@ -6,9 +6,12 @@
 #include "config.h"
 #include "ui_con.h"
 
-#define LL_COM_LOG 0
+#include "stm32746g_discovery_qspi.h"
+
+#define LL_COM_LOG 1
 
 class ESG {
+public:
     typedef struct {
         uint16_t alarm: 8;           ///< Alarm code
         uint16_t isNE: 1;            ///< Neutral electrode is connected
@@ -21,36 +24,11 @@ class ESG {
         uint16_t isBiActive: 1;
     } States_t;
 
-    bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
-    bool isCutMix;          ///< Флаг выбора режима Резание/Смесь
-    bool isMonoBiCoag;      ///< Флаг выбора активности в текущий момент МОНО/БИ коагуляции
-    uint8_t monoCutMode;    ///< Режимы МОНО резания
-    uint8_t biCutMode;      ///< Режимы БИ резания
-    uint8_t monoMixMode;    ///< Режимы МОНО смеси
-    uint8_t biMixMode;      ///< Режимы БИ смеси
-    uint8_t monoCoagMode;   ///< Режимы МОНО коагуляции
-    uint8_t biCoagMode;     ///< Режимы БИ коагуляции
-    /// Мощности режимов (18 штук)
-    uint16_t monoCutPwr[3];
-    uint16_t biCutPwr[3];
-    uint16_t monoMixPwr[3];
-    uint16_t biMixPwr[3];
-    uint16_t monoCoagPwr[3];
-    uint16_t biCoagPwr[3];
-    uint8_t timeout;
-
-    States_t m_state; ///< Структура текущего состояния прибора (активность педалей, ошибки и т.д.)
-
-    I2C *m_twi; ///< Указатель на класс, инкапсулирущий работу с I2C
-
-    static inline uint16_t createData(uint16_t power, uint8_t mode);
-
-    static void adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase);
-
-public:
     explicit ESG(I2C *twi) : m_twi(twi) {}
 
     void Init();
+
+    void setDefaultParams();
 
     void powerOn();
 
@@ -112,7 +90,38 @@ public:
 
     bool setTimeout(uint16_t timeOut);
 
-    bool getState();
+    bool getStateTwi();
+
+    [[nodiscard]] ESG::States_t getStateUI() const;
+
+    void checkStateUI() const;
+
+private:
+    bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
+    bool isCutMix;          ///< Флаг выбора режима Резание/Смесь
+    bool isMonoBiCoag;      ///< Флаг выбора активности в текущий момент МОНО/БИ коагуляции
+    uint8_t monoCutMode;    ///< Режимы МОНО резания
+    uint8_t biCutMode;      ///< Режимы БИ резания
+    uint8_t monoMixMode;    ///< Режимы МОНО смеси
+    uint8_t biMixMode;      ///< Режимы БИ смеси
+    uint8_t monoCoagMode;   ///< Режимы МОНО коагуляции
+    uint8_t biCoagMode;     ///< Режимы БИ коагуляции
+    /// Мощности режимов (18 штук)
+    uint16_t monoCutPwr[3];
+    uint16_t biCutPwr[3];
+    uint16_t monoMixPwr[3];
+    uint16_t biMixPwr[3];
+    uint16_t monoCoagPwr[3];
+    uint16_t biCoagPwr[3];
+    uint8_t timeout;
+
+    States_t m_state; ///< Структура текущего состояния прибора (активность педалей, ошибки и т.д.)
+
+    I2C *m_twi; ///< Указатель на класс, инкапсулирущий работу с I2C
+
+    static inline uint16_t createData(uint16_t power, uint8_t mode);
+
+    static void adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase);
 };
 
 #endif // ESG_DEVICE_HPP

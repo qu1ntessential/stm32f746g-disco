@@ -13,6 +13,10 @@
 objects_t objects;
 lv_obj_t *tick_value_change_obj;
 
+static void event_handler_cb_main_led_cut(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+}
+
 void create_screen_main() {
     lv_obj_t *obj = lv_obj_create(0);
     objects.main = obj;
@@ -322,6 +326,42 @@ void create_screen_main() {
                 }
             }
         }
+        {
+            // led_coag
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.led_coag = obj;
+            lv_obj_set_pos(obj, 448, 240);
+            lv_obj_set_size(obj, 32, 32);
+            lv_led_set_color(obj, lv_color_hex(0xff0000ff));
+            lv_led_set_brightness(obj, 0);
+        }
+        {
+            // led_cut
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.led_cut = obj;
+            lv_obj_set_pos(obj, 0, 240);
+            lv_obj_set_size(obj, 32, 32);
+            lv_led_set_color(obj, lv_color_hex(0xffffff00));
+            lv_obj_add_event_cb(obj, event_handler_cb_main_led_cut, LV_EVENT_ALL, 0);
+        }
+        {
+            // led_ne
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.led_ne = obj;
+            lv_obj_set_pos(obj, 0, -2);
+            lv_obj_set_size(obj, 32, 32);
+            lv_led_set_color(obj, lv_color_hex(0xffff0000));
+            lv_led_set_brightness(obj, 0);
+        }
+        {
+            // led_mix
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.led_mix = obj;
+            lv_obj_set_pos(obj, 159, 241);
+            lv_obj_set_size(obj, 32, 32);
+            lv_led_set_color(obj, lv_color_hex(0xff00ff00));
+            lv_led_set_brightness(obj, 0);
+        }
     }
     
     tick_screen_main();
@@ -397,6 +437,17 @@ void tick_screen_main() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.label_mono_bi_sel;
             lv_label_set_text(objects.label_mono_bi_sel, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = get_var_led_cut_br();
+        if (new_val < 0) new_val = 0;
+        else if (new_val > 255) new_val = 255;
+        int32_t cur_val = lv_led_get_brightness(objects.led_cut);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.led_cut;
+            lv_led_set_brightness(objects.led_cut, new_val);
             tick_value_change_obj = NULL;
         }
     }
