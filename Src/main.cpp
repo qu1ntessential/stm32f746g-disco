@@ -1,13 +1,5 @@
 #include "OsTasks.h"
 
-#include "lvgl_port_tft.h"
-#include "lvgl_port_touchpad.h"
-
-#include "ff.h"
-#include "sd_diskio_dma.h"
-
-#include "FatFsWrapper.hpp"
-
 extern "C" void SystemClock_Config(void);
 extern "C" void PeriphCommonClock_Config(void);
 

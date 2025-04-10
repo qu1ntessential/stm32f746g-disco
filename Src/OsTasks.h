@@ -7,6 +7,8 @@
 #include "stm32f7xx.h"
 
 #include "usart.h"
+#include "i2c.h"
+#include "tim.h"
 #include "uart_log.h"
 
 #include "FreeRTOS.h"
@@ -29,25 +31,6 @@
 #include "ui_con.h"
 #include "vars.h"
 #include "actions.h"
-
-#include "main.h"
-#include "adc.h"
-#include "crc.h"
-#include "dcmi.h"
-#include "dma2d.h"
-#include "eth.h"
-#include "i2c.h"
-#include "ltdc.h"
-#include "quadspi.h"
-#include "rtc.h"
-#include "sai.h"
-#include "sdmmc.h"
-#include "spdifrx.h"
-#include "spi.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
-#include "fmc.h"
 
 void FreeRTOS_Resources_Init();
 

@@ -19,6 +19,7 @@ target_include_directories(cmsis PUBLIC
 target_compile_definitions(cmsis PUBLIC
         -DSTM32F746xx
         -DUSE_HAL_DRIVER
+        # -DUSE_FULL_ASSERT
 )
 
 # target_link_options(cmsis PUBLIC -T${STM32_LINKER_SCRIPT})
