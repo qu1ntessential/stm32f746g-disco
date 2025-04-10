@@ -174,6 +174,38 @@
         "defaultValue": "0",
         "persistent": false,
         "native": false
+      },
+      {
+        "objID": "30feb5e8-35cc-4738-8312-86400cc4e6ad",
+        "name": "led_mix_br",
+        "type": "integer",
+        "defaultValue": "false",
+        "persistent": false,
+        "native": false
+      },
+      {
+        "objID": "23a07870-b424-4446-a3b8-2099fbc42a62",
+        "name": "led_coag_br",
+        "type": "integer",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": false
+      },
+      {
+        "objID": "f45732c5-cf07-43d0-ddf9-6c45fcfb441b",
+        "name": "led_alarm_br",
+        "type": "integer",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": false
+      },
+      {
+        "objID": "0b6aa304-6ba2-4cc2-9e59-c474dddb2fd0",
+        "name": "led_ne_br",
+        "type": "integer",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": false
       }
     ],
     "structures": [],
@@ -1920,8 +1952,8 @@
               "groupIndex": 0,
               "color": "#0000FF",
               "colorType": "literal",
-              "brightness": 0,
-              "brightnessType": "literal"
+              "brightness": "led_coag_br",
+              "brightnessType": "expression"
             },
             {
               "objID": "64e69f19-1c5f-4493-f0ab-9b7a9635a3ca",
@@ -2011,8 +2043,8 @@
               "groupIndex": 0,
               "color": "#FF0000",
               "colorType": "literal",
-              "brightness": 0,
-              "brightnessType": "literal"
+              "brightness": "led_alarm_br",
+              "brightnessType": "expression"
             },
             {
               "objID": "c6c1022c-a459-4d33-bc8f-df97ad1ec632",
@@ -2056,8 +2088,54 @@
               "groupIndex": 0,
               "color": "#00ff00",
               "colorType": "literal",
-              "brightness": 0,
-              "brightnessType": "literal"
+              "brightness": "led_mix_br",
+              "brightnessType": "expression"
+            },
+            {
+              "objID": "95a2645d-8340-4a90-cdf5-15eb4f6869ad",
+              "type": "LVGLLedWidget",
+              "left": 168,
+              "top": -1,
+              "width": 32,
+              "height": 32,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "607b9558-ae5d-4fa0-ec72-82f6306a0129",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [],
+              "identifier": "led_ne_1",
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlag": false,
+              "hiddenFlagType": "literal",
+              "clickableFlag": true,
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledState": false,
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "50adcefc-15fe-42a6-b504-d81163a0ded0"
+              },
+              "group": "",
+              "groupIndex": 0,
+              "color": "#00FFFF",
+              "colorType": "literal",
+              "brightness": "led_ne_br",
+              "brightnessType": "expression"
             }
           ],
           "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",

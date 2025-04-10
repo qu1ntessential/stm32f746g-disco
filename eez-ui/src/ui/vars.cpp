@@ -50,10 +50,26 @@ const char *get_var_mono_bi_sel_str() {
 }
 
 int32_t get_var_led_cut_br() {
-    int32_t flash = 0;
-    flash = ESG15.getStateUI().isCutActive;
+    if (ESG15.getStateUI().isCutActive) return 255;
+    else return 0;
+}
 
-    if (flash) return 255;
+extern int32_t get_var_led_mix_br() {
+    if (ESG15.getStateUI().isMixActive) return 255;
+    else return 0;
+}
 
+extern int32_t get_var_led_coag_br() {
+    if (ESG15.getStateUI().isCoagActive) return 255;
+    else return 0;
+}
+
+extern int32_t get_var_led_alarm_br() {
+    if (ESG15.getStateUI().isCrash) return 255;
+    else return 0;
+}
+
+extern int32_t get_var_led_ne_br() {
+    if (ESG15.getStateUI().isNE) return 255;
     else return 0;
 }

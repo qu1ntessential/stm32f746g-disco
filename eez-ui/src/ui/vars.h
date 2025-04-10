@@ -21,7 +21,11 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_BICOAG_MODE_STR = 5,
     FLOW_GLOBAL_VARIABLE_MIX_MODE_STR = 6,
     FLOW_GLOBAL_VARIABLE_MONO_BI_SEL_STR = 7,
-    FLOW_GLOBAL_VARIABLE_LED_CUT_BR = 8
+    FLOW_GLOBAL_VARIABLE_LED_CUT_BR = 8,
+    FLOW_GLOBAL_VARIABLE_LED_MIX_BR = 9,
+    FLOW_GLOBAL_VARIABLE_LED_COAG_BR = 10,
+    FLOW_GLOBAL_VARIABLE_LED_ALARM_BR = 11,
+    FLOW_GLOBAL_VARIABLE_LED_NE_BR = 12
 };
 
 // Native global variables
@@ -43,6 +47,14 @@ extern const char *get_var_mono_bi_sel_str();
 extern void set_var_mono_bi_sel_str(const char *value);
 extern int32_t get_var_led_cut_br();
 extern void set_var_led_cut_br(int32_t value);
+extern int32_t get_var_led_mix_br();
+extern void set_var_led_mix_br(int32_t value);
+extern int32_t get_var_led_coag_br();
+extern void set_var_led_coag_br(int32_t value);
+extern int32_t get_var_led_alarm_br();
+extern void set_var_led_alarm_br(int32_t value);
+extern int32_t get_var_led_ne_br();
+extern void set_var_led_ne_br(int32_t value);
 
 #ifdef __cplusplus
 }

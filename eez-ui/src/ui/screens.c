@@ -13,7 +13,23 @@
 objects_t objects;
 lv_obj_t *tick_value_change_obj;
 
+static void event_handler_cb_main_led_coag(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+}
+
 static void event_handler_cb_main_led_cut(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+}
+
+static void event_handler_cb_main_led_ne(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+}
+
+static void event_handler_cb_main_led_mix(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+}
+
+static void event_handler_cb_main_led_ne_1(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
 }
 
@@ -333,7 +349,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 448, 240);
             lv_obj_set_size(obj, 32, 32);
             lv_led_set_color(obj, lv_color_hex(0xff0000ff));
-            lv_led_set_brightness(obj, 0);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_led_coag, LV_EVENT_ALL, 0);
         }
         {
             // led_cut
@@ -351,7 +367,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 0, -2);
             lv_obj_set_size(obj, 32, 32);
             lv_led_set_color(obj, lv_color_hex(0xffff0000));
-            lv_led_set_brightness(obj, 0);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_led_ne, LV_EVENT_ALL, 0);
         }
         {
             // led_mix
@@ -360,7 +376,16 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 159, 241);
             lv_obj_set_size(obj, 32, 32);
             lv_led_set_color(obj, lv_color_hex(0xff00ff00));
-            lv_led_set_brightness(obj, 0);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_led_mix, LV_EVENT_ALL, 0);
+        }
+        {
+            // led_ne_1
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.led_ne_1 = obj;
+            lv_obj_set_pos(obj, 168, -1);
+            lv_obj_set_size(obj, 32, 32);
+            lv_led_set_color(obj, lv_color_hex(0xff00ffff));
+            lv_obj_add_event_cb(obj, event_handler_cb_main_led_ne_1, LV_EVENT_ALL, 0);
         }
     }
     
@@ -441,6 +466,17 @@ void tick_screen_main() {
         }
     }
     {
+        int32_t new_val = get_var_led_coag_br();
+        if (new_val < 0) new_val = 0;
+        else if (new_val > 255) new_val = 255;
+        int32_t cur_val = lv_led_get_brightness(objects.led_coag);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.led_coag;
+            lv_led_set_brightness(objects.led_coag, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
         int32_t new_val = get_var_led_cut_br();
         if (new_val < 0) new_val = 0;
         else if (new_val > 255) new_val = 255;
@@ -448,6 +484,39 @@ void tick_screen_main() {
         if (new_val != cur_val) {
             tick_value_change_obj = objects.led_cut;
             lv_led_set_brightness(objects.led_cut, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = get_var_led_alarm_br();
+        if (new_val < 0) new_val = 0;
+        else if (new_val > 255) new_val = 255;
+        int32_t cur_val = lv_led_get_brightness(objects.led_ne);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.led_ne;
+            lv_led_set_brightness(objects.led_ne, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = get_var_led_mix_br();
+        if (new_val < 0) new_val = 0;
+        else if (new_val > 255) new_val = 255;
+        int32_t cur_val = lv_led_get_brightness(objects.led_mix);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.led_mix;
+            lv_led_set_brightness(objects.led_mix, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = get_var_led_ne_br();
+        if (new_val < 0) new_val = 0;
+        else if (new_val > 255) new_val = 255;
+        int32_t cur_val = lv_led_get_brightness(objects.led_ne_1);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.led_ne_1;
+            lv_led_set_brightness(objects.led_ne_1, new_val);
             tick_value_change_obj = NULL;
         }
     }

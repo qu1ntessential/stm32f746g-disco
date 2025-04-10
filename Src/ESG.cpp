@@ -336,14 +336,14 @@ bool ESG::getStateTwi() {
     }
 
     m_state.alarm = buf[1];
-    m_state.isNE = buf[2] & 1;
-    m_state.isOverheat = buf[2] & 2;
-    m_state.isPedal = buf[2] & 4;
-    m_state.isCrash = buf[2] & 8;
-    m_state.isCutActive = buf[2] & 16;
-    m_state.isMixActive = buf[2] & 32;
-    m_state.isCoagActive = buf[2] & 64;
-    m_state.isBiActive = buf[2] & 128;
+    m_state.isNE = (buf[2] >> 0) & 1;
+    m_state.isOverheat = (buf[2] >> 1) & 1;
+    m_state.isPedal = (buf[2] >> 2) & 1;
+    m_state.isCrash = (buf[2] >> 3) & 1;
+    m_state.isCutActive = (buf[2] >> 4) & 1;
+    m_state.isMixActive = (buf[2] >> 5) & 1;
+    m_state.isCoagActive = (buf[2] >> 6) & 1;
+    m_state.isBiActive = (buf[2] >> 7) & 1;
 
     return true;
 }

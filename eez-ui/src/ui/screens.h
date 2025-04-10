@@ -9,7 +9,11 @@ extern "C" {
 
 typedef struct _objects_t {
     lv_obj_t *main;
+    lv_obj_t *led_coag;
     lv_obj_t *led_cut;
+    lv_obj_t *led_ne;
+    lv_obj_t *led_mix;
+    lv_obj_t *led_ne_1;
     lv_obj_t *label_cut;
     lv_obj_t *label_mono;
     lv_obj_t *label_cut_mix_pwr;
@@ -37,9 +41,6 @@ typedef struct _objects_t {
     lv_obj_t *label_mix_mode_sel;
     lv_obj_t *btn_mono_bi_sel;
     lv_obj_t *label_mono_bi_sel;
-    lv_obj_t *led_coag;
-    lv_obj_t *led_ne;
-    lv_obj_t *led_mix;
 } objects_t;
 
 extern objects_t objects;

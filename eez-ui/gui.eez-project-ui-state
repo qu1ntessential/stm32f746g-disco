@@ -2,7 +2,7 @@
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
     "selectedActionObject": "[gui.eez-project]:/actions/3",
-    "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/0",
+    "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/8",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
@@ -127,7 +127,7 @@
                 {
                   "type": "tabset",
                   "id": "#7532da9e-7b2d-4e87-878c-c89e8c1387f1",
-                  "weight": 1.288675989752423,
+                  "weight": 0.8045124116815973,
                   "enableClose": false,
                   "children": [
                     {
@@ -159,7 +159,7 @@
                 {
                   "type": "tabset",
                   "id": "#ec303920-eec0-478b-9b39-483fa384d9f0",
-                  "weight": 0.367673093121454,
+                  "weight": 0.8518366711922795,
                   "enableClose": false,
                   "children": [
                     {
