@@ -24,8 +24,10 @@ extern "C" {
 #define BICOAG_MIN_PWR {0, 0, 0}
 
 #define MAX_TIMEOUT 100
+#define MIN_TIMEOUT 0
 
 #define PWR_STEP 10
+#define TIMEOUT_STEP 1
 
 #ifdef __cplusplus
 }

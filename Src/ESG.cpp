@@ -41,37 +41,6 @@ void ESG::Init() {
     //setTimeout();
 }
 
-void ESG::setDefaultParams() {
-    isMonoBi = true;
-    isCutMix = false;
-    isMonoBiCoag = true;
-    monoCutMode = 1;
-    biCutMode = 1;
-    monoMixMode = 1;
-    biMixMode = 1;
-    monoCoagMode = 1;
-    biCoagMode = 1;
-    monoCutPwr[0] = 0;
-    monoCutPwr[1] = 0;
-    monoCutPwr[2] = 0;
-    monoMixPwr[0] = 0;
-    monoMixPwr[1] = 0;
-    monoMixPwr[2] = 0;
-    monoCoagPwr[0] = 0;
-    monoCoagPwr[1] = 0;
-    monoCoagPwr[2] = 0;
-    biCutPwr[0] = 0;
-    biCutPwr[1] = 0;
-    biCutPwr[2] = 0;
-    biMixPwr[0] = 0;
-    biMixPwr[1] = 0;
-    biMixPwr[2] = 0;
-    biCoagPwr[0] = 0;
-    biCoagPwr[1] = 0;
-    biCoagPwr[2] = 0;
-    timeout = 20;
-}
-
 /**
  * @brief Включение платы генератора (подача питания на ПГ)
  */
@@ -156,6 +125,10 @@ uint16_t ESG::getBiCoagPower() const {
     return biCoagPwr[biCoagMode];
 }
 
+uint16_t ESG::getTimeout() const {
+    return timeout;
+}
+
 uint8_t ESG::getCutMode() const {
     if (isMonoBi) {
         return monoCutMode;
@@ -184,18 +157,18 @@ uint8_t ESG::getBiCoagMode() const {
     return isMonoBi;
 }
 
-void ESG::adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase) {
+void ESG::adjustParam(uint16_t &currentParam, uint16_t minParam, uint16_t maxParam, bool increase, uint16_t step) {
     if (increase) {
-        if (currentPower + PWR_STEP <= maxPower) {
-            currentPower += PWR_STEP;
+        if (currentParam + step <= maxParam) {
+            currentParam += step;
         } else {
-            currentPower = maxPower;
+            currentParam = maxParam;
         }
     } else {
-        if (currentPower >= PWR_STEP + minPower) {
-            currentPower -= PWR_STEP;
+        if (currentParam >= step + minParam) {
+            currentParam -= step;
         } else {
-            currentPower = minPower;
+            currentParam = minParam;
         }
     }
 }
@@ -205,33 +178,41 @@ void ESG::changeCutMixPwr(bool increase) {
         if (isMonoBi) { /// Текущий режим монополярное резание
             const uint16_t monoCutMin[] = MONOCUT_MIN_PWR;
             const uint16_t monoCutMax[] = MONOCUT_MAX_PWR;
-            adjustPower(monoCutPwr[monoCutMode],
+            adjustParam(monoCutPwr[monoCutMode],
                         monoCutMin[monoCutMode],
                         monoCutMax[monoCutMode],
-                        increase);
+                        increase,
+                        PWR_STEP);
+            setMonoCutPower();
         } else { /// Текущий режим биполярное резание
             const uint16_t biCutMin[] = BICUT_MIN_PWR;
             const uint16_t biCutMax[] = BICUT_MAX_PWR;
-            adjustPower(biCutPwr[biCutMode],
+            adjustParam(biCutPwr[biCutMode],
                         biCutMin[biCutMode],
                         biCutMax[biCutMode],
-                        increase);
+                        increase,
+                        PWR_STEP);
+            setBiCutPower();
         }
     } else {
         if (isMonoBi) { /// Текущий режим монополярная смесь
             const uint16_t monoMixMin[] = MONOMIX_MIN_PWR;
             const uint16_t monoMixMax[] = MONOMIX_MAX_PWR;
-            adjustPower(monoMixPwr[monoMixMode],
+            adjustParam(monoMixPwr[monoMixMode],
                         monoMixMin[monoMixMode],
                         monoMixMax[monoMixMode],
-                        increase);
+                        increase,
+                        PWR_STEP);
+            setMonoMixPower();
         } else { /// Текущий режим биполярная смесь
             const uint16_t biMixMin[] = BIMIX_MIN_PWR;
             const uint16_t biMixMax[] = BIMIX_MAX_PWR;
-            adjustPower(biMixPwr[biMixMode],
+            adjustParam(biMixPwr[biMixMode],
                         biMixMin[biMixMode],
                         biMixMax[biMixMode],
-                        increase);
+                        increase,
+                        PWR_STEP);
+            setBiMixPower();
         }
     }
 }
@@ -240,10 +221,12 @@ void ESG::changeMonoCoagPwr(bool increase) {
     if (isMonoBi && isMonoBiCoag) { /// Текущий режим монополярная коагуляция
         const uint16_t monoCoagMin[] = MONOCOAG_MIN_PWR;
         const uint16_t monoCoagMax[] = MONOCOAG_MAX_PWR;
-        adjustPower(monoCoagPwr[monoCoagMode],
+        adjustParam(monoCoagPwr[monoCoagMode],
                     monoCoagMin[monoCoagMode],
                     monoCoagMax[monoCoagMode],
-                    increase);
+                    increase,
+                    PWR_STEP);
+        setMonoCoagPower();
     }
 }
 
@@ -251,10 +234,12 @@ void ESG::changeBiCoagPwr(bool increase) {
     if (!isMonoBiCoag) { /// Текущий режим монополярная коагуляция
         const uint16_t biCoagMin[] = BICOAG_MIN_PWR;
         const uint16_t biCoagMax[] = BICOAG_MAX_PWR;
-        adjustPower(biCoagPwr[biCoagMode],
+        adjustParam(biCoagPwr[biCoagMode],
                     biCoagMin[biCoagMode],
                     biCoagMax[biCoagMode],
-                    increase);
+                    increase,
+                    PWR_STEP);
+        setBiCoagPower();
     }
 }
 
@@ -316,9 +301,16 @@ void ESG::changeBiCoagMode() {
     }
 }
 
-bool ESG::setTimeout(uint16_t timeOut) {
-    if (timeOut > MAX_TIMEOUT) return false;
-    timeout = timeOut;
+void ESG::changeTimeout(bool increase) {
+    adjustParam(timeout,
+                MIN_TIMEOUT,
+                MAX_TIMEOUT,
+                increase,
+                TIMEOUT_STEP);
+    setTimeout();
+}
+
+bool ESG::setTimeout() {
     return m_twi->putData(I2C::SET_TIMEOUT, timeout);
 }
 
@@ -350,26 +342,4 @@ bool ESG::getStateTwi() {
 
 ESG::States_t ESG::getStateUI() const {
     return m_state;
-}
-
-void ESG::checkStateUI() const {
-    /*
-    if (m_state.isCutActive) {
-        lv_obj_clear_flag(objects.led_cut, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        lv_obj_add_flag(objects.led_cut, LV_OBJ_FLAG_HIDDEN);
-    }
-
-    if (m_state.isMixActive) {
-        lv_obj_clear_flag(objects.led_mix, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        lv_obj_add_flag(objects.led_mix, LV_OBJ_FLAG_HIDDEN);
-    }
-
-    if (m_state.isCoagActive) {
-        lv_obj_clear_flag(objects.led_coag, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        lv_obj_add_flag(objects.led_coag, LV_OBJ_FLAG_HIDDEN);
-    }
-     */
 }

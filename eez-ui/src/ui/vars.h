@@ -25,7 +25,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_LED_MIX_BR = 9,
     FLOW_GLOBAL_VARIABLE_LED_COAG_BR = 10,
     FLOW_GLOBAL_VARIABLE_LED_ALARM_BR = 11,
-    FLOW_GLOBAL_VARIABLE_LED_NE_BR = 12
+    FLOW_GLOBAL_VARIABLE_LED_NE_BR = 12,
+    FLOW_GLOBAL_VARIABLE_TIMEOUT_STR = 13
 };
 
 // Native global variables
@@ -55,6 +56,8 @@ extern int32_t get_var_led_alarm_br();
 extern void set_var_led_alarm_br(int32_t value);
 extern int32_t get_var_led_ne_br();
 extern void set_var_led_ne_br(int32_t value);
+extern const char *get_var_timeout_str();
+extern void set_var_timeout_str(const char *value);
 
 #ifdef __cplusplus
 }

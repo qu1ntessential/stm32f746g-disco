@@ -1,5 +1,5 @@
 #include "actions.h"
-
+#include "ui.h"
 #include "ESG.hpp"
 
 extern ESG ESG15;
@@ -46,4 +46,21 @@ void action_bicoag_mode_sel(lv_event_t *e) {
 
 void action_mono_bi_sel(lv_event_t *e) {
     ESG15.invMonoBiSel();
+}
+
+extern void action_rtn_main(lv_event_t *e) {
+    loadScreen(SCREEN_ID_MAIN);
+
+}
+
+extern void action_load_page_settings(lv_event_t *e) {
+    loadScreen(SCREEN_ID_SETTINGS);
+}
+
+extern void action_timeout_inc(lv_event_t *e) {
+    ESG15.changeTimeout(true);
+}
+
+extern void action_timeout_dec(lv_event_t *e) {
+    ESG15.changeTimeout(false);
 }

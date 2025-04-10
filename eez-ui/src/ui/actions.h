@@ -18,6 +18,10 @@ extern void action_mix_mode_sel(lv_event_t * e);
 extern void action_monocoag_mode_sel(lv_event_t * e);
 extern void action_bicoag_mode_sel(lv_event_t * e);
 extern void action_mono_bi_sel(lv_event_t * e);
+extern void action_rtn_main(lv_event_t * e);
+extern void action_load_page_settings(lv_event_t * e);
+extern void action_timeout_inc(lv_event_t * e);
+extern void action_timeout_dec(lv_event_t * e);
 
 #ifdef __cplusplus
 }

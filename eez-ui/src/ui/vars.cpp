@@ -73,3 +73,8 @@ extern int32_t get_var_led_ne_br() {
     if (ESG15.getStateUI().isNE) return 255;
     else return 0;
 }
+
+extern const char *get_var_timeout_str() {
+    snprintf(str, sizeof(str), "%hu", ESG15.getTimeout());
+    return str;
+}

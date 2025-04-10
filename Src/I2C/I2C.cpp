@@ -68,10 +68,13 @@ bool I2C::putData(Orders order, uint16_t value, uint8_t addr) {
         return false;
     }
 
-    static uint8_t data_tx[4] = {addr,
-                                 static_cast<uint8_t>(order),
-                                 static_cast<uint8_t>(value & 0xFF),
-                                 static_cast<uint8_t>((value >> 8) & 0xFF)};
+    static uint8_t data_tx[4];
+
+    data_tx[0] = addr;
+    data_tx[1] = static_cast<uint8_t>(order);
+    data_tx[2] = static_cast<uint8_t>(value & 0xFF);
+    data_tx[3] = static_cast<uint8_t>((value >> 8) & 0xFF);
+
     uint8_t crc = crc8(data_tx, sizeof(data_tx));
 
     data_tx[0] = data_tx[1];

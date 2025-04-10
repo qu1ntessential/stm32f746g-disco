@@ -28,8 +28,6 @@ public:
 
     void Init();
 
-    void setDefaultParams();
-
     void powerOn();
 
     void powerOff();
@@ -39,6 +37,7 @@ public:
     /**
      * @defgroup Функции установки мощности и активного режима согласно текущим
      *           переменным класса (подразумевается, что данные корректные)
+     *           Перенесено из класса MasterPrx СЛ с изменениями сигнатуры
      */
     [[nodiscard]] bool setMonoCutPower() const;
 
@@ -53,13 +52,16 @@ public:
     [[nodiscard]] bool setBiMixPower() const;
 
     /**
-     * @defgroup Методы для передачи мощности и активного режима в UI
+     * @defgroup Методы для передачи данных класса в UI (EEZ model for lvgl)
+     *           Смотри vars.cpp
      */
     [[nodiscard]] uint16_t getCutMixPower() const;
 
     [[nodiscard]] uint16_t getMonoCoagPower() const;
 
     [[nodiscard]] uint16_t getBiCoagPower() const;
+
+    [[nodiscard]] uint16_t getTimeout() const;
 
     [[nodiscard]] uint8_t getCutMode() const;
 
@@ -71,8 +73,11 @@ public:
 
     [[nodiscard]] bool getMonoBiFlag() const;
 
+    [[nodiscard]] ESG::States_t getStateUI() const;
+
     /**
-     * @defgroup Методы для передачи зменения мощности и режима в UI
+     * @defgroup Методы для изменения данных класса из UI (lvgl),
+     *           завершают изменения транзакциями I2C
      */
     void changeCutMixPwr(bool increase);
 
@@ -88,13 +93,11 @@ public:
 
     void changeBiCoagMode();
 
-    bool setTimeout(uint16_t timeOut);
+    void changeTimeout(bool increase);
+
+    bool setTimeout();
 
     bool getStateTwi();
-
-    [[nodiscard]] ESG::States_t getStateUI() const;
-
-    void checkStateUI() const;
 
 private:
     bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
@@ -113,7 +116,7 @@ private:
     uint16_t biMixPwr[3];
     uint16_t monoCoagPwr[3];
     uint16_t biCoagPwr[3];
-    uint8_t timeout;
+    uint16_t timeout;
 
     States_t m_state; ///< Структура текущего состояния прибора (активность педалей, ошибки и т.д.)
 
@@ -121,7 +124,7 @@ private:
 
     static inline uint16_t createData(uint16_t power, uint8_t mode);
 
-    static void adjustPower(uint16_t &currentPower, uint16_t minPower, uint16_t maxPower, bool increase);
+    static void adjustParam(uint16_t &currentParam, uint16_t minParam, uint16_t maxParam, bool increase, uint16_t step);
 };
 
 #endif // ESG_DEVICE_HPP
