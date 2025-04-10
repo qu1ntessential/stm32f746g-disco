@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
+include(toolchain/gcc-arm-none-eabi.cmake)
 
 # set(CMAKE_VERBOSE_MAKEFILE OFF CACHE BOOL "" FORCE)
 set(CMAKE_VERBOSE_MAKEFILE ON)

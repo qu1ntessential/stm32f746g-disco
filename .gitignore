@@ -4,3 +4,4 @@ cmake-build-*/
 CoGen/*
 !CoGen/CoGen.ioc
 !CoGen/Core/
+eez-ui/gui.eez-project-ui-state
