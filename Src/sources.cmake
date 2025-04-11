@@ -47,5 +47,3 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         ${INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Inc/
 )
-
-add_compile_definitions(-DDEBUG)

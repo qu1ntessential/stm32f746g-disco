@@ -4,7 +4,7 @@ include(toolchain/gcc-arm-none-eabi.cmake)
 # set(CMAKE_VERBOSE_MAKEFILE OFF CACHE BOOL "" FORCE)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-project(stm32h746g_disco LANGUAGES C CXX ASM)
+project(stm32f746g-disco LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -20,7 +20,6 @@ add_subdirectory(Drivers/FreeRTOS-Plus-CLI)
 add_executable(${PROJECT_NAME})
 
 include(Src/sources.cmake)
-# include(CubeMX/CM7/Core/cubemx.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
 set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel-11.1.0")
@@ -62,7 +61,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 add_custom_target(erase_flash
         COMMAND ${CMAKE_COMMAND} -E echo "Erasing flash memory..."
-        COMMAND openocd -f stm32h745i-disco.cfg -c "init; reset init; stm32h7x mass_erase 0; reset halt; shutdown"
+        COMMAND openocd -f stm32f746g-disco.cfg -c "init; reset init; stm32f7x mass_erase 0; reset halt; shutdown"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Erasing the flash memory of STM32F103C8T6"
+        COMMENT "Erasing the flash memory of STM32F746NGH6"
 )

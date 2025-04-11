@@ -1,6 +1,10 @@
 .idea/
+.vscode/
 doxygen/
+
 cmake-build-*/
+build/
+
 CoGen/*
 !CoGen/CoGen.ioc
 !CoGen/Core/
