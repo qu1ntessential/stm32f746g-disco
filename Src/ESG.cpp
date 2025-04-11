@@ -59,8 +59,6 @@ void ESG::invMonoBiSel() {
     isMonoBi = !isMonoBi;
     if (!isMonoBi) { /// Выбран биполярный режим
         isMonoBiCoag = false;
-    } else {
-        isMonoBiCoag = true;
     }
 }
 
@@ -342,4 +340,31 @@ bool ESG::getStateTwi() {
 
 ESG::States_t ESG::getStateUI() const {
     return m_state;
+}
+
+void ESG::syncUI() {
+    if (isMonoBi) {
+        if (isMonoBiCoag) { /// Активна monoCoag
+            lv_obj_remove_state(objects.btn_monocoag_pwr_inc, LV_STATE_DISABLED);
+            lv_obj_remove_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
+            lv_obj_remove_state(objects.btn_monocoag_mode_sel, LV_STATE_DISABLED);
+
+            lv_obj_add_state(objects.btn_bicoag_pwr_inc, LV_STATE_DISABLED);
+            lv_obj_add_state(objects.btn_bicoag_pwr_dec, LV_STATE_DISABLED);
+        } else { /// Активна biCoag
+            lv_obj_remove_state(objects.btn_bicoag_pwr_inc, LV_STATE_DISABLED);
+            lv_obj_remove_state(objects.btn_bicoag_pwr_dec, LV_STATE_DISABLED);
+
+            lv_obj_add_state(objects.btn_monocoag_pwr_inc, LV_STATE_DISABLED);
+            lv_obj_add_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
+        }
+    } else { /// Активен режим БПР
+        //lv_obj_remove_state(objects.btn_bicoag_pwr_inc, LV_STATE_DISABLED);
+        //lv_obj_remove_state(objects.btn_bicoag_pwr_dec, LV_STATE_DISABLED);
+        //lv_obj_remove_state(objects.btn_bicoag_mode_sel, LV_STATE_DISABLED);
+        isMonoBiCoag = false;
+        lv_obj_add_state(objects.btn_monocoag_pwr_inc, LV_STATE_DISABLED);
+        lv_obj_add_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
+        lv_obj_add_state(objects.btn_monocoag_mode_sel, LV_STATE_DISABLED);
+    }
 }

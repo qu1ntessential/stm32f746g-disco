@@ -7,10 +7,11 @@
 extern "C" {
 #endif
 
-// Style: selected
-lv_style_t *get_style_selected_MAIN_DEFAULT();
-void add_style_selected(lv_obj_t *obj);
-void remove_style_selected(lv_obj_t *obj);
+// Style: eleps
+lv_style_t *get_style_eleps_MAIN_DEFAULT();
+lv_style_t *get_style_eleps_MAIN_DISABLED();
+void add_style_eleps(lv_obj_t *obj);
+void remove_style_eleps(lv_obj_t *obj);
 
 
 

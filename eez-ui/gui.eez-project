@@ -675,7 +675,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "48c4d24e-9d24-4b71-fb62-e41934cebc0a",
                 "definition": {
@@ -789,7 +789,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "f4d8a77d-2b99-4686-e276-579020090fef",
                 "definition": {
@@ -899,10 +899,11 @@
               "flagScrollDirection": "",
               "scrollSnapX": "",
               "scrollSnapY": "",
+              "checkedState": false,
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "e64f415e-638b-4eab-c2da-2d7f4458b10f",
                 "definition": {
@@ -1015,7 +1016,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "20e39f42-ed5f-47c5-db69-5eb09e87c9e8",
                 "definition": {
@@ -1179,7 +1180,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "fddb5dca-d63e-4dc2-d0ce-e9fa7d71aab0",
                 "definition": {
@@ -1293,7 +1294,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "1a31131a-82e6-466d-80d7-1a2810f98cc6",
                 "definition": {
@@ -1504,7 +1505,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "cd34d3a3-314d-4411-a07f-521e81437a3d",
                 "definition": {
@@ -1612,7 +1613,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "230ea166-9f99-4287-f3ca-a867cae1c11f",
                 "definition": {
@@ -1720,7 +1721,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "722a0bd5-3b07-4372-936b-c72f4249101e",
                 "definition": {
@@ -1828,7 +1829,7 @@
               "checkedStateType": "literal",
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "86b3c9cc-dfaf-4592-9698-7dce2a5b1389",
                 "definition": {
@@ -1862,13 +1863,6 @@
                 {
                   "objID": "6295cb33-dacb-4ec7-85ac-4d4fa6853c10",
                   "eventName": "PRESSED",
-                  "handlerType": "action",
-                  "action": "mono_bi_sel",
-                  "userData": 0
-                },
-                {
-                  "objID": "eef4ce0f-5ce8-4298-d4bd-4d0b62c14f6f",
-                  "eventName": "LONG_PRESSED_REPEAT",
                   "handlerType": "action",
                   "action": "mono_bi_sel",
                   "userData": 0
@@ -1944,7 +1938,7 @@
               "disabledState": false,
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "1d3d09b4-0447-407d-e53f-3f49f3be7dba",
                 "definition": {
@@ -1961,10 +1955,10 @@
             {
               "objID": "b99677f2-0989-495f-8a14-50b3e1c85933",
               "type": "LVGLLedWidget",
-              "left": -1,
-              "top": 30,
-              "width": 32,
-              "height": 32,
+              "left": 0,
+              "top": 32,
+              "width": 30,
+              "height": 30,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2006,10 +2000,10 @@
             {
               "objID": "64e69f19-1c5f-4493-f0ab-9b7a9635a3ca",
               "type": "LVGLLedWidget",
-              "left": -1,
-              "top": -2,
-              "width": 32,
-              "height": 32,
+              "left": 0,
+              "top": 0,
+              "width": 30,
+              "height": 30,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2051,10 +2045,10 @@
             {
               "objID": "a9e3877b-d9f8-45ad-e7e2-680c3c949437",
               "type": "LVGLLedWidget",
-              "left": -1,
-              "top": 126,
-              "width": 32,
-              "height": 32,
+              "left": 0,
+              "top": 128,
+              "width": 30,
+              "height": 30,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2097,10 +2091,10 @@
             {
               "objID": "c6c1022c-a459-4d33-bc8f-df97ad1ec632",
               "type": "LVGLLedWidget",
-              "left": -1,
-              "top": 62,
-              "width": 32,
-              "height": 32,
+              "left": 0,
+              "top": 64,
+              "width": 30,
+              "height": 30,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2142,10 +2136,10 @@
             {
               "objID": "95a2645d-8340-4a90-cdf5-15eb4f6869ad",
               "type": "LVGLLedWidget",
-              "left": -1,
-              "top": 94,
-              "width": 32,
-              "height": 32,
+              "left": 0,
+              "top": 96,
+              "width": 30,
+              "height": 30,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2188,7 +2182,7 @@
             {
               "objID": "3fc6e20f-f4e4-4bbb-9f71-f840b6971152",
               "type": "LVGLButtonWidget",
-              "left": -1,
+              "left": 0,
               "top": 232,
               "width": 40,
               "height": 40,
@@ -2277,9 +2271,10 @@
               "scrollSnapX": "",
               "scrollSnapY": "",
               "checkedStateType": "literal",
+              "disabledState": true,
               "disabledStateType": "literal",
               "states": "",
-              "useStyle": "",
+              "useStyle": "eleps",
               "localStyles": {
                 "objID": "d92db833-0bfa-41c4-e1a6-7648485c89ca",
                 "definition": {
@@ -2819,7 +2814,9 @@
               "flagScrollDirection": "",
               "scrollSnapX": "",
               "scrollSnapY": "",
+              "checkedState": false,
               "checkedStateType": "literal",
+              "disabledState": false,
               "disabledStateType": "literal",
               "states": "",
               "useStyle": "",
@@ -2868,16 +2865,19 @@
     "objID": "a31bd004-35c5-b3fb-5c8b-78ea5c7693b8",
     "styles": [
       {
-        "objID": "319c481d-5896-4b61-af11-3a79bcc86595",
-        "name": "selected",
+        "objID": "ed6c1293-245b-43b8-ae9a-3fa2e6f48b71",
+        "name": "eleps",
         "forWidgetType": "LVGLButtonWidget",
         "childStyles": [],
         "definition": {
-          "objID": "4a50ae13-f3d2-4d01-ab9f-ae52e837035d",
+          "objID": "c93d3a3e-0e28-4018-ebd8-3f140e1d652a",
           "definition": {
             "MAIN": {
               "DEFAULT": {
-                "bg_color": "#ff00ff"
+                "text_font": "MONTSERRAT_30"
+              },
+              "DISABLED": {
+                "bg_color": "#7f7f7f"
               }
             }
           }

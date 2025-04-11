@@ -107,8 +107,8 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
 void LvglThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     while (1) {
-        lv_task_handler();
         ui_tick();
+        lv_task_handler();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }

@@ -12,6 +12,9 @@
 
 class ESG {
 public:
+    /**
+     * @brief Определение структуры, описывающей состояние и ошибки прибора
+     */
     typedef struct {
         uint16_t alarm: 8;           ///< Alarm code
         uint16_t isNE: 1;            ///< Neutral electrode is connected
@@ -98,6 +101,12 @@ public:
     bool setTimeout();
 
     bool getStateTwi();
+
+    /**
+     * @defgroup Методы, использующие API lvgl (синхронизируют интерфейс и состояние прибора)
+     */
+
+    void syncUI();
 
 private:
     bool isMonoBi;          ///< Флаг выбора МОНО/БИ режима
