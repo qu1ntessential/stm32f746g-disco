@@ -356,7 +356,7 @@ void create_screen_main() {
             // led_coag
             lv_obj_t *obj = lv_led_create(parent_obj);
             objects.led_coag = obj;
-            lv_obj_set_pos(obj, 0, 32);
+            lv_obj_set_pos(obj, 2, 34);
             lv_obj_set_size(obj, 30, 30);
             lv_led_set_color(obj, lv_color_hex(0xff0000ff));
             lv_obj_add_event_cb(obj, event_handler_cb_main_led_coag, LV_EVENT_ALL, 0);
@@ -365,7 +365,7 @@ void create_screen_main() {
             // led_cut
             lv_obj_t *obj = lv_led_create(parent_obj);
             objects.led_cut = obj;
-            lv_obj_set_pos(obj, 0, 0);
+            lv_obj_set_pos(obj, 2, 2);
             lv_obj_set_size(obj, 30, 30);
             lv_led_set_color(obj, lv_color_hex(0xffffff00));
             lv_obj_add_event_cb(obj, event_handler_cb_main_led_cut, LV_EVENT_ALL, 0);
@@ -374,7 +374,7 @@ void create_screen_main() {
             // led_ne
             lv_obj_t *obj = lv_led_create(parent_obj);
             objects.led_ne = obj;
-            lv_obj_set_pos(obj, 0, 128);
+            lv_obj_set_pos(obj, 2, 130);
             lv_obj_set_size(obj, 30, 30);
             lv_led_set_color(obj, lv_color_hex(0xffff0000));
             lv_obj_add_event_cb(obj, event_handler_cb_main_led_ne, LV_EVENT_ALL, 0);
@@ -383,7 +383,7 @@ void create_screen_main() {
             // led_mix
             lv_obj_t *obj = lv_led_create(parent_obj);
             objects.led_mix = obj;
-            lv_obj_set_pos(obj, 0, 64);
+            lv_obj_set_pos(obj, 2, 66);
             lv_obj_set_size(obj, 30, 30);
             lv_led_set_color(obj, lv_color_hex(0xff00ff00));
             lv_obj_add_event_cb(obj, event_handler_cb_main_led_mix, LV_EVENT_ALL, 0);
@@ -392,7 +392,7 @@ void create_screen_main() {
             // led_ne_1
             lv_obj_t *obj = lv_led_create(parent_obj);
             objects.led_ne_1 = obj;
-            lv_obj_set_pos(obj, 0, 96);
+            lv_obj_set_pos(obj, 2, 98);
             lv_obj_set_size(obj, 30, 30);
             lv_led_set_color(obj, lv_color_hex(0xff00ffff));
             lv_obj_add_event_cb(obj, event_handler_cb_main_led_ne_1, LV_EVENT_ALL, 0);

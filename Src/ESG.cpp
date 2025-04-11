@@ -357,12 +357,12 @@ void ESG::syncUI() {
 
             lv_obj_add_state(objects.btn_monocoag_pwr_inc, LV_STATE_DISABLED);
             lv_obj_add_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
+            lv_obj_remove_state(objects.btn_monocoag_mode_sel, LV_STATE_DISABLED);
         }
     } else { /// Активен режим БПР
-        //lv_obj_remove_state(objects.btn_bicoag_pwr_inc, LV_STATE_DISABLED);
-        //lv_obj_remove_state(objects.btn_bicoag_pwr_dec, LV_STATE_DISABLED);
-        //lv_obj_remove_state(objects.btn_bicoag_mode_sel, LV_STATE_DISABLED);
-        isMonoBiCoag = false;
+        lv_obj_remove_state(objects.btn_bicoag_pwr_inc, LV_STATE_DISABLED);
+        lv_obj_remove_state(objects.btn_bicoag_pwr_dec, LV_STATE_DISABLED);
+
         lv_obj_add_state(objects.btn_monocoag_pwr_inc, LV_STATE_DISABLED);
         lv_obj_add_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
         lv_obj_add_state(objects.btn_monocoag_mode_sel, LV_STATE_DISABLED);

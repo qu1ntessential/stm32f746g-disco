@@ -48,6 +48,7 @@ void action_bicoag_mode_sel(lv_event_t *e) {
 void action_mono_bi_sel(lv_event_t *e) {
     ESG15.invMonoBiSel();
     ESG15.syncUI();
+    vTaskDelay(pdMS_TO_TICKS(500));
 }
 
 extern void action_rtn_main(lv_event_t *e) {

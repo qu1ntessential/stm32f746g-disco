@@ -109,7 +109,7 @@ void LvglThread(void *argument) {
     while (1) {
         ui_tick();
         lv_task_handler();
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(15));
     }
 }
 

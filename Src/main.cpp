@@ -32,6 +32,7 @@ int main() {
     touchpad_init();
     //lv_fs_fatfs_init();
     ui_init();
+    ESG15.syncUI();
 
     ConfigureTimerForRunTimeStats();
     FreeRTOS_Resources_Init();
