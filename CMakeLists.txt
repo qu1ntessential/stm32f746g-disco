@@ -14,12 +14,12 @@ add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
 add_subdirectory(Drivers/lvgl-9.2.2)
-add_subdirectory(eez-ui)
 add_subdirectory(Drivers/FreeRTOS-Plus-CLI)
 
 add_executable(${PROJECT_NAME})
 
-include(Src/sources.cmake)
+include(Src/app-sources.cmake)
+include(eez-ui/eez-sources.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
 set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel-11.1.0")
@@ -50,13 +50,28 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         freertos_kernel
         fatfs
         lvgl
-        eez-project
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Converting ELF to HEX..."
-        COMMAND ${CMAKE_COMMAND} -E rename $<TARGET_FILE:${PROJECT_NAME}> $<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.elf
-        COMMAND arm-none-eabi-objcopy -O ihex $<TARGET_FILE:${PROJECT_NAME}> $<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.hex
+        COMMAND ${CMAKE_COMMAND} -E echo "Generating HEX and BIN files..."
+
+        # Переименовываем .elf (опционально, если нужно сохранить оригинальный файл)
+        COMMAND ${CMAKE_COMMAND} -E rename
+        $<TARGET_FILE:${PROJECT_NAME}>
+        $<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.elf
+
+        # Конвертируем ELF -> HEX (Intel HEX)
+        COMMAND arm-none-eabi-objcopy -O ihex
+        $<TARGET_FILE:${PROJECT_NAME}>
+        $<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.hex
+
+        # Конвертируем ELF -> BIN (Raw binary)
+        COMMAND arm-none-eabi-objcopy -O binary
+        $<TARGET_FILE:${PROJECT_NAME}>
+        $<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.bin
+
+        # Можно добавить вывод размера файла (опционально)
+        COMMAND arm-none-eabi-size $<TARGET_FILE:${PROJECT_NAME}>
 )
 
 add_custom_target(erase_flash

@@ -626,6 +626,27 @@ void create_screen_settings() {
                 }
             }
         }
+        {
+            // btn_pause_twi
+            lv_obj_t *obj = lv_btn_create(parent_obj);
+            objects.btn_pause_twi = obj;
+            lv_obj_set_pos(obj, 320, 60);
+            lv_obj_set_size(obj, 120, 40);
+            lv_obj_add_event_cb(obj, action_pause_twi, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    // label_pause_twi
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_pause_twi = obj;
+                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_label_set_text(obj, "PAUSE");
+                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                }
+            }
+        }
     }
     
     tick_screen_settings();

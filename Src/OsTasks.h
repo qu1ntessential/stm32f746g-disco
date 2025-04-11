@@ -1,9 +1,6 @@
 #ifndef OSTASKS_H
 #define OSTASKS_H
 
-#include <cstdio>
-#include <cstring>
-
 #include "stm32f7xx.h"
 
 #include "usart.h"
@@ -32,6 +29,14 @@
 #include "vars.h"
 #include "actions.h"
 
+extern TaskHandle_t LvglTaskHandle;
+extern TaskHandle_t UartTaskHandle;
+extern TaskHandle_t TwiTaskHandle;
+extern TaskHandle_t Task4Handle;
+
+/**
+ * @brief Функция инициализации FreeRTOS ресурсов (заадчи, очереди, семафоры и т.д.)
+ */
 void FreeRTOS_Resources_Init();
 
 /**

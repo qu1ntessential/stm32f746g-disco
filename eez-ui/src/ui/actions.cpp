@@ -1,6 +1,7 @@
 #include "actions.h"
 #include "ui.h"
-#include "ESG.hpp"
+
+#include "OsTasks.h"
 
 extern ESG ESG15;
 
@@ -63,4 +64,13 @@ extern void action_timeout_inc(lv_event_t *e) {
 
 extern void action_timeout_dec(lv_event_t *e) {
     ESG15.changeTimeout(false);
+}
+
+extern void action_pause_twi(lv_event_t *e) {
+    static bool pause_flag = false;
+
+    pause_flag = !pause_flag;
+
+    if (pause_flag) vTaskSuspend(TwiTaskHandle);
+    else vTaskResume(TwiTaskHandle);
 }
