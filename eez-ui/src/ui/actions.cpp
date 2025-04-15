@@ -31,24 +31,27 @@ void action_bicoag_pwr_dec(lv_event_t *e) {
 
 void action_cut_mode_sel(lv_event_t *e) {
     ESG15.changeCutMode();
+    ESG15.syncUI();
 }
 
 void action_mix_mode_sel(lv_event_t *e) {
     ESG15.changeMixMode();
+    ESG15.syncUI();
 }
 
 void action_monocoag_mode_sel(lv_event_t *e) {
     ESG15.changeMonoCoagMode();
+    ESG15.syncUI();
 }
 
 void action_bicoag_mode_sel(lv_event_t *e) {
     ESG15.changeBiCoagMode();
+    ESG15.syncUI();
 }
 
 void action_mono_bi_sel(lv_event_t *e) {
     ESG15.invMonoBiSel();
     ESG15.syncUI();
-    vTaskDelay(pdMS_TO_TICKS(500));
 }
 
 extern void action_rtn_main(lv_event_t *e) {

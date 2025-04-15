@@ -594,7 +594,7 @@
               "eventHandlers": [
                 {
                   "objID": "d2bcadd0-e72a-4605-e045-e11ccc2593e0",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "cut_mix_pwr_inc",
                   "userData": 0
@@ -708,7 +708,7 @@
               "eventHandlers": [
                 {
                   "objID": "a6ab9cb6-e719-48ff-f17f-b2f03e1a5290",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "cut_mix_pwr_dec",
                   "userData": 0
@@ -822,7 +822,7 @@
               "eventHandlers": [
                 {
                   "objID": "4cbdd99f-ff80-44c1-956c-61d91f5126f7",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "monocoag_pwr_inc",
                   "userData": 0
@@ -936,7 +936,7 @@
               "eventHandlers": [
                 {
                   "objID": "f5df7408-b647-4d21-f2b6-dd05cadc059a",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "monocoag_pwr_dec",
                   "userData": 0
@@ -1099,7 +1099,7 @@
               "eventHandlers": [
                 {
                   "objID": "02d00333-1474-4604-c7d5-aebfd0f8ac68",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "bicoag_pwr_inc",
                   "userData": 0
@@ -1213,7 +1213,7 @@
               "eventHandlers": [
                 {
                   "objID": "5a0ecce2-60d2-4266-e06a-67ac5a613184",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "bicoag_pwr_dec",
                   "userData": 0
@@ -1430,7 +1430,7 @@
               "eventHandlers": [
                 {
                   "objID": "22493cc6-b884-4c6d-d20f-6deaa77ba408",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "cut_mode_sel",
                   "userData": 0
@@ -1538,7 +1538,7 @@
               "eventHandlers": [
                 {
                   "objID": "ca0cc81d-369d-4eaf-d1b5-02577737d326",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "monocoag_mode_sel",
                   "userData": 0
@@ -1646,7 +1646,7 @@
               "eventHandlers": [
                 {
                   "objID": "d390cb12-a70e-4014-c73c-70f562f00e48",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "bicoag_mode_sel",
                   "userData": 0
@@ -1754,7 +1754,7 @@
               "eventHandlers": [
                 {
                   "objID": "eac244f4-00ef-4172-e175-c0c70edcef4c",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "mix_mode_sel",
                   "userData": 0
@@ -1826,7 +1826,9 @@
               "flagScrollDirection": "",
               "scrollSnapX": "",
               "scrollSnapY": "",
+              "checkedState": false,
               "checkedStateType": "literal",
+              "disabledState": false,
               "disabledStateType": "literal",
               "states": "",
               "useStyle": "eleps",
@@ -1862,7 +1864,7 @@
               "eventHandlers": [
                 {
                   "objID": "6295cb33-dacb-4ec7-85ac-4d4fa6853c10",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "mono_bi_sel",
                   "userData": 0
@@ -2198,7 +2200,7 @@
               "eventHandlers": [
                 {
                   "objID": "917a6c51-f70b-47cb-d665-2ff66d41788a",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "load_page_settings",
                   "userData": 0
@@ -2357,7 +2359,7 @@
               "eventHandlers": [
                 {
                   "objID": "087f5fdd-e5e5-4262-f85c-d11b86e81171",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "rtn_main",
                   "userData": 0
@@ -2515,7 +2517,7 @@
               "eventHandlers": [
                 {
                   "objID": "85525f35-e693-44c4-8689-e2fae1eae180",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "timeout_inc",
                   "userData": 0
@@ -2629,7 +2631,7 @@
               "eventHandlers": [
                 {
                   "objID": "bc6537e1-d865-4fa1-e0da-6262419851d6",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "timeout_dec",
                   "userData": 0
@@ -2743,7 +2745,7 @@
               "eventHandlers": [
                 {
                   "objID": "71dc7e74-4eae-4f4b-8cdb-a34732f47a27",
-                  "eventName": "PRESSED",
+                  "eventName": "CLICKED",
                   "handlerType": "action",
                   "action": "pause_twi",
                   "userData": 0

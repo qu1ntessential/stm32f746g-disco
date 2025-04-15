@@ -193,8 +193,8 @@ SECTIONS
   .extflash_text :
   {
     . = ALIGN(4);
-    *(.extflash_text)
-    *(.extflash_text*)
+    KEEP(*(.extflash_text))
+    KEEP(*(.extflash_text*))
     . = ALIGN(4);
   } >QSPIFLASH
 

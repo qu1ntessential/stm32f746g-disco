@@ -4,6 +4,7 @@
     "selectedActionObject": "[gui.eez-project]:/actions/11",
     "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/13",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
+    "selectedBitmapObject": "[gui.eez-project]:/bitmaps/0",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -74,7 +75,7 @@
           },
           {
             "type": "border",
-            "selected": 0,
+            "selected": 1,
             "size": 40.5,
             "location": "bottom",
             "children": [
@@ -195,7 +196,7 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 49.59738469504487,
-              "selected": 2,
+              "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
@@ -233,8 +234,7 @@
                   },
                   "icon": "svg:page"
                 }
-              ],
-              "active": true
+              ]
             },
             {
               "type": "tabset",
@@ -249,7 +249,8 @@
                   "enableClose": false,
                   "icon": "svg:properties"
                 }
-              ]
+              ],
+              "active": true
             }
           ]
         }
@@ -1025,11 +1026,10 @@
           "14": {},
           "15": {},
           "16": {
-            "0": {}
-          },
-          "17": {
+            "0": {},
             "$selected": true
           },
+          "17": {},
           "23": {}
         }
       },
@@ -1051,7 +1051,9 @@
       "selection": {
         "0": {
           "0": {},
-          "2": {},
+          "2": {
+            "$selected": true
+          },
           "4": {}
         }
       },

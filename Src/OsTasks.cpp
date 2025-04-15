@@ -109,7 +109,7 @@ void LvglThread(void *argument) {
     while (1) {
         ui_tick();
         lv_task_handler();
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(15));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }
 
@@ -146,9 +146,20 @@ void UartThread(void *argument) {
 void TwiThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     ESG15.setTimeout();
+    ESG15.getStateTwi();
+    if (ESG15.getMonoBiFlag()) {
+        ESG15.setMonoCutPower();
+        ESG15.setMonoMixPower();
+    } else {
+        ESG15.setBiCutPower();
+        ESG15.setBiMixPower();
+    }
+    ESG15.setMonoCoagPower();
+    ESG15.setBiCoagPower();
+    ESG15.syncUI();
     while (1) {
         ESG15.getStateTwi();
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5000));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
 

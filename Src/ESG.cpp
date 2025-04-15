@@ -18,24 +18,24 @@ void ESG::Init() {
     biMixMode = 1;
     monoCoagMode = 1;
     biCoagMode = 1;
-    monoCutPwr[0] = 0;
-    monoCutPwr[1] = 0;
-    monoCutPwr[2] = 0;
-    monoMixPwr[0] = 0;
-    monoMixPwr[1] = 0;
-    monoMixPwr[2] = 0;
-    monoCoagPwr[0] = 0;
-    monoCoagPwr[1] = 0;
-    monoCoagPwr[2] = 0;
-    biCutPwr[0] = 0;
-    biCutPwr[1] = 0;
-    biCutPwr[2] = 0;
-    biMixPwr[0] = 0;
-    biMixPwr[1] = 0;
-    biMixPwr[2] = 0;
-    biCoagPwr[0] = 0;
-    biCoagPwr[1] = 0;
-    biCoagPwr[2] = 0;
+    monoCutPwr[0] = 10;
+    monoCutPwr[1] = 20;
+    monoCutPwr[2] = 30;
+    monoMixPwr[0] = 40;
+    monoMixPwr[1] = 50;
+    monoMixPwr[2] = 60;
+    monoCoagPwr[0] = 10;
+    monoCoagPwr[1] = 20;
+    monoCoagPwr[2] = 30;
+    biCutPwr[0] = 70;
+    biCutPwr[1] = 80;
+    biCutPwr[2] = 90;
+    biMixPwr[0] = 100;
+    biMixPwr[1] = 110;
+    biMixPwr[2] = 100;
+    biCoagPwr[0] = 90;
+    biCoagPwr[1] = 80;
+    biCoagPwr[2] = 70;
     timeout = 10;
 
     //setTimeout();
@@ -244,28 +244,40 @@ void ESG::changeBiCoagPwr(bool increase) {
 void ESG::changeCutMode() {
     if (isCutMix) {
         if (isMonoBi) { /// Текущий режим монополярное резание
-            if (++monoCutMode > 2)
+            if (++monoCutMode > 2) {
                 monoCutMode = 0;
+                setMonoCutPower();
+            }
         } else { /// Текущий режим биполярное резание
-            if (++biCutMode > 2)
+            if (++biCutMode > 2) {
                 biCutMode = 0;
+                setBiCutPower();
+            }
         }
     } else {
         isCutMix = true; /// Переключаем текущий режим на резание
+        if (isMonoBi) setMonoCutPower();
+        else setBiCutPower();
     }
 }
 
 void ESG::changeMixMode() {
     if (!isCutMix) {
         if (isMonoBi) { /// Текущий режим монополярная смесь
-            if (++monoMixMode > 2)
+            if (++monoMixMode > 2) {
                 monoMixMode = 0;
+                setMonoMixPower();
+            }
         } else { /// Текущий режим биполярная смесь
-            if (++biMixMode > 2)
+            if (++biMixMode > 2) {
                 biMixMode = 0;
+                setBiMixPower();
+            }
         }
     } else {
         isCutMix = false; /// Переключаем текущий режим на смесь
+        if (isMonoBi) setMonoMixPower();
+        else setBiMixPower();
     }
 }
 
@@ -282,6 +294,7 @@ void ESG::changeMonoCoagMode() {
      * Нет ветви else, т.к. в режиме БПР не предусмотрено
      * использование монополярной коагуляции
      */
+    setMonoCoagPower();
 }
 
 void ESG::changeBiCoagMode() {
@@ -297,6 +310,7 @@ void ESG::changeBiCoagMode() {
         if (++biCoagMode > 2)
             biCoagMode = 0;
     }
+    setBiCoagPower();
 }
 
 void ESG::changeTimeout(bool increase) {
