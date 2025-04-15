@@ -367,4 +367,12 @@ void ESG::syncUI() {
         lv_obj_add_state(objects.btn_monocoag_pwr_dec, LV_STATE_DISABLED);
         lv_obj_add_state(objects.btn_monocoag_mode_sel, LV_STATE_DISABLED);
     }
+
+    if (isCutMix) {
+        lv_obj_add_state(objects.btn_cut_mode_sel, LV_STATE_CHECKED);
+        lv_obj_remove_state(objects.btn_mix_mode_sel, LV_STATE_CHECKED);
+    } else {
+        lv_obj_add_state(objects.btn_mix_mode_sel, LV_STATE_CHECKED);
+        lv_obj_remove_state(objects.btn_cut_mode_sel, LV_STATE_CHECKED);
+    }
 }
