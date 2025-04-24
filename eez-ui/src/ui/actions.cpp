@@ -76,6 +76,13 @@ extern void action_pause_twi(lv_event_t *e) {
 
     pause_flag = !pause_flag;
 
-    if (pause_flag) vTaskSuspend(TwiTaskHandle);
-    else vTaskResume(TwiTaskHandle);
+    if (pause_flag) {
+        lv_label_set_text(objects.label_pause_twi,"PAUSE");
+        lv_obj_add_state(objects.btn_pause_twi, LV_STATE_CHECKED);
+        vTaskSuspend(TwiTaskHandle);
+    } else {
+        lv_label_set_text(objects.label_pause_twi,"RUN");
+        lv_obj_remove_state(objects.btn_pause_twi, LV_STATE_CHECKED);
+        vTaskResume(TwiTaskHandle);
+    }
 }

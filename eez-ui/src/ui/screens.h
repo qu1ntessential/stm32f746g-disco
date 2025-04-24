@@ -53,6 +53,8 @@ typedef struct _objects_t {
     lv_obj_t *label_cut_mix_pwr_dec_1;
     lv_obj_t *btn_pause_twi;
     lv_obj_t *label_pause_twi;
+    lv_obj_t *slider_volume;
+    lv_obj_t *label_volume;
 } objects_t;
 
 extern objects_t objects;

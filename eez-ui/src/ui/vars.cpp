@@ -78,3 +78,8 @@ extern const char *get_var_timeout_str() {
     snprintf(str, sizeof(str), "%hu", ESG15.getTimeout());
     return str;
 }
+
+extern const char *get_var_volume_str() {
+    snprintf(str, sizeof(str), "%ld", lv_slider_get_value(objects.slider_volume));
+    return str;
+}
