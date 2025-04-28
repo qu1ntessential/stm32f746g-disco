@@ -8,7 +8,7 @@
 
 #include "stm32746g_discovery_qspi.h"
 
-#define LL_COM_LOG 1
+#define LL_COM_LOG 0
 
 class ESG {
 public:

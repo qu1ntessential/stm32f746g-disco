@@ -17,6 +17,9 @@
 #include "FatFsWrapper.hpp"
 #include "ESG.hpp"
 
+#include "FreeRTOS_CLI.h"
+#include "Commands.h"
+
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_sd.h"
 
@@ -33,6 +36,7 @@ extern TaskHandle_t LvglTaskHandle;
 extern TaskHandle_t UartTaskHandle;
 extern TaskHandle_t TwiTaskHandle;
 extern TaskHandle_t Task4Handle;
+extern TaskHandle_t cliTaskHandle;
 
 /**
  * @brief Функция инициализации FreeRTOS ресурсов (заадчи, очереди, семафоры и т.д.)
@@ -63,5 +67,11 @@ void TwiThread(void *argument);
  * @param argument
  */
 void Task4Thread(void *argument);
+
+/**
+ * @brief
+ * @param argument
+ */
+void cliThread(void *argument);
 
 #endif // OSTASKS_H

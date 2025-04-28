@@ -4,12 +4,7 @@
 #define UART_TASK_STACK_SIZE 256
 #define TWI_TASK_STACK_SIZE 512
 #define STACK4_SIZE 256
-
-#define UIEVENT_QUEUE_LENGTH 10                   ///< Длина очереди UIEvent
-#define UIEVENT_QUEUE_ITEM_SIZE sizeof(UIEvent_t) ///< Размер элемента очереди UIEvent
-
-#define UICMD_QUEUE_LENGTH 10
-#define UICMD_QUEUE_ITEM_SIZE sizeof(UICmd_t)
+#define CLI_TASK_STACK_SIZE 256
 
 #define UART_QUEUE_LENGTH 400
 #define UART_QUEUE_ITEM_SIZE sizeof(char)
@@ -27,17 +22,10 @@ TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t UartTaskHandle = nullptr;
 TaskHandle_t TwiTaskHandle = nullptr;
 TaskHandle_t Task4Handle = nullptr;
+TaskHandle_t cliTaskHandle = nullptr;
 
 SemaphoreHandle_t twiSemaphore = nullptr;
 static StaticSemaphore_t twiSemaphoreBuffer;
-
-QueueHandle_t uiEventQueue = nullptr;
-static StaticQueue_t xUiEventQueueStruct;
-static uint8_t ucUiEventQueueStorageArea[UIEVENT_QUEUE_LENGTH * UIEVENT_QUEUE_ITEM_SIZE];
-
-QueueHandle_t uiCmdQueue = nullptr;
-static StaticQueue_t xUiCmdQueueStruct;
-static uint8_t ucUiCmdQueueStorageArea[UICMD_QUEUE_LENGTH * UICMD_QUEUE_ITEM_SIZE];
 
 QueueHandle_t uartQueue = nullptr;
 static StaticQueue_t xUartQueueStruct;
@@ -54,6 +42,9 @@ StackType_t TwiTaskStack[TWI_TASK_STACK_SIZE];
 
 StaticTask_t Task4Buffer;
 StackType_t Stack4[STACK4_SIZE];
+
+StaticTask_t cliTaskBuffer;
+StackType_t cliTaskStack[CLI_TASK_STACK_SIZE];
 
 static StaticTask_t xIdleTaskTCBBuffer;
 static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
@@ -166,39 +157,89 @@ void TwiThread(void *argument) {
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     while (true) {
-        BSP_LED_Toggle(LED_GREEN);
-        print_log(INFO_LOG, "LED_GREEN toggled\r\n");
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
 
+void cliThread(void *argument) {
+    char input_buffer[128] = {0};  // Буфер ввода
+    char output_buffer[configCOMMAND_INT_MAX_OUTPUT_SIZE] = {0}; // Буфер вывода
+    uint8_t input_index = 0;
+    uint8_t echo = 1; // Флаг эхо-вывода
+
+    printf("FreeRTOS CLI v1.0\r\nType 'help' for commands\r\n> ");
+
+    while (1) {
+        uint8_t c;
+        if (HAL_UART_Receive(&huart1, &c, 1, portMAX_DELAY) == HAL_OK) {
+            // Эхо-вывод только печатных символов
+            if (echo && isprint(c)) {
+                HAL_UART_Transmit(&huart1, &c, 1, 10);
+            }
+
+            // Обработка Backspace
+            if (c == '\b') {
+                if (input_index > 0) {
+                    input_buffer[--input_index] = '\0';
+                    // Отправляем backspace + space + backspace для очистки символа
+                    uint8_t bs_seq[] = {'\b', ' ', '\b'};
+                    HAL_UART_Transmit(&huart1, bs_seq, 3, 10);
+                }
+                continue;
+            }
+
+            // Обработка Enter
+            if (c == '\r' || c == '\n') {
+                if (c == '\r') {
+                    HAL_UART_Transmit(&huart1, (uint8_t *) "\r\n", 2, 10);
+                }
+
+                if (input_index > 0) {
+                    // Обработка команды
+                    BaseType_t cmd_result;
+                    do {
+                        cmd_result = FreeRTOS_CLIProcessCommand(
+                                input_buffer,
+                                output_buffer,
+                                sizeof(output_buffer));
+
+                        if (strlen(output_buffer) > 0) {
+                            HAL_UART_Transmit(&huart1, (uint8_t *) output_buffer, strlen(output_buffer), 10);
+                        }
+                        memset(output_buffer, 0, sizeof(output_buffer));
+                    } while (cmd_result != pdFALSE);
+
+                    // Очистка буфера ввода
+                    memset(input_buffer, 0, sizeof(input_buffer));
+                    input_index = 0;
+                }
+
+                // Вывод приглашения
+                HAL_UART_Transmit(&huart1, (uint8_t *) "> ", 2, 10);
+                continue;
+            }
+
+            // Добавление печатных символов в буфер
+            if (isprint(c) && input_index < sizeof(input_buffer) - 1) {
+                input_buffer[input_index++] = c;
+            }
+        }
+    }
+}
+
 void FreeRTOS_Resources_Init() {
+    if (FreeRTOS_CLIRegisterCommand(&xLedCommand) != pdPASS) {
+        printf("Failed to register xLedCommand\r\n");
+    }
+
+    if (FreeRTOS_CLIRegisterCommand(&xTasksCommand) != pdPASS) {
+        printf("Failed to register xTasksCommand\r\n");
+    }
+
     twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
 
     if (twiSemaphore == nullptr) {
         print_log(ERROR_LOG, "Error creating twiSemaphore\n\r");
-    }
-
-    uiEventQueue = xQueueCreateStatic(UIEVENT_QUEUE_LENGTH,
-                                      UIEVENT_QUEUE_ITEM_SIZE,
-                                      ucUiEventQueueStorageArea,
-                                      &xUiEventQueueStruct);
-
-    if (uiEventQueue == nullptr) {
-        print_log(ERROR_LOG, "Error creating uiEventQueue\n\r");
-    } else {
-        vQueueAddToRegistry(uiEventQueue, "uiEventQueue");
-    }
-
-    uiCmdQueue = xQueueCreateStatic(UICMD_QUEUE_LENGTH,
-                                    UICMD_QUEUE_ITEM_SIZE,
-                                    ucUiCmdQueueStorageArea,
-                                    &xUiCmdQueueStruct);
-
-    if (uiCmdQueue == nullptr) {
-        print_log(ERROR_LOG, "Error creating uiCmdQueue\n\r");
-    } else {
-        vQueueAddToRegistry(uiCmdQueue, "uiCmdQueue");
     }
 
     uartQueue = xQueueCreateStatic(UART_QUEUE_LENGTH,
@@ -216,7 +257,7 @@ void FreeRTOS_Resources_Init() {
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
                                        nullptr,
-                                       2,
+                                       3,
                                        LvglTaskStack,
                                        &LvglTaskBuffer);
 
@@ -228,7 +269,7 @@ void FreeRTOS_Resources_Init() {
                                        "Task for UART",
                                        UART_TASK_STACK_SIZE,
                                        nullptr,
-                                       1,
+                                       3,
                                        UartTaskStack,
                                        &UartTaskBuffer);
 
@@ -240,7 +281,7 @@ void FreeRTOS_Resources_Init() {
                                       "Task for TWI communication",
                                       TWI_TASK_STACK_SIZE,
                                       nullptr,
-                                      3,
+                                      1,
                                       TwiTaskStack,
                                       &TwiTaskBuffer);
 
@@ -258,6 +299,18 @@ void FreeRTOS_Resources_Init() {
 
     if (Task4Handle == nullptr) {
         print_log(ERROR_LOG, "Error creating Task4\r\n");
+    }
+
+    cliTaskHandle = xTaskCreateStatic(cliThread,
+                                      "CLI task thread",
+                                      CLI_TASK_STACK_SIZE,
+                                      nullptr,
+                                      2,
+                                      cliTaskStack,
+                                      &cliTaskBuffer);
+
+    if (cliTaskHandle == nullptr) {
+        print_log(ERROR_LOG, "Error creating Task5\r\n");
     }
 }
 

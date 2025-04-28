@@ -127,6 +127,9 @@ extern uint32_t GetRuntimeCounterValue(void);
 #define INCLUDE_eTaskGetState                  0
 #define INCLUDE_xTimerPendFunctionCall         0
 #define INCLUDE_xTaskAbortDelay                0
-#define INCLUDE_xTaskGetHandle                 0
+#define INCLUDE_xTaskGetHandle                 1
+
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE 256
+#define configAPPLICATION_PROVIDES_cOutputBuffer 0
 
 #endif /* FREERTOS_CONFIG_H */
