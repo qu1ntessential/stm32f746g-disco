@@ -21,7 +21,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_PREEMPTION                     1  ///< 1 - вытесняющая многозадачность, 0 - кооперативная
 #define configUSE_TIME_SLICING                   1  ///< Включает квантование времени для задач с одинаковым приоритетом
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1  ///< Оптимизированный алгоритм выбора задач (использует CLZ на Cortex-M)
-#define configMAX_PRIORITIES                     4  ///< Число приоритетов задач (0 - самый низкий)
+#define configMAX_PRIORITIES                     7  ///< Число приоритетов задач (0 - самый низкий)
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)256)  ///< Размер стека idle-задачи (в словах)
 #define configMAX_TASK_NAME_LEN                  16  ///< Макс. длина имени задачи (с NULL-терминатором)
 
@@ -31,7 +31,7 @@ extern uint32_t SystemCoreClock;
 /* Memory allocation */
 #define configSUPPORT_STATIC_ALLOCATION          1  ///< Поддержка статического выделения памяти
 #define configSUPPORT_DYNAMIC_ALLOCATION         1  ///< Поддержка динамического выделения памяти
-#define configTOTAL_HEAP_SIZE                    ((size_t)16 * 1024)  ///< Общий размер кучи (байт)
+#define configTOTAL_HEAP_SIZE                    ((size_t)32 * 1024)  ///< Общий размер кучи (байт)
 
 /* Queue registry */
 #define configQUEUE_REGISTRY_SIZE                8  ///< Для vQueueAddToRegistry() (назначение имён очередям/семафорам)
@@ -129,7 +129,7 @@ extern uint32_t GetRuntimeCounterValue(void);
 #define INCLUDE_xTaskAbortDelay                0
 #define INCLUDE_xTaskGetHandle                 1
 
-#define configCOMMAND_INT_MAX_OUTPUT_SIZE 256
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE 512
 #define configAPPLICATION_PROVIDES_cOutputBuffer 0
 
 #endif /* FREERTOS_CONFIG_H */
