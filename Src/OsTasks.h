@@ -16,6 +16,7 @@
 
 #include "FatFsWrapper.hpp"
 #include "ESG.hpp"
+#include "gpio_cfg.h"
 
 #include "FreeRTOS_CLI.h"
 #include "Commands.h"
@@ -36,7 +37,6 @@ extern TaskHandle_t LvglTaskHandle;
 extern TaskHandle_t UartTaskHandle;
 extern TaskHandle_t TwiTaskHandle;
 extern TaskHandle_t Task4Handle;
-extern TaskHandle_t cliTaskHandle;
 
 /**
  * @brief Функция инициализации FreeRTOS ресурсов (заадчи, очереди, семафоры и т.д.)
