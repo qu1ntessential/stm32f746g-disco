@@ -20,11 +20,15 @@ extern "C" {
 #include "task.h"
 #include "FreeRTOS_CLI.h"
 
+//#include "DFPlayer.hpp"
+
 #define LED_GPIO_Port GPIOI
 #define LED_Pin       GPIO_PIN_13
 
 #define UART_CLI_TASK_STACK_SIZE 1024
 
+extern const CLI_Command_Definition_t xClearCommand;
+extern const CLI_Command_Definition_t xResetCommand;
 extern const CLI_Command_Definition_t xGpioCommand;
 extern const CLI_Command_Definition_t xTasksCommand;
 

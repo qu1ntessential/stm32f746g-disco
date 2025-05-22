@@ -4,6 +4,10 @@ TaskHandle_t UartCliTaskHandle = NULL;
 StaticTask_t UartCliTaskBuffer;
 StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
 
+static BaseType_t prvClearCommand(char *pcWriteBuffer,
+                                  size_t xWriteBufferLen,
+                                  const char *pcCommandString);
+
 static BaseType_t prvResetCommand(char *pcWriteBuffer,
                                   size_t xWriteBufferLen,
                                   const char *pcCommandString);
@@ -16,9 +20,20 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer,
                                   size_t xWriteBufferLen,
                                   const char *pcCommandString);
 
+static BaseType_t prvDfpCommand(char *pcWriteBuffer,
+                                size_t xWriteBufferLen,
+                                const char *pcCommandString);
+
+const CLI_Command_Definition_t xClearCommand = {
+        "clear",
+        "clear:\r\n\tClears the entire display\r\n\n",
+        prvClearCommand,
+        0
+};
+
 const CLI_Command_Definition_t xResetCommand = {
         "reset",
-        "reset:\r\n\tPerform a software reset of the MCU.\r\n\n",
+        "reset:\r\n\tPerform a software reset of the MCU\r\n\n",
         prvResetCommand,
         0
 };
@@ -38,6 +53,19 @@ const CLI_Command_Definition_t xTasksCommand = {
         "\tStates: R-Running, Y-Ready, B-Blocked, S-Suspended, D-Deleted\r\n\n",
         prvTasksCommand,
         0 // Без параметров
+};
+
+const CLI_Command_Definition_t xDfpCommand = {
+        "dfp", // Имя команды
+        "dfp:\r\n\tDFPlayer control commands:\r\n"
+        "\tdfp play [0..999]\r\n"
+        "\tdfp volume [0..15]\r\n"
+        "\tdfp next\r\n"
+        "\tdfp prev\r\n"
+        "\tdfp pause\r\n"
+        "\tdfp resume\r\n\n",
+        prvDfpCommand,
+        -1
 };
 
 static GPIO_TypeDef *get_gpio_port(char portChar) {
@@ -63,6 +91,14 @@ static GPIO_TypeDef *get_gpio_port(char portChar) {
         default:
             return NULL;
     }
+}
+
+static BaseType_t prvClearCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
+    (void) pcCommandString;  // Неиспользуемый параметр
+
+    // Отправляем ANSI-код очистки экрана
+    snprintf(pcWriteBuffer, xWriteBufferLen, "\x1B[2J\x1B[H");
+    return pdFALSE;
 }
 
 static BaseType_t prvResetCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
@@ -186,7 +222,7 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
                     state_str = "Deleted";
                     break;
                 case 'X':
-                    state_str = "Idle";
+                    state_str = "None";
                     break;
                 default:
                     state_str = "Unknown";
@@ -211,6 +247,50 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
 
         // Пропускаем лишние \r или \n
         while (*line == '\r' || *line == '\n') line++;
+    }
+
+    return pdFALSE;
+}
+
+static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
+    BaseType_t xParameterStringLength;
+    const char *pcSubCmd = FreeRTOS_CLIGetParameter(pcCommandString,
+                                                    1,
+                                                    &xParameterStringLength);
+
+    if (pcSubCmd == NULL) {
+        snprintf(pcWriteBuffer,
+                 xWriteBufferLen,
+                 "Error: Missing parameters.\r\n");
+        return pdFALSE;
+    }
+
+    // SubCommand play
+    if (strncmp(pcSubCmd, "play", xParameterStringLength) == 0) {
+        const char *trackNumStr;
+        BaseType_t trackNumLen;
+        int trackNum;
+
+        trackNumStr = FreeRTOS_CLIGetParameter(pcCommandString, 2, &trackNumLen);
+        if (trackNumStr == NULL) {
+            snprintf(pcWriteBuffer, xWriteBufferLen, "ERROR: 'play' requires track number\r\n");
+            return pdFALSE;
+        }
+
+        trackNum = atoi(trackNumStr);
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Playing track %d\r\n", trackNum);
+    } else if (strncmp(pcSubCmd, "volume", xParameterStringLength) == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Skipping to next track\r\n");
+    } else if (strncmp(pcSubCmd, "next", xParameterStringLength) == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Skipping to next track\r\n");
+    } else if (strncmp(pcSubCmd, "prev", xParameterStringLength) == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Return to previous track\r\n");
+    } else if (strncmp(pcSubCmd, "pause", xParameterStringLength) == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "The track has been stopped\r\n");
+    } else if (strncmp(pcSubCmd, "resume", xParameterStringLength) == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "The track has been resumed\r\n");
+    } else {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Invalid subcommand\r\n");
     }
 
     return pdFALSE;
@@ -286,6 +366,10 @@ void UartCliThread(void *argument) {
 }
 
 void UART_CLI_Init(void) {
+    if (FreeRTOS_CLIRegisterCommand(&xClearCommand) != pdPASS) {
+        print_log(ERROR_LOG, "Failed to register xClearCommand\r\n");
+    }
+
     if (FreeRTOS_CLIRegisterCommand(&xResetCommand) != pdPASS) {
         print_log(ERROR_LOG, "Failed to register xResetCommand\r\n");
     }
@@ -296,6 +380,10 @@ void UART_CLI_Init(void) {
 
     if (FreeRTOS_CLIRegisterCommand(&xTasksCommand) != pdPASS) {
         print_log(ERROR_LOG, "Failed to register xTasksCommand\r\n");
+    }
+
+    if (FreeRTOS_CLIRegisterCommand(&xDfpCommand) != pdPASS) {
+        print_log(ERROR_LOG, "Failed to register xDfpCommand\r\n");
     }
 
     UartCliTaskHandle = xTaskCreateStatic(UartCliThread,

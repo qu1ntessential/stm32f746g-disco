@@ -101,7 +101,7 @@ void UartThread(void *argument) {
     while (1) {
         uint8_t ch;
         if (xQueueReceive(uartQueue, &ch, portMAX_DELAY) == pdTRUE) {
-            HAL_UART_Transmit(&huart1, &ch, 1, HAL_MAX_DELAY);
+            HAL_UART_Transmit(&huart1, &ch, 1, 100);
         }
     }
 }
