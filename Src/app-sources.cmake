@@ -18,7 +18,7 @@ file(GLOB_RECURSE SOURCES
 
 # Исключаем указанные файлы
 set(EXCLUDE_FILES
-        ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
 )
 
 foreach (file ${EXCLUDE_FILES})

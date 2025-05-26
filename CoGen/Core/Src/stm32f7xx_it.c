@@ -41,7 +41,19 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+// Структура для дампа регистров при падении
+typedef struct {
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;  // LR перед падением
+    uint32_t pc;  // PC (адрес сбоя)
+    uint32_t psr; // PSR (флаги процессора)
+} HardFaultRegisters;
 
+volatile HardFaultRegisters fault_regs;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,16 +98,36 @@ void NMI_Handler(void)
 /**
   * @brief This function handles Hard fault interrupt.
   */
-void HardFault_Handler(void)
-{
-  /* USER CODE BEGIN HardFault_IRQn 0 */
+__attribute__((naked)) void HardFault_Handler(void) {
+    __asm volatile(
+            "TST LR, #4\n"
+            "ITE EQ\n"
+            "MRSEQ R0, MSP\n"
+            "MRSNE R0, PSP\n"
+            "B HardFault_Handler_C\n" // Переход на C-обработчик
+            );
+}
 
-  /* USER CODE END HardFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
-  }
+void HardFault_Handler_C(uint32_t *stack_frame) {
+    // Дамп регистров из стека
+    uint32_t r0 = stack_frame[0];
+    uint32_t r1 = stack_frame[1];
+    uint32_t r2 = stack_frame[2];
+    uint32_t r3 = stack_frame[3];
+    uint32_t r12 = stack_frame[4];
+    uint32_t lr = stack_frame[5];
+    uint32_t pc = stack_frame[6];
+    uint32_t psr = stack_frame[7];
+
+    // Анализ причины HardFault
+    uint32_t hfsr = SCB->HFSR;
+    uint32_t cfsr = SCB->CFSR;
+    uint32_t mmfar = SCB->MMFAR;
+    uint32_t bfar = SCB->BFAR;
+
+    while (1) {
+        __asm("BKPT #0");
+    }
 }
 
 /**

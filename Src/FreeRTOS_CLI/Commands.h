@@ -27,15 +27,6 @@ extern "C" {
 
 #define UART_CLI_TASK_STACK_SIZE 1024
 
-extern const CLI_Command_Definition_t xClearCommand;
-extern const CLI_Command_Definition_t xResetCommand;
-extern const CLI_Command_Definition_t xGpioCommand;
-extern const CLI_Command_Definition_t xTasksCommand;
-
-extern TaskHandle_t UartCliTaskHandle;
-extern StaticTask_t UartCliTaskBuffer;
-extern StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
-
 /**
  * @brief Задача FreeRTOS, обрабатывающая UART CLI
  * @param argument

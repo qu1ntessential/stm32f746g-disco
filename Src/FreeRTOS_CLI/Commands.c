@@ -1,8 +1,8 @@
 #include "Commands.h"
 
-TaskHandle_t UartCliTaskHandle = NULL;
-StaticTask_t UartCliTaskBuffer;
-StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
+static TaskHandle_t UartCliTaskHandle = NULL;
+static StaticTask_t UartCliTaskBuffer;
+static StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
 
 static BaseType_t prvClearCommand(char *pcWriteBuffer,
                                   size_t xWriteBufferLen,
@@ -24,21 +24,25 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer,
                                 size_t xWriteBufferLen,
                                 const char *pcCommandString);
 
-const CLI_Command_Definition_t xClearCommand = {
+static BaseType_t prvFlashCommand(char *pcWriteBuffer,
+                                size_t xWriteBufferLen,
+                                const char *pcCommandString);
+
+static const CLI_Command_Definition_t xClearCommand = {
         "clear",
         "clear:\r\n\tClears the entire display\r\n\n",
         prvClearCommand,
         0
 };
 
-const CLI_Command_Definition_t xResetCommand = {
+static const CLI_Command_Definition_t xResetCommand = {
         "reset",
         "reset:\r\n\tPerform a software reset of the MCU\r\n\n",
         prvResetCommand,
         0
 };
 
-const CLI_Command_Definition_t xGpioCommand = {
+static const CLI_Command_Definition_t xGpioCommand = {
         "gpio",                            // Имя команды (должно быть в нижнем регистре)
         "gpio:\r\n\t"
         "gpio [A..I] [0..15] [set/reset/read]\r\n\n", // Справка
@@ -46,7 +50,7 @@ const CLI_Command_Definition_t xGpioCommand = {
         3                     // Ожидаемое количество параметров
 };
 
-const CLI_Command_Definition_t xTasksCommand = {
+static const CLI_Command_Definition_t xTasksCommand = {
         "tasks", // Имя команды
         "tasks:\r\n\tList all running tasks\r\n"
         "\tFormat: <Name> <State> <Priority> <Runtime>\r\n"
@@ -55,7 +59,7 @@ const CLI_Command_Definition_t xTasksCommand = {
         0 // Без параметров
 };
 
-const CLI_Command_Definition_t xDfpCommand = {
+static const CLI_Command_Definition_t xDfpCommand = {
         "dfp", // Имя команды
         "dfp:\r\n\tDFPlayer control commands:\r\n"
         "\tdfp play [0..999]\r\n"
@@ -66,6 +70,13 @@ const CLI_Command_Definition_t xDfpCommand = {
         "\tdfp resume\r\n\n",
         prvDfpCommand,
         -1
+};
+
+static const CLI_Command_Definition_t xFlashCommand = {
+        "flash", // Имя команды
+        "flash:\r\n\tShow flash data\r\n",
+        prvFlashCommand,
+        1
 };
 
 static GPIO_TypeDef *get_gpio_port(char portChar) {
@@ -296,6 +307,10 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, con
     return pdFALSE;
 }
 
+static BaseType_t prvFlashCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
+    return pdFALSE;
+}
+
 void UartCliThread(void *argument) {
     char input_buffer[128] = {0};
     char output_buffer[configCOMMAND_INT_MAX_OUTPUT_SIZE] = {0};
@@ -307,7 +322,7 @@ void UartCliThread(void *argument) {
 
     while (1) {
         uint8_t c;
-        if (HAL_UART_Receive(&huart1, &c, 1, portMAX_DELAY) == HAL_OK) {
+        if (HAL_UART_Receive(&huart1, &c, 1, 100) == HAL_OK) {
             if (echo && isprint(c)) {
                 iprintf("%c", c);
                 fflush(stdout);
@@ -384,6 +399,10 @@ void UART_CLI_Init(void) {
 
     if (FreeRTOS_CLIRegisterCommand(&xDfpCommand) != pdPASS) {
         print_log(ERROR_LOG, "Failed to register xDfpCommand\r\n");
+    }
+
+    if (FreeRTOS_CLIRegisterCommand(&xFlashCommand) != pdPASS) {
+        print_log(ERROR_LOG, "Failed to register xFlashCommand\r\n");
     }
 
     UartCliTaskHandle = xTaskCreateStatic(UartCliThread,

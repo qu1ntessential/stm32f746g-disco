@@ -16,6 +16,7 @@
 
 #include "FatFsWrapper.hpp"
 #include "ESG.hpp"
+#include "QSPI.hpp"
 #include "gpio_cfg.h"
 
 #include "FreeRTOS_CLI.h"

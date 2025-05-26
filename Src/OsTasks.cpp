@@ -11,6 +11,9 @@
 extern FatFsWrapper uSD;
 extern ESG ESG15;
 
+extern QSPI_HandleTypeDef QSPIHandle;
+QSPI extFlash(&QSPIHandle);
+
 TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t UartTaskHandle = nullptr;
 TaskHandle_t TwiTaskHandle = nullptr;
@@ -128,6 +131,8 @@ void TwiThread(void *argument) {
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
+    extFlash.Init();
+    extFlash.getInfo();
     while (true) {
         BSP_LED_Toggle(LED_GREEN);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));

@@ -73,7 +73,8 @@ MEMORY
     /* Internal Flash
        0x08000000 - 0x080FFFFF */
     FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
-    /* External QSPIFLASH W25Q128JV: 16Mb */
+    /* External QSPIFLASH W25Q128JV: 16Mb
+       0x90000000 - 0x91000000 */
     QSPIFLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 16M             /* External QSPI Flash */
     /* External SDRAM IS42S32400F-6BL: 1Mb x 32 x 4 Banks (used DQ[15..0])
        0xD0000000 - 0xD07FFFFF */
