@@ -77,12 +77,19 @@ extern void action_pause_twi(lv_event_t *e) {
     pause_flag = !pause_flag;
 
     if (pause_flag) {
-        lv_label_set_text(objects.label_pause_twi,"PAUSE");
+        lv_label_set_text(objects.label_pause_twi, "PAUSE");
         lv_obj_add_state(objects.btn_pause_twi, LV_STATE_CHECKED);
         vTaskSuspend(TwiTaskHandle);
     } else {
-        lv_label_set_text(objects.label_pause_twi,"RUN");
+        lv_label_set_text(objects.label_pause_twi, "RUN");
         lv_obj_remove_state(objects.btn_pause_twi, LV_STATE_CHECKED);
         vTaskResume(TwiTaskHandle);
     }
+}
+
+extern void action_test(lv_event_t *e) {
+    lv_obj_t *img = lv_img_create(lv_scr_act()); ///< Создаём объект изображения
+    lv_img_set_src(img, "A:/1.bmp");            ///< Путь к файлу на SD-карте
+    lv_refr_now(NULL);
+    lv_obj_set_pos(img, 0, 0);                ///< Устанавливаем координаты
 }

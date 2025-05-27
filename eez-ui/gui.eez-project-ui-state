@@ -1,7 +1,7 @@
 {
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/1",
-    "selectedActionObject": "[gui.eez-project]:/actions/11",
+    "selectedActionObject": "[gui.eez-project]:/actions/16",
     "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/14",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
     "subnavigationSelectedItems": {
@@ -127,7 +127,8 @@
                 {
                   "type": "tabset",
                   "id": "#7532da9e-7b2d-4e87-878c-c89e8c1387f1",
-                  "weight": 0.7281548341367816,
+                  "weight": 1.419902736378013,
+                  "selected": 1,
                   "enableClose": false,
                   "children": [
                     {
@@ -159,7 +160,7 @@
                 {
                   "type": "tabset",
                   "id": "#ec303920-eec0-478b-9b39-483fa384d9f0",
-                  "weight": 1.1978158005913437,
+                  "weight": 0.5060678983501123,
                   "enableClose": false,
                   "children": [
                     {
@@ -1051,12 +1052,13 @@
           "0": {},
           "2": {},
           "4": {},
-          "5": {}
+          "5": {},
+          "7": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -256.9249999999996,
+          "x": -254.9249999999996,
           "y": -149
         },
         "scale": 1.1

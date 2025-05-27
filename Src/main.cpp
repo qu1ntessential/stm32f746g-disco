@@ -3,8 +3,8 @@
 extern "C" void SystemClock_Config(void);
 extern "C" void PeriphCommonClock_Config(void);
 
-//extern const Diskio_drvTypeDef SD_Driver;
-//FatFsWrapper uSD(&SD_Driver);
+extern const Diskio_drvTypeDef SD_Driver;
+FatFsWrapper uSD(&SD_Driver);
 
 I2C twi1(&hi2c1);
 ESG ESG15(&twi1);
@@ -26,12 +26,12 @@ int main() {
     twi1.Init();
 
     ESG15.Init();
-    //uSD.Init();
+    uSD.Init();
 
     lv_init();
     tft_init();
     touchpad_init();
-    //lv_fs_fatfs_init();
+    lv_fs_fatfs_init();
     ui_init();
     //ESG15.syncUI();
 
