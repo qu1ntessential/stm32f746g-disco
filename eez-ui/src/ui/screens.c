@@ -420,6 +420,28 @@ void create_screen_main() {
                 }
             }
         }
+        {
+            // btn_test
+            lv_obj_t *obj = lv_btn_create(parent_obj);
+            objects.btn_test = obj;
+            lv_obj_set_pos(obj, 111, 1);
+            lv_obj_set_size(obj, 120, 40);
+            lv_obj_add_event_cb(obj, action_test, LV_EVENT_CLICKED, (void *)0);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    // label_rtn_2
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_rtn_2 = obj;
+                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_label_set_text(obj, "TEST");
+                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+                }
+            }
+        }
     }
     
     tick_screen_main();
@@ -675,28 +697,6 @@ void create_screen_settings() {
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_text(obj, "");
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
-        {
-            // btn_test
-            lv_obj_t *obj = lv_btn_create(parent_obj);
-            objects.btn_test = obj;
-            lv_obj_set_pos(obj, 320, 10);
-            lv_obj_set_size(obj, 120, 40);
-            lv_obj_add_event_cb(obj, action_test, LV_EVENT_CLICKED, (void *)0);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
-            {
-                lv_obj_t *parent_obj = obj;
-                {
-                    // label_rtn_1
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_rtn_1 = obj;
-                    lv_obj_set_pos(obj, 0, 0);
-                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                    lv_label_set_text(obj, "TEST");
-                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
-                }
-            }
         }
     }
     

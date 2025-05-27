@@ -41,19 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-// Структура для дампа регистров при падении
-typedef struct {
-    uint32_t r0;
-    uint32_t r1;
-    uint32_t r2;
-    uint32_t r3;
-    uint32_t r12;
-    uint32_t lr;  // LR перед падением
-    uint32_t pc;  // PC (адрес сбоя)
-    uint32_t psr; // PSR (флаги процессора)
-} HardFaultRegisters;
 
-volatile HardFaultRegisters fault_regs;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
