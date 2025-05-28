@@ -1,8 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[gui.eez-project]:/userPages/1",
-    "selectedActionObject": "[gui.eez-project]:/actions/16",
-    "selectedGlobalVariableObject": "[gui.eez-project]:/variables/globalVariables/14",
+    "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
@@ -27,7 +25,7 @@
           {
             "type": "border",
             "selected": 2,
-            "size": 463.5,
+            "size": 384.5,
             "location": "right",
             "children": [
               {
@@ -122,13 +120,12 @@
             {
               "type": "row",
               "id": "#74883b04-4f76-4a8a-8f06-fdef6ba7362a",
-              "weight": 21.01257120979052,
+              "weight": 28.14003500308371,
               "children": [
                 {
                   "type": "tabset",
                   "id": "#7532da9e-7b2d-4e87-878c-c89e8c1387f1",
-                  "weight": 1.419902736378013,
-                  "selected": 1,
+                  "weight": 1.0594658879128251,
                   "enableClose": false,
                   "children": [
                     {
@@ -160,7 +157,7 @@
                 {
                   "type": "tabset",
                   "id": "#ec303920-eec0-478b-9b39-483fa384d9f0",
-                  "weight": 0.5060678983501123,
+                  "weight": 1.1213592992924002,
                   "enableClose": false,
                   "children": [
                     {
@@ -176,7 +173,7 @@
                 {
                   "type": "tabset",
                   "id": "#21d88b3d-5410-4e67-bdd1-a7c94d5bbcec",
-                  "weight": 1.0740293652718735,
+                  "weight": 0.819174812794773,
                   "enableClose": false,
                   "children": [
                     {
@@ -194,7 +191,7 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 49.59738469504487,
+              "weight": 42.469920901751664,
               "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
@@ -210,17 +207,6 @@
                     "permanent": false
                   },
                   "icon": "material:settings"
-                },
-                {
-                  "type": "tab",
-                  "id": "#6f22178d-314c-4f9d-961b-72a527c3ba31",
-                  "name": "Settings",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[gui.eez-project]:/userPages/1",
-                    "permanent": false
-                  },
-                  "icon": "svg:page"
                 },
                 {
                   "type": "tab",
@@ -1014,30 +1000,15 @@
     "[gui.eez-project]:/userPages/0[flow-state]": {
       "selection": {
         "0": {
-          "4": {},
-          "5": {},
-          "6": {},
-          "7": {},
-          "9": {},
-          "11": {},
-          "12": {},
-          "13": {},
-          "14": {},
-          "15": {},
-          "16": {
-            "0": {},
-            "$selected": true
-          },
-          "17": {},
-          "23": {}
+          "0": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -280,
-          "y": -212
+          "x": -180.90909090909088,
+          "y": -160.31818181818178
         },
-        "scale": 1.1
+        "scale": 0.9
       },
       "timeline": {
         "isEditorActive": false,
@@ -1052,8 +1023,7 @@
           "0": {},
           "2": {},
           "4": {},
-          "5": {},
-          "7": {}
+          "5": {}
         }
       },
       "transform": {
@@ -1172,6 +1142,6 @@
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
-  "flowZoom": 1.1,
+  "flowZoom": 0.9,
   "implementationLanguage": "C++"
 }

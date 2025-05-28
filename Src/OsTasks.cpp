@@ -1,6 +1,6 @@
 #include "OsTasks.h"
 
-#define LVGL_TASK_STACK_SIZE 1024
+#define LVGL_TASK_STACK_SIZE 2048
 #define UART_TASK_STACK_SIZE 256
 #define TWI_TASK_STACK_SIZE 512
 #define STACK4_SIZE 256
@@ -9,7 +9,6 @@
 #define UART_QUEUE_ITEM_SIZE sizeof(char)
 
 extern FatFsWrapper uSD;
-extern ESG ESG15;
 
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
@@ -89,9 +88,12 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
  */
 void LvglThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
+    uSD.Init();
+    extFlash.Init();
+    lv_fs_fatfs_init();
     while (1) {
-        ui_tick();
         lv_task_handler();
+        ui_tick();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }
@@ -111,28 +113,13 @@ void UartThread(void *argument) {
 
 void TwiThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-    ESG15.setTimeout();
-    ESG15.getStateTwi();
-    if (ESG15.getMonoBiFlag()) {
-        ESG15.setMonoCutPower();
-        ESG15.setMonoMixPower();
-    } else {
-        ESG15.setBiCutPower();
-        ESG15.setBiMixPower();
-    }
-    ESG15.setMonoCoagPower();
-    ESG15.setBiCoagPower();
-    ESG15.syncUI();
     while (1) {
-        ESG15.getStateTwi();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-    extFlash.Init();
-    extFlash.getInfo();
     while (true) {
         BSP_LED_Toggle(LED_GREEN);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
@@ -140,7 +127,7 @@ void Task4Thread(void *argument) {
 }
 
 void FreeRTOS_Resources_Init() {
-    UART_CLI_Init();
+    //UART_CLI_Init();
 
     twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
 
@@ -163,7 +150,7 @@ void FreeRTOS_Resources_Init() {
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
                                        nullptr,
-                                       4,
+                                       5,
                                        LvglTaskStack,
                                        &LvglTaskBuffer);
 

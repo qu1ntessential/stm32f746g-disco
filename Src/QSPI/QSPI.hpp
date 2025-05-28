@@ -28,7 +28,7 @@ public:
 
     void getStatus();
 
-    void getInfo();
+    QSPI_Info getInfo();
 
     void Reset();
 

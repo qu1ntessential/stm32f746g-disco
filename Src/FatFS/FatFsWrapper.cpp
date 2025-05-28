@@ -15,11 +15,7 @@ FatFsWrapper::FatFsWrapper(const Diskio_drvTypeDef *uSD_Driver) :
         m_fileOpen(false),
         m_dirOpen(false),
         m_currentDrive(DEFAULT_DRIVE),
-        m_SD_Driver(uSD_Driver) {
-    snprintf(m_path, sizeof(m_path), "%u:/", m_currentDrive);
-    print_log(DEBUG_LOG, "m_path: %s"
-                         "%u:/", m_path, m_currentDrive);
-}
+        m_SD_Driver(uSD_Driver) {}
 
 /**
  * @brief Деструктор
@@ -56,6 +52,10 @@ FatFsWrapper::~FatFsWrapper() {
  * 5. При необходимости - создание новой ФС и повторное монтирование
  */
 FatFsWrapper::Result FatFsWrapper::Init() {
+    snprintf(m_path, sizeof(m_path), "%u:/", m_currentDrive);
+    print_log(DEBUG_LOG, "m_path: %s\r\n"
+                         "m_currentDrive: %u\r\n", m_path, m_currentDrive);
+
     /// 1. Инициализация SD/MMC карты
     if (BSP_SD_Init() != MSD_OK) {
         m_lastError = Result::DISK_ERR;

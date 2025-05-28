@@ -14,8 +14,8 @@
 #include "semphr.h"
 #include "timers.h"
 
+#include "I2C.hpp"
 #include "FatFsWrapper.hpp"
-#include "ESG.hpp"
 #include "QSPI.hpp"
 #include "gpio_cfg.h"
 
@@ -30,7 +30,6 @@
 #include "lvgl_port_touchpad.h"
 
 #include "ui.h"
-#include "ui_con.h"
 #include "vars.h"
 #include "actions.h"
 

@@ -8,12 +8,12 @@ add_library(${LIBRARY_NAME} STATIC
         src/diskio.c
         src/option/syscall.c
         src/option/unicode.c
-        src/drivers/sd_diskio_dma.c
+        src/customDrivers/sd_diskio_dma.c
 )
 
 target_include_directories(${LIBRARY_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/customDrivers/
 )
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC

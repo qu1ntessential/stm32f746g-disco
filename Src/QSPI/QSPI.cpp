@@ -9,10 +9,10 @@ void QSPI::getStatus() {
 
 }
 
-void QSPI::getInfo() {
+QSPI_Info QSPI::getInfo() {
     QSPI_Info info;
     BSP_QSPI_GetInfo(&info);
-    print_log(ERROR_LOG, "FlashSize: %d", info.FlashSize);
+    return info;
 }
 
 void QSPI::Reset() {
