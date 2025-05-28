@@ -78,8 +78,8 @@ MEMORY
     QSPIFLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 16M             /* External QSPI Flash */
     /* External SDRAM IS42S32400F-6BL: 1Mb x 32 x 4 Banks (used DQ[15..0])
        0xD0000000 - 0xD07FFFFF */
-    SDRAM_DATA (xrw): ORIGIN = 0xC0000000, LENGTH = 8M - 0xFF000    /* External SDRAM */
-    SDRAM_LVGL (xrw): ORIGIN = 0xC0701000, LENGTH = 0xFF000         /* External SDRAM */
+    SDRAM_DATA (xrw): ORIGIN = 0xC0000000, LENGTH = 8M - 0x1FE000  /* External SDRAM */
+    SDRAM_LVGL (xrw): ORIGIN = 0xC0602000, LENGTH = 0x1FE000       /* External SDRAM */
 }
 
 /* Define output sections */

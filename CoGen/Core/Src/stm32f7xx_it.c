@@ -84,41 +84,6 @@ void NMI_Handler(void)
 }
 
 /**
-  * @brief This function handles Hard fault interrupt.
-  */
-__attribute__((naked)) void HardFault_Handler(void) {
-    __asm volatile(
-            "TST LR, #4\n"
-            "ITE EQ\n"
-            "MRSEQ R0, MSP\n"
-            "MRSNE R0, PSP\n"
-            "B HardFault_Handler_C\n" // Переход на C-обработчик
-            );
-}
-
-void HardFault_Handler_C(uint32_t *stack_frame) {
-    // Дамп регистров из стека
-    uint32_t r0 = stack_frame[0];
-    uint32_t r1 = stack_frame[1];
-    uint32_t r2 = stack_frame[2];
-    uint32_t r3 = stack_frame[3];
-    uint32_t r12 = stack_frame[4];
-    uint32_t lr = stack_frame[5];
-    uint32_t pc = stack_frame[6];
-    uint32_t psr = stack_frame[7];
-
-    // Анализ причины HardFault
-    uint32_t hfsr = SCB->HFSR;
-    uint32_t cfsr = SCB->CFSR;
-    uint32_t mmfar = SCB->MMFAR;
-    uint32_t bfar = SCB->BFAR;
-
-    while (1) {
-        __asm("BKPT #0");
-    }
-}
-
-/**
   * @brief This function handles Memory management fault.
   */
 void MemManage_Handler(void)
@@ -288,5 +253,37 @@ void DMA2_Stream6_IRQHandler(void) {
 */
 void DMA2_Stream3_IRQHandler(void) {
     HAL_DMA_IRQHandler(uSdHandle.hdmarx);
+}
+
+__attribute__((naked)) void HardFault_Handler(void) {
+    __asm volatile(
+            "TST LR, #4\n"
+            "ITE EQ\n"
+            "MRSEQ R0, MSP\n"
+            "MRSNE R0, PSP\n"
+            "B HardFault_Handler_C\n" // Переход на C-обработчик
+            );
+}
+
+void HardFault_Handler_C(uint32_t *stack_frame) {
+    // Дамп регистров из стека
+    uint32_t r0 = stack_frame[0];
+    uint32_t r1 = stack_frame[1];
+    uint32_t r2 = stack_frame[2];
+    uint32_t r3 = stack_frame[3];
+    uint32_t r12 = stack_frame[4];
+    uint32_t lr = stack_frame[5];
+    uint32_t pc = stack_frame[6];
+    uint32_t psr = stack_frame[7];
+
+    // Анализ причины HardFault
+    uint32_t hfsr = SCB->HFSR;
+    uint32_t cfsr = SCB->CFSR;
+    uint32_t mmfar = SCB->MMFAR;
+    uint32_t bfar = SCB->BFAR;
+
+    while (1) {
+        __asm("BKPT #0");
+    }
 }
 /* USER CODE END 1 */
