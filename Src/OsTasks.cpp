@@ -186,7 +186,7 @@ void FreeRTOS_Resources_Init() {
                                     "Task4",
                                     STACK4_SIZE,
                                     nullptr,
-                                    2,
+                                    5,
                                     Stack4,
                                     &Task4Buffer);
 

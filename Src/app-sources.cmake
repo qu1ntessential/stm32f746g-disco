@@ -9,7 +9,6 @@ file(GLOB_RECURSE SOURCES
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/i2c.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/tim.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/ltdc.c
-        ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/dma2d.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/stm32f7xx_hal_msp.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/stm32f7xx_hal_timebase_tim.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/syscalls.c

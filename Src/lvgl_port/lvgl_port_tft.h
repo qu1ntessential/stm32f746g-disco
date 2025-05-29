@@ -21,6 +21,8 @@ extern "C" {
 #define TFT_HOR_RES 480
 #define TFT_VER_RES 272
 
+#define MY_FB_SECTION __attribute__((section(".lvgl_buffer"), aligned(8)))
+
 void tft_init(void);
 
 #ifdef __cplusplus
