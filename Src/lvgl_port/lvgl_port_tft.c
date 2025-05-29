@@ -1,8 +1,3 @@
-/*
- * lvgl_port_tft.c — порт для LVGL с поддержкой LTDC и DMA2D (STM32)
- * Обновлено: поддержка LV_COLOR_DEPTH == 32 (ARGB8888) и DMA2D с колбэками через поля hdma2d.XferCpltCallback
- */
-
 #include "lvgl.h"
 #include "lvgl_port_tft.h"
 #include "stm32f7xx_hal.h"
@@ -26,8 +21,6 @@ static lv_display_t *disp_to_flush;
 static DMA2D_HandleTypeDef hdma2d;
 
 static void flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map);
-
-static void start_dma2d_line(void);
 
 static void dma2d_init(void);
 
@@ -62,30 +55,19 @@ void tft_init(void) {
 }
 
 static void flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
-    x1_flush = LV_CLAMP(0, area->x1, TFT_HOR_RES - 1);
-    x2_flush = LV_CLAMP(0, area->x2, TFT_HOR_RES - 1);
-    y1_flush = LV_CLAMP(0, area->y1, TFT_VER_RES - 1);
-    y2_fill = LV_CLAMP(0, area->y2, TFT_VER_RES - 1);
-    y_fill_act = y1_flush;
+    int32_t x1 = LV_CLAMP(area->x1, 0, TFT_HOR_RES - 1);
+    int32_t x2 = LV_CLAMP(area->x2, 0, TFT_HOR_RES - 1);
+    int32_t y1 = LV_CLAMP(area->y1, 0, TFT_VER_RES - 1);
+    int32_t y2 = LV_CLAMP(area->y2, 0, TFT_VER_RES - 1);
 
-    area_to_flush = area;
-    buf_to_flush = (const lv_color32_t *) px_map;
-    disp_to_flush = disp;
+    uint32_t width = x2 - x1 + 1;
+    uint32_t height = y2 - y1 + 1;
 
-    start_dma2d_line();
-}
+    const uint32_t *src = (const uint32_t *)px_map;
+    uint32_t *dst = &my_fb[y1 * TFT_HOR_RES + x1];
 
-static void start_dma2d_line(void) {
-    if (y_fill_act > y2_fill) {
-        lv_disp_flush_ready(disp_to_flush);
-        return;
-    }
-
-    uint32_t width = x2_flush - x1_flush + 1;
-    const uint32_t *src = (const uint32_t *) buf_to_flush;
-    uint32_t *dst = &my_fb[y_fill_act * TFT_HOR_RES + x1_flush];
-
-    SCB_CleanDCache_by_Addr((uint32_t *) src, width * sizeof(uint32_t));
+    // Очистка кэша
+    SCB_CleanDCache_by_Addr((uint32_t *) src, width * height * sizeof(uint32_t));
 
     HAL_DMA2D_DeInit(&hdma2d);
     hdma2d.Instance = DMA2D;
@@ -101,20 +83,22 @@ static void start_dma2d_line(void) {
     HAL_DMA2D_Init(&hdma2d);
     HAL_DMA2D_ConfigLayer(&hdma2d, 1);
 
+    // Запуск DMA2D с прерыванием на весь прямоугольник
     HAL_DMA2D_RegisterCallback(&hdma2d, HAL_DMA2D_TRANSFERCOMPLETE_CB_ID, MyDMA2D_TransferCompleteCallback);
     HAL_DMA2D_RegisterCallback(&hdma2d, HAL_DMA2D_TRANSFERERROR_CB_ID, MyDMA2D_TransferErrorCallback);
 
-    HAL_DMA2D_Start_IT(&hdma2d, (uint32_t) src, (uint32_t) dst, width, 1);
+    HAL_DMA2D_Start_IT(&hdma2d, (uint32_t) src, (uint32_t) dst, width, height);
+
+    // Сохраняй display и area для передачи в callback, если нужно
+    disp_to_flush = disp;
 }
 
 static void MyDMA2D_TransferCompleteCallback(DMA2D_HandleTypeDef *hdma2d) {
-    y_fill_act++;
-    buf_to_flush += (x2_flush - x1_flush + 1);
-    start_dma2d_line();
+    lv_disp_flush_ready(disp_to_flush);
 }
 
 static void MyDMA2D_TransferErrorCallback(DMA2D_HandleTypeDef *hdma2d) {
-    while (1); // Остановка на ошибке DMA2D
+    while (1);
 }
 
 static void dma2d_init(void) {

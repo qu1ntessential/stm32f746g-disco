@@ -12,11 +12,8 @@ extern "C" {
 #include "lvgl.h"
 
 #include "stm32f7xx.h"
-#include "stm32746g_discovery.h"
 #include "stm32746g_discovery_lcd.h"
-#include "stm32746g_discovery_sdram.h"
 #include "stm32746g_discovery_ts.h"
-#include "rk043fn48h.h"
 
 #define TFT_HOR_RES 480
 #define TFT_VER_RES 272
