@@ -31,6 +31,7 @@ int main() {
 
     ConfigureTimerForRunTimeStats();
     FreeRTOS_Resources_Init();
+    MX_IWDG_Init();
     vTaskStartScheduler();
 
     while (1) {}

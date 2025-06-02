@@ -9,7 +9,7 @@
 #define MY_FB_SECTION __attribute__((section(".lvgl_buffer"), aligned(8)))
 
 static lv_display_t *display;
-uint32_t my_fb[TFT_HOR_RES * TFT_VER_RES] MY_FB_SECTION;
+static uint32_t my_fb[TFT_HOR_RES * TFT_VER_RES] MY_FB_SECTION;
 
 static lv_display_t *disp_to_flush;
 

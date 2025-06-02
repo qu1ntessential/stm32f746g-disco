@@ -27,6 +27,9 @@ extern "C" {
 
 #define UART_CLI_TASK_STACK_SIZE 1024
 
+extern TaskHandle_t UartCliTaskHandle;
+extern volatile uint8_t UartCliAlive;
+
 /**
  * @brief Задача FreeRTOS, обрабатывающая UART CLI
  * @param argument

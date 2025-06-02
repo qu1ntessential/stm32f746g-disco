@@ -25,6 +25,7 @@
 #include "dcmi.h"
 #include "eth.h"
 #include "i2c.h"
+#include "iwdg.h"
 #include "ltdc.h"
 #include "quadspi.h"
 #include "rtc.h"

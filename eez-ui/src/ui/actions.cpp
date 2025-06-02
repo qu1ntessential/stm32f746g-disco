@@ -4,7 +4,6 @@
 #include "OsTasks.h"
 
 extern FatFsWrapper uSD;
-extern uint32_t my_fb[TFT_HOR_RES * TFT_VER_RES];
 
 extern void action_test_sd(lv_event_t *e) {
     lv_obj_clean(lv_scr_act());

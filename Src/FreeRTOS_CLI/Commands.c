@@ -1,8 +1,10 @@
 #include "Commands.h"
 
-static TaskHandle_t UartCliTaskHandle = NULL;
+TaskHandle_t UartCliTaskHandle = NULL;
 static StaticTask_t UartCliTaskBuffer;
 static StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
+
+volatile uint8_t UartCliAlive = 0;
 
 static BaseType_t prvClearCommand(char *pcWriteBuffer,
                                   size_t xWriteBufferLen,
@@ -377,6 +379,7 @@ void UartCliThread(void *argument) {
                 input_buffer[input_index++] = c;
             }
         }
+        UartCliAlive = 1;
     }
 }
 

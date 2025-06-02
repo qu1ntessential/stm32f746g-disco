@@ -22,7 +22,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TIME_SLICING                   1  ///< Включает квантование времени для задач с одинаковым приоритетом
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1  ///< Оптимизированный алгоритм выбора задач (использует CLZ на Cortex-M)
 #define configMAX_PRIORITIES                     7  ///< Число приоритетов задач (0 - самый низкий)
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)256)  ///< Размер стека idle-задачи (в словах)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)128)  ///< Размер стека idle-задачи (в словах)
 #define configMAX_TASK_NAME_LEN                  16  ///< Макс. длина имени задачи (с NULL-терминатором)
 
 /* TickType_t width */

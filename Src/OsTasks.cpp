@@ -1,5 +1,6 @@
 #include "OsTasks.h"
 
+#define WATCHDOG_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define LVGL_TASK_STACK_SIZE 2048
 #define UART_TASK_STACK_SIZE 256
 #define TWI_TASK_STACK_SIZE 512
@@ -13,6 +14,7 @@ extern FatFsWrapper uSD;
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
 
+TaskHandle_t WatchdogTaskHandle = nullptr;
 TaskHandle_t LvglTaskHandle = nullptr;
 TaskHandle_t UartTaskHandle = nullptr;
 TaskHandle_t TwiTaskHandle = nullptr;
@@ -24,6 +26,9 @@ static StaticSemaphore_t twiSemaphoreBuffer;
 QueueHandle_t uartQueue = nullptr;
 static StaticQueue_t xUartQueueStruct;
 static uint8_t ucUartQueueStorageArea[UART_QUEUE_LENGTH * UART_QUEUE_ITEM_SIZE];
+
+StaticTask_t WatchdogTaskBuffer;
+StackType_t WatchdogTaskStack[WATCHDOG_TASK_STACK_SIZE];
 
 StaticTask_t LvglTaskBuffer;
 StackType_t LvglTaskStack[LVGL_TASK_STACK_SIZE];
@@ -80,6 +85,38 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
 }
 */
 
+#define MAX_MISSED_CYCLES 2
+#define WDG_CHECK_INTERVAL_MS 500
+
+volatile uint8_t LvglTaskAlive = 0;
+extern volatile uint8_t UartCliAlive;
+
+/**
+ * @brief Поток для перезагрузки Watchdog таймера
+ * @param argument
+ */
+void WatchdogThread(void *argument) {
+    portTickType xLastWakeTime = xTaskGetTickCount();
+    for (;;) {
+        BaseType_t  all_tasks_alive = 1;
+
+        if (!LvglTaskAlive || !UartCliAlive) {
+            all_tasks_alive = 0;
+        }
+
+        if (all_tasks_alive) {
+            HAL_IWDG_Refresh(&hiwdg);
+        } else {
+            // Индикация ошибки
+        }
+
+        LvglTaskAlive = 0;
+        UartCliAlive = 0;
+
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(500));
+    }
+}
+
 /**
  * @brief Поток для обработки UI (задача с периодом 5 мс)
  * @note LVGL не является потокобезопасной библиотекой!
@@ -94,6 +131,7 @@ void LvglThread(void *argument) {
     while (1) {
         lv_task_handler();
         ui_tick();
+        LvglTaskAlive = 1;
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }
@@ -127,7 +165,7 @@ void Task4Thread(void *argument) {
 }
 
 void FreeRTOS_Resources_Init() {
-    //UART_CLI_Init();
+    UART_CLI_Init();
 
     twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
 
@@ -146,6 +184,18 @@ void FreeRTOS_Resources_Init() {
         vQueueAddToRegistry(uartQueue, "uartQueue");
     }
 
+    WatchdogTaskHandle = xTaskCreateStatic(WatchdogThread,
+                                           "Task for Watchdog Timer",
+                                           WATCHDOG_TASK_STACK_SIZE,
+                                           nullptr,
+                                           4,
+                                           WatchdogTaskStack,
+                                           &WatchdogTaskBuffer);
+
+    if (WatchdogTaskHandle == nullptr) {
+        print_log(ERROR_LOG, "Error creating WatchdogTask\r\n");
+    }
+
     LvglTaskHandle = xTaskCreateStatic(LvglThread,
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
@@ -155,7 +205,7 @@ void FreeRTOS_Resources_Init() {
                                        &LvglTaskBuffer);
 
     if (LvglTaskHandle == nullptr) {
-        print_log(ERROR_LOG, "Error creating Task1\r\n");
+        print_log(ERROR_LOG, "Error creating LvglTask\r\n");
     }
 
     UartTaskHandle = xTaskCreateStatic(UartThread,
@@ -167,7 +217,7 @@ void FreeRTOS_Resources_Init() {
                                        &UartTaskBuffer);
 
     if (UartTaskHandle == nullptr) {
-        print_log(ERROR_LOG, "Error creating Task2\r\n");
+        print_log(ERROR_LOG, "Error creating UartTask\r\n");
     }
 
     TwiTaskHandle = xTaskCreateStatic(TwiThread,
@@ -179,7 +229,7 @@ void FreeRTOS_Resources_Init() {
                                       &TwiTaskBuffer);
 
     if (TwiTaskHandle == nullptr) {
-        print_log(ERROR_LOG, "Error creating Task3\r\n");
+        print_log(ERROR_LOG, "Error creating TwiTask\r\n");
     }
 
     Task4Handle = xTaskCreateStatic(Task4Thread,

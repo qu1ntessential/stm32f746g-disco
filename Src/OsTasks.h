@@ -6,6 +6,7 @@
 #include "usart.h"
 #include "i2c.h"
 #include "tim.h"
+#include "iwdg.h"
 #include "uart_log.h"
 
 #include "FreeRTOS.h"
@@ -33,6 +34,7 @@
 #include "vars.h"
 #include "actions.h"
 
+extern TaskHandle_t WatchdogTaskHandle;
 extern TaskHandle_t LvglTaskHandle;
 extern TaskHandle_t UartTaskHandle;
 extern TaskHandle_t TwiTaskHandle;
