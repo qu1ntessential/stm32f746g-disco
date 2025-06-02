@@ -23,6 +23,8 @@ int main() {
     MX_USART6_UART_Init();
     MX_I2C1_Init();
     twi1.Init();
+    BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 80, 44100);
+    BSP_AUDIO_OUT_Play((uint16_t *) audio_file, audio_file_size);
 
     lv_init();
     tft_init();
@@ -31,7 +33,6 @@ int main() {
 
     ConfigureTimerForRunTimeStats();
     FreeRTOS_Resources_Init();
-    MX_IWDG_Init();
     vTaskStartScheduler();
 
     while (1) {}

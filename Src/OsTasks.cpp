@@ -97,6 +97,7 @@ extern volatile uint8_t UartCliAlive;
  */
 void WatchdogThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
+    MX_IWDG_Init();
     for (;;) {
         BaseType_t  all_tasks_alive = 1;
 

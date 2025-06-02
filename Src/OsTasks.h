@@ -18,13 +18,13 @@
 #include "I2C.hpp"
 #include "FatFsWrapper.hpp"
 #include "QSPI.hpp"
-#include "gpio_cfg.h"
 
 #include "FreeRTOS_CLI.h"
 #include "Commands.h"
 
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_sd.h"
+#include "stm32746g_discovery_audio.h"
 
 #include "lvgl.h"
 #include "lvgl_port_tft.h"
