@@ -13,6 +13,7 @@ extern FatFsWrapper uSD;
 
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
+OWTester oneWire(GPIOA, GPIO_PIN_0, &htim5);
 
 TaskHandle_t WatchdogTaskHandle = nullptr;
 TaskHandle_t LvglTaskHandle = nullptr;
@@ -159,8 +160,11 @@ void TwiThread(void *argument) {
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
+    oneWire.init();
     while (true) {
         BSP_LED_Toggle(LED_GREEN);
+        oneWire.startReset();
+        oneWire.resetState();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
@@ -184,7 +188,7 @@ void FreeRTOS_Resources_Init() {
     } else {
         vQueueAddToRegistry(uartQueue, "uartQueue");
     }
-
+    /*
     WatchdogTaskHandle = xTaskCreateStatic(WatchdogThread,
                                            "Task for Watchdog Timer",
                                            WATCHDOG_TASK_STACK_SIZE,
@@ -196,7 +200,7 @@ void FreeRTOS_Resources_Init() {
     if (WatchdogTaskHandle == nullptr) {
         print_log(ERROR_LOG, "Error creating WatchdogTask\r\n");
     }
-
+    */
     LvglTaskHandle = xTaskCreateStatic(LvglThread,
                                        "Task for LVGL interface",
                                        LVGL_TASK_STACK_SIZE,
@@ -261,4 +265,14 @@ extern "C" int __io_putchar(int ch) {
     }
 
     return (status == pdTRUE) ? ch : EOF;
+}
+
+extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim == oneWire.getTimerHandle()) {
+        oneWire.onTimerElapsed();
+    }
+    else if (htim->Instance == TIM6) {
+        HAL_IncTick();
+        lv_tick_inc(1);
+    }
 }

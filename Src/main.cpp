@@ -9,6 +9,7 @@ FatFsWrapper uSD(&SD_Driver);
 I2C twi1(&hi2c1);
 
 int main() {
+    __HAL_DBGMCU_FREEZE_TIM5();
     __HAL_DBGMCU_FREEZE_TIM6(); ///< Cortex-M7 erratum 3092511
     HAL_Init();
     SystemClock_Config();
@@ -19,12 +20,11 @@ int main() {
 
     BSP_LED_Init(LED_GREEN);
     BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
+    MX_TIM5_Init();
     MX_USART1_UART_Init();
     MX_USART6_UART_Init();
     MX_I2C1_Init();
     twi1.Init();
-    BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 80, 44100);
-    BSP_AUDIO_OUT_Play((uint16_t *) audio_file, audio_file_size);
 
     lv_init();
     tft_init();

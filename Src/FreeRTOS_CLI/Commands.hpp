@@ -1,5 +1,7 @@
-#ifndef COMMANDS_H
-#define COMMANDS_H
+#ifndef COMMANDS_HPP
+#define COMMANDS_HPP
+
+#include "FatFsWrapper.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,4 +44,4 @@ void UART_CLI_Init(void);
 }
 #endif
 
-#endif // COMMANDS_H
+#endif // COMMANDS_HPP

@@ -1,10 +1,12 @@
-#include "Commands.h"
+#include "Commands.hpp"
 
 TaskHandle_t UartCliTaskHandle = NULL;
 static StaticTask_t UartCliTaskBuffer;
 static StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
 
 volatile uint8_t UartCliAlive = 0;
+
+extern FatFsWrapper uSD;
 
 static BaseType_t prvClearCommand(char *pcWriteBuffer,
                                   size_t xWriteBufferLen,
@@ -26,9 +28,9 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer,
                                 size_t xWriteBufferLen,
                                 const char *pcCommandString);
 
-static BaseType_t prvFlashCommand(char *pcWriteBuffer,
-                                size_t xWriteBufferLen,
-                                const char *pcCommandString);
+static BaseType_t prvFileSystemCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
 
 static const CLI_Command_Definition_t xClearCommand = {
         "clear",
@@ -74,11 +76,12 @@ static const CLI_Command_Definition_t xDfpCommand = {
         -1
 };
 
-static const CLI_Command_Definition_t xFlashCommand = {
-        "flash", // Имя команды
-        "flash:\r\n\tShow flash data\r\n",
-        prvFlashCommand,
-        1
+static const CLI_Command_Definition_t xFileSystemCommand = {
+        "fs", // Имя команды
+        "fs:\r\n\tFilesystem control commands:\r\n"
+        "\tfs ls [path]\r\n\n",
+        prvFileSystemCommand,
+        -1
 };
 
 static GPIO_TypeDef *get_gpio_port(char portChar) {
@@ -118,9 +121,6 @@ static BaseType_t prvResetCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
     (void) pcCommandString;
     snprintf(pcWriteBuffer, xWriteBufferLen, "System is resetting...\r\n");
 
-    // Небольшая задержка для завершения вывода
-    for (volatile int i = 0; i < 100000; i++);
-
     // Сброс через системный контроллер
     NVIC_SystemReset();
 
@@ -149,7 +149,7 @@ static BaseType_t prvGpioCommand(char *pcWriteBuffer, size_t xWriteBufferLen, co
     // Pin
     char pinStr[4] = {0};
     strncpy(pinStr, pcPinParam, xParameterStringLength > 3 ? 3 : xParameterStringLength);
-    uint32_t pin = (uint32_t) atoi(pinStr);
+    auto pin = (uint32_t) atoi(pinStr);
     if (pin > 15) {
         snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Invalid GPIO pin '%u'\r\n", pin);
         return pdFALSE;
@@ -309,8 +309,80 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, con
     return pdFALSE;
 }
 
-static BaseType_t prvFlashCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
-    return pdFALSE;
+static BaseType_t prvFileSystemCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString) {
+    static std::vector<std::string> files;
+    static size_t currentIndex = 0;
+    static bool listingActive = false;
+
+    BaseType_t xParameterStringLength;
+    const char *pcSubCmd = FreeRTOS_CLIGetParameter(pcCommandString,
+                                                    1,
+                                                    &xParameterStringLength);
+
+    // Первый вызов: инициализация
+    if (!listingActive) {
+        if (pcSubCmd == NULL) {
+            snprintf(pcWriteBuffer, xWriteBufferLen,
+                     "Error: Missing parameters.\r\n");
+            return pdFALSE;
+        }
+
+        if (strncmp(pcSubCmd, "ls", xParameterStringLength) == 0) {
+            const char *path;
+            BaseType_t pathLen;
+
+            path = FreeRTOS_CLIGetParameter(pcCommandString, 2, &pathLen);
+            if (path == NULL) {
+                snprintf(pcWriteBuffer, xWriteBufferLen,
+                         "ERROR: 'ls' requires path\r\n");
+                return pdFALSE;
+            }
+
+            // Получаем путь как std::string
+            std::string pathStr(path, pathLen);
+            files.clear();
+            currentIndex = 0;
+
+            if (uSD.ls(pathStr.c_str(), files) != FatFsWrapper::Result::OK) {
+                snprintf(pcWriteBuffer, xWriteBufferLen,
+                         "ERROR: ls failed on path '%s'\r\n", pathStr.c_str());
+                return pdFALSE;
+            }
+
+            if (files.empty()) {
+                snprintf(pcWriteBuffer, xWriteBufferLen,
+                         "Directory is empty.\r\n");
+                return pdFALSE;
+            }
+
+            listingActive = true;
+        }
+    }
+
+    // Пошаговая генерация вывода
+    size_t bytesWritten = 0;
+    for (; currentIndex < files.size(); currentIndex++) {
+        const std::string &entry = files[currentIndex];
+        int n = snprintf(pcWriteBuffer + bytesWritten,
+                         xWriteBufferLen - bytesWritten,
+                         "%s\r\n", entry.c_str());
+
+        if (n < 0 || n >= (int) (xWriteBufferLen - bytesWritten)) {
+            break;  // Буфер переполнен
+        }
+
+        bytesWritten += n;
+    }
+
+    if (currentIndex >= files.size()) {
+        // Закончили вывод
+        listingActive = false;
+        return pdFALSE;
+    }
+
+    return pdTRUE; // Продолжить вызовы
 }
 
 void UartCliThread(void *argument) {
@@ -404,7 +476,7 @@ void UART_CLI_Init(void) {
         print_log(ERROR_LOG, "Failed to register xDfpCommand\r\n");
     }
 
-    if (FreeRTOS_CLIRegisterCommand(&xFlashCommand) != pdPASS) {
+    if (FreeRTOS_CLIRegisterCommand(&xFileSystemCommand) != pdPASS) {
         print_log(ERROR_LOG, "Failed to register xFlashCommand\r\n");
     }
 

@@ -2,6 +2,7 @@
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
+    "selectedBitmapObject": "[gui.eez-project]:/bitmaps/0",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -24,6 +25,7 @@
           },
           {
             "type": "border",
+            "selected": 2,
             "size": 240,
             "location": "right",
             "children": [
@@ -189,7 +191,7 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 65,
+              "weight": 52.095059412132585,
               "selected": -1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
@@ -198,7 +200,7 @@
             {
               "type": "tabset",
               "id": "#b8319d38-5381-4a78-8d7b-fba687868214",
-              "weight": 20,
+              "weight": 32.904940587867415,
               "children": [
                 {
                   "type": "tab",
@@ -500,7 +502,8 @@
                       "component": "bitmaps",
                       "enableClose": false
                     }
-                  ]
+                  ],
+                  "active": true
                 },
                 {
                   "type": "tabset",

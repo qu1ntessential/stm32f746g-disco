@@ -18,9 +18,10 @@
 #include "I2C.hpp"
 #include "FatFsWrapper.hpp"
 #include "QSPI.hpp"
+#include "OW.hpp"
 
 #include "FreeRTOS_CLI.h"
-#include "Commands.h"
+#include "Commands.hpp"
 
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_sd.h"
