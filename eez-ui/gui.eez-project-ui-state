@@ -2,7 +2,7 @@
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
-    "selectedBitmapObject": "[gui.eez-project]:/bitmaps/0",
+    "selectedBitmapObject": "[gui.eez-project]:/bitmaps/-1",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -25,7 +25,7 @@
           },
           {
             "type": "border",
-            "selected": 2,
+            "selected": 0,
             "size": 240,
             "location": "right",
             "children": [

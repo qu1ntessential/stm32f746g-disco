@@ -154,17 +154,20 @@ void UartThread(void *argument) {
 void TwiThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     while (1) {
+        BSP_LED_Toggle(LED_GREEN);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
+
     oneWire.init();
-    while (true) {
-        BSP_LED_Toggle(LED_GREEN);
-        oneWire.startReset();
-        oneWire.resetState();
+    oneWire.startReset();
+    vTaskDelay(2000);
+    oneWire.writeByte(0xCC);
+    for (;;) {
+
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
 }
