@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "stm32f7xx.h"
 #include "uart_log.h"
 
@@ -13,34 +15,39 @@
 #define SEARCH_ROM   0xF0
 #define ALARM_SEARCH 0xEC
 
-extern TaskHandle_t owTaskHandle;
+#define OW_DEBUG 1
 
 class OW {
 public:
     enum class State {
         Idle,
-        Reset_Pulse,
-        Wait_Presence,
+        Reset,
+        WaitPresence,
+        PresenceDetect,
         Done,
         Error,
-
-        WriteBit_Start,
-        WriteBit_ReleaseOrHold,
-        WriteBit_Done,
-
-        ReadBit_Start,
-        ReadBit_ReadSample,
-        ReadBit_Done
     };
 
     enum class Event {
         Start,
         Timeout,
-        LineLow,
-        LineHigh,
-        PresenceOk,
-        PresenceFail
     };
+
+#if (OW_DEBUG == 1)
+    static constexpr const char *state_names[] = {
+            "Idle",
+            "Reset",
+            "WaitPresence",
+            "PresenceDetect",
+            "Done",
+            "Error",
+    };
+
+    static constexpr const char *event_names[] = {
+            "Start",
+            "Timeout",
+    };
+#endif
 
     enum class CommandType {
         Reset,
@@ -48,55 +55,31 @@ public:
         ReadByte
     };
 
-    struct Command {
-        CommandType type;
-        uint8_t byte = 0; ///< Используется только для WriteByte
+    struct Transition {
+        State current;
+        Event event;
+        State next;
+
+        void (OW::*action)();
     };
+
+    TIM_HandleTypeDef *getTimerHandle() const;
+
+    State getState() const;
 
     explicit OW(GPIO_TypeDef *port, uint16_t pin, TIM_HandleTypeDef *htim);
 
     void init();
 
-    void startReset();
-
-    void resetState();
-
-    void writeBit(bool bit);
-
-    void readBit();
-
-    void writeByte(uint8_t byte);
-
-    void readByteStart();
-
-    /**
-     * @defgroup Get-functions
-     */
-    bool getReadBit() const;
-
-    uint8_t getReadByte() const;
-
-    State getState() const;
-
-    bool isDevicePresent() const { return m_presence; }
-
     /**
      * @defgroup
      */
-    void handleEvent(Event e);
-
-    void onTimerElapsed();
-
-    TIM_HandleTypeDef *getTimerHandle() const;
+    void handleEvent(OW::Event e);
 
 protected:
     bool m_presence;
 
     virtual void onDone(bool presenceDetected) = 0;
-
-    virtual void onWriteByteDone();
-
-    virtual void onReadByteDone();
 
 private:
     GPIO_TypeDef *m_port;
@@ -119,6 +102,18 @@ private:
     void startTimerUs(uint32_t us);
 
     void stopTimer();
+
+    void sendReset();
+
+    void waitPresence();
+
+    void finishReset();
+
+    static constexpr Transition m_transitions[] = {
+            {State::Idle,  Event::Start,   State::Reset,        &OW::sendReset},
+            {State::Reset, Event::Timeout, State::WaitPresence, &OW::waitPresence},
+            {State::WaitPresence, Event::Timeout, State::PresenceDetect, &OW::finishReset}
+    };
 };
 
 class OWTester : public OW {
@@ -127,10 +122,6 @@ public:
             : OW(port, pin, htim) {}
 
 protected:
-    void onWriteByteDone() override {
-        print_log(DEBUG_LOG, "WriteByte done\n");
-    }
-
     void onDone(bool presence) override {
         print_log(DEBUG_LOG, presence ? "Presence detected\n" : "No presence\n");
     }

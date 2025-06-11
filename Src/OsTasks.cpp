@@ -100,7 +100,7 @@ void WatchdogThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     MX_IWDG_Init();
     for (;;) {
-        BaseType_t  all_tasks_alive = 1;
+        BaseType_t all_tasks_alive = 1;
 
         if (!LvglTaskAlive || !UartCliAlive) {
             all_tasks_alive = 0;
@@ -163,12 +163,10 @@ void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
 
     oneWire.init();
-    oneWire.startReset();
-    vTaskDelay(2000);
-    oneWire.writeByte(0xCC);
-    for (;;) {
 
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
+    for (;;) {
+        oneWire.handleEvent(OW::Event::Start);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(3000));
     }
 }
 
@@ -272,9 +270,8 @@ extern "C" int __io_putchar(int ch) {
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == oneWire.getTimerHandle()) {
-        oneWire.onTimerElapsed();
-    }
-    else if (htim->Instance == TIM6) {
+        oneWire.handleEvent(OW::Event::Timeout);
+    } else if (htim->Instance == TIM6) {
         HAL_IncTick();
         lv_tick_inc(1);
     }
