@@ -17,27 +17,6 @@ void OW::init() {
     m_state = State::Idle;
 }
 
-void OW::sendReset() {
-    m_state = State::Reset;
-    setLineOutput();
-    writeLine(false);
-    startTimerUs(480);
-}
-
-void OW::waitPresence() {
-    m_state = State::WaitPresence;
-    writeLine(true);
-    setLineInput();
-    startTimerUs(70);
-}
-
-void OW::finishReset() {
-    m_state = State::PresenceDetect;
-    stopTimer();
-    m_presence = !readLine();
-    onDone(m_presence);
-}
-
 OW::State OW::getState() const {
     return m_state;
 }
@@ -105,4 +84,88 @@ void OW::handleEvent(OW::Event e) {
               state_names[static_cast<int>(m_state)],
               event_names[static_cast<int>(e)]);
 #endif
+}
+
+void OW::sendReset() {
+    m_state = State::Reset;
+    setLineOutput();
+    writeLine(false);
+    startTimerUs(480);
+}
+
+void OW::waitPresence() {
+    m_state = State::WaitPresence;
+    writeLine(true);
+    setLineInput();
+    startTimerUs(70);
+}
+
+void OW::finishReset() {
+    m_state = State::PresenceDetect;
+    stopTimer();
+    m_presence = !readLine();
+    onDone(m_presence);
+}
+
+/// Idle -> WriteBitInit -> WriteBitHold -> WriteBitRelease
+
+void OW::startWriteBit() {
+    m_state = State::WriteBitInit;
+    setLineOutput();
+    writeLine(false);
+    if (m_currentBit) {
+        startTimerUs(5);
+    } else {
+        startTimerUs(60);
+    }
+}
+
+void OW::continueWriteBit() {
+    m_state = State::WriteBitHold;
+    writeLine(true);
+    if (m_currentBit) {
+        startTimerUs(60);
+    } else {
+        startTimerUs(5);
+    }
+}
+
+void OW::releaseLine() {
+    m_state = State::WriteBitRelease;
+}
+
+/// Idle -> ReadBitInit -> ReadBitSample -> ReadBitDone
+
+void OW::startReadBit() {
+    m_state = State::ReadBitInit;
+    setLineOutput();
+    writeLine(false);
+    startTimerUs(3);
+}
+
+void OW::sampleBit() {
+    m_state = State::ReadBitSample;
+    writeLine(true);
+    startTimerUs(15);
+}
+
+void OW::finishReadBit() {
+    m_state = State::ReadBitDone;
+    setLineInput();
+    m_readBit = readLine();
+}
+
+bool OW::getLastReadBit() const {
+    return m_readBit;
+}
+
+void OW::writeBit(bool bit) {
+    if (m_state != State::Idle) return;
+    m_currentBit = bit;
+    handleEvent(Event::BitWrite);
+}
+
+void OW::readBitAsync() {
+    if (m_state != State::Idle) return;
+    handleEvent(Event::BitRead);
 }

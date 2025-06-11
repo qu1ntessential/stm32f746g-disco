@@ -163,9 +163,10 @@ void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
 
     oneWire.init();
-
+    oneWire.handleEvent(OW::Event::Start);
+    oneWire.handleEvent(OW::Event::Done);
     for (;;) {
-        oneWire.handleEvent(OW::Event::Start);
+        oneWire.writeBit(true);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(3000));
     }
 }

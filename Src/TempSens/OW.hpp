@@ -24,13 +24,21 @@ public:
         Reset,
         WaitPresence,
         PresenceDetect,
-        Done,
-        Error,
+        WriteBitInit,
+        WriteBitHold,
+        WriteBitRelease,
+        ReadBitInit,
+        ReadBitSample,
+        ReadBitDone
     };
 
     enum class Event {
         Start,
         Timeout,
+        Done,
+        BitWrite,
+        BitRead,
+        ReadSample
     };
 
 #if (OW_DEBUG == 1)
@@ -46,6 +54,7 @@ public:
     static constexpr const char *event_names[] = {
             "Start",
             "Timeout",
+            "Done"
     };
 #endif
 
@@ -67,6 +76,8 @@ public:
 
     State getState() const;
 
+    bool getLastReadBit() const;
+
     explicit OW(GPIO_TypeDef *port, uint16_t pin, TIM_HandleTypeDef *htim);
 
     void init();
@@ -75,6 +86,10 @@ public:
      * @defgroup
      */
     void handleEvent(OW::Event e);
+
+    void writeBit(bool bit);
+
+    void readBitAsync();
 
 protected:
     bool m_presence;
@@ -109,10 +124,34 @@ private:
 
     void finishReset();
 
+    void startWriteBit();
+
+    void continueWriteBit();
+
+    void releaseLine();
+
+    void startReadBit();
+
+    void sampleBit();
+
+    void finishReadBit();
+
     static constexpr Transition m_transitions[] = {
-            {State::Idle,  Event::Start,   State::Reset,        &OW::sendReset},
-            {State::Reset, Event::Timeout, State::WaitPresence, &OW::waitPresence},
-            {State::WaitPresence, Event::Timeout, State::PresenceDetect, &OW::finishReset}
+            /// Reset
+            {State::Idle,            Event::Start,    State::Reset,           &OW::sendReset},
+            {State::Reset,           Event::Timeout,  State::WaitPresence,    &OW::waitPresence},
+            {State::WaitPresence,    Event::Timeout,  State::PresenceDetect,  &OW::finishReset},
+            {State::PresenceDetect,  Event::Done,     State::Idle,            nullptr},
+            /// WriteBit
+            {State::Idle,            Event::BitWrite, State::WriteBitInit,    &OW::startWriteBit},
+            {State::WriteBitInit,    Event::Timeout,  State::WriteBitHold,    &OW::continueWriteBit},
+            {State::WriteBitHold,    Event::Timeout,  State::WriteBitRelease, &OW::releaseLine},
+            {State::WriteBitRelease, Event::Timeout,  State::Idle,            nullptr},
+            /// ReadBit
+            {State::Idle,            Event::BitRead,  State::ReadBitInit,     &OW::startReadBit},
+            {State::ReadBitInit,     Event::Timeout,  State::ReadBitSample,   &OW::sampleBit},
+            {State::ReadBitSample,   Event::Timeout,  State::ReadBitDone,     &OW::finishReadBit},
+            {State::ReadBitDone,     Event::Done,     State::Idle,            nullptr},
     };
 };
 
@@ -123,6 +162,6 @@ public:
 
 protected:
     void onDone(bool presence) override {
-        print_log(DEBUG_LOG, presence ? "Presence detected\n" : "No presence\n");
+        print_log(DEBUG_LOG, presence ? "Presence detected\r\n" : "No presence\r\n");
     }
 };
