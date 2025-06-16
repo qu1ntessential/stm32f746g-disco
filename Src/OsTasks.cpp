@@ -13,7 +13,7 @@ extern FatFsWrapper uSD;
 
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
-OWTester oneWire(GPIOA, GPIO_PIN_0, &htim5);
+DS18X20 ds18s20(GPIOA, GPIO_PIN_0, &htim5);
 
 TaskHandle_t WatchdogTaskHandle = nullptr;
 TaskHandle_t LvglTaskHandle = nullptr;
@@ -127,9 +127,9 @@ void WatchdogThread(void *argument) {
  */
 void LvglThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-    uSD.Init();
-    extFlash.Init();
-    lv_fs_fatfs_init();
+    //uSD.Init();
+    //extFlash.Init();
+    //lv_fs_fatfs_init();
     while (1) {
         lv_task_handler();
         ui_tick();
@@ -162,11 +162,9 @@ void TwiThread(void *argument) {
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
 
-    oneWire.init();
-    oneWire.handleEvent(OW::Event::Start);
-    oneWire.handleEvent(OW::Event::Done);
+    ds18s20.init();
+    ds18s20.handleEvent(OW::Event::Start);
     for (;;) {
-        oneWire.writeBit(true);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(3000));
     }
 }
@@ -270,8 +268,8 @@ extern "C" int __io_putchar(int ch) {
 }
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim == oneWire.getTimerHandle()) {
-        oneWire.handleEvent(OW::Event::Timeout);
+    if (htim == ds18s20.getTimerHandle()) {
+        ds18s20.handleEvent(OW::Event::Timeout);
     } else if (htim->Instance == TIM6) {
         HAL_IncTick();
         lv_tick_inc(1);

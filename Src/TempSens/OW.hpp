@@ -20,6 +20,8 @@
 class OW {
 public:
     enum class State {
+        Any,
+        Error,
         Idle,
         Reset,
         WaitPresence,
@@ -36,6 +38,7 @@ public:
         Start,
         Timeout,
         Done,
+        Error,
         BitWrite,
         BitRead,
         ReadSample
@@ -43,18 +46,28 @@ public:
 
 #if (OW_DEBUG == 1)
     static constexpr const char *state_names[] = {
+            "Any",
+            "Error",
             "Idle",
             "Reset",
             "WaitPresence",
             "PresenceDetect",
-            "Done",
-            "Error",
+            "WriteBitInit",
+            "WriteBitHold",
+            "WriteBitRelease",
+            "ReadBitInit",
+            "ReadBitSample",
+            "ReadBitDone"
     };
 
     static constexpr const char *event_names[] = {
             "Start",
             "Timeout",
-            "Done"
+            "Done",
+            "Error",
+            "BitWrite",
+            "BitRead",
+            "ReadSample"
     };
 #endif
 
@@ -106,6 +119,8 @@ private:
     uint8_t m_currentByte;
     uint8_t m_byteBitIndex;
 
+    void handleError();
+
     void setLineOutput();
 
     void setLineInput();
@@ -142,6 +157,7 @@ private:
             {State::Reset,           Event::Timeout,  State::WaitPresence,    &OW::waitPresence},
             {State::WaitPresence,    Event::Timeout,  State::PresenceDetect,  &OW::finishReset},
             {State::PresenceDetect,  Event::Done,     State::Idle,            nullptr},
+            {State::PresenceDetect,  Event::Error,    State::Idle,            nullptr},
             /// WriteBit
             {State::Idle,            Event::BitWrite, State::WriteBitInit,    &OW::startWriteBit},
             {State::WriteBitInit,    Event::Timeout,  State::WriteBitHold,    &OW::continueWriteBit},
@@ -152,16 +168,24 @@ private:
             {State::ReadBitInit,     Event::Timeout,  State::ReadBitSample,   &OW::sampleBit},
             {State::ReadBitSample,   Event::Timeout,  State::ReadBitDone,     &OW::finishReadBit},
             {State::ReadBitDone,     Event::Done,     State::Idle,            nullptr},
+            /// Any
+            /// {State::Any,             Event::Timeout,  State::Error,           &OW::handleError}
     };
 };
 
-class OWTester : public OW {
+class DS18X20 : public OW {
 public:
-    OWTester(GPIO_TypeDef *port, uint16_t pin, TIM_HandleTypeDef *htim)
+    DS18X20(GPIO_TypeDef *port, uint16_t pin, TIM_HandleTypeDef *htim)
             : OW(port, pin, htim) {}
 
 protected:
     void onDone(bool presence) override {
-        print_log(DEBUG_LOG, presence ? "Presence detected\r\n" : "No presence\r\n");
+        if (presence) {
+            print_log(DEBUG_LOG, "Presence detected\r\n");
+            handleEvent(Event::Done);
+        } else {
+            print_log(DEBUG_LOG, "No presence\r\n");
+            handleEvent(Event::Error);
+        }
     }
 };
