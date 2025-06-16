@@ -71,13 +71,13 @@ void OW::stopTimer() {
 void OW::handleEvent(OW::Event e) {
     for (const auto &t: m_transitions) {
         if (t.current == m_state && t.event == e) {
-            /*
-#if (OW_DEBUG == 1)
+
+#if (OW_DEBUG >= 2)
             print_log(DEBUG_LOG, "%s -> %s\r\n",
                       state_names[static_cast<int>(t.current)],
                       state_names[static_cast<int>(t.next)]);
 #endif
-             */
+
             m_state = t.next;
             if (t.action)
                 (this->*t.action)();
@@ -85,7 +85,7 @@ void OW::handleEvent(OW::Event e) {
         }
     }
 
-#if (OW_DEBUG == 1)
+#if (OW_DEBUG >= 2)
     print_log(ERROR_LOG,
               "FSM: No transition for state=%s, event=%s\r\n",
               state_names[static_cast<int>(m_state)],
@@ -102,7 +102,7 @@ void OW::sendReset() {
 void OW::waitPresence() {
     stopTimer();
     writeLine(true);
-    startTimerUs(70);
+    startTimerUs(40); ///< Более правильно читать линию по прерыванию
 }
 
 void OW::finishReset() {
@@ -114,7 +114,7 @@ void OW::finishReset() {
 
 /// Idle -> WriteBitInit -> WriteBitHold -> WriteBitRelease
 
-void OW::startWriteBit() {
+void OW::startWriteByte() {
     setLineOutput();
     writeLine(false);
     if (m_currentBit) {
@@ -134,32 +134,22 @@ void OW::continueWriteBit() {
 }
 
 void OW::releaseLine() {
-    print_log(DEBUG_LOG, "releaseLine()\r\n");
     writeLine(true);
-    setLineInput();
+    startTimerUs(10);
+}
+
+void OW::nextWriteBit() {
+    writeLine(true);
     startTimerUs(20);
-}
 
-/// Idle -> ReadBitInit -> ReadBitSample -> ReadBitDone
+    m_byteBitIndex++;
 
-void OW::startReadBit() {
-    setLineOutput();
-    writeLine(false);
-    startTimerUs(3);
-}
-
-void OW::sampleBit() {
-    writeLine(true);
-    startTimerUs(15);
-}
-
-void OW::finishReadBit() {
-    setLineInput();
-    m_readBit = readLine();
-}
-
-bool OW::getLastReadBit() const {
-    return m_readBit;
+    if (m_byteBitIndex < 8) {
+        m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
+    } else {
+        m_state = State::Idle;
+        onDone(true);
+    }
 }
 
 void OW::writeBit(bool bit) {
@@ -168,11 +158,12 @@ void OW::writeBit(bool bit) {
     handleEvent(Event::BitWrite);
 }
 
-void OW::readBitAsync() {
+void OW::writeByte(uint8_t byte) {
     if (m_state != State::Idle) return;
-    handleEvent(Event::BitRead);
-}
 
-void OW::handleError() {
-    print_log(ERROR_LOG, "Called handleError\r\n");
+    m_currentByte = byte;
+    m_byteBitIndex = 0;
+    m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
+
+    handleEvent(Event::ByteWrite);
 }

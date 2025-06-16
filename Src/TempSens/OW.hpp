@@ -15,23 +15,21 @@
 #define SEARCH_ROM   0xF0
 #define ALARM_SEARCH 0xEC
 
-#define OW_DEBUG 1
+#define OW_DEBUG 2
 
 class OW {
 public:
     enum class State {
-        Any,
-        Error,
         Idle,
         Reset,
         WaitPresence,
         PresenceDetect,
-        WriteBitInit,
+
+        WriteByteInit,
         WriteBitHold,
         WriteBitRelease,
-        ReadBitInit,
-        ReadBitSample,
-        ReadBitDone
+        WriteBitInit,
+        WriteWaitNextBit
     };
 
     enum class Event {
@@ -40,24 +38,22 @@ public:
         Done,
         Error,
         BitWrite,
-        BitRead,
-        ReadSample
+        ByteWrite,
+        ContinueByte,
     };
 
-#if (OW_DEBUG == 1)
+#if (OW_DEBUG >= 1)
     static constexpr const char *state_names[] = {
-            "Any",
-            "Error",
             "Idle",
             "Reset",
             "WaitPresence",
             "PresenceDetect",
-            "WriteBitInit",
+
+            "WriteByteInit",
             "WriteBitHold",
             "WriteBitRelease",
-            "ReadBitInit",
-            "ReadBitSample",
-            "ReadBitDone"
+            "WriteBitInit",
+            "WriteWaitNextBit"
     };
 
     static constexpr const char *event_names[] = {
@@ -66,8 +62,8 @@ public:
             "Done",
             "Error",
             "BitWrite",
-            "BitRead",
-            "ReadSample"
+            "ByteWrite",
+            "ContinueByte",
     };
 #endif
 
@@ -102,7 +98,7 @@ public:
 
     void writeBit(bool bit);
 
-    void readBitAsync();
+    void writeByte(uint8_t byte);
 
 protected:
     bool m_presence;
@@ -118,8 +114,6 @@ private:
     bool m_currentBit;
     uint8_t m_currentByte;
     uint8_t m_byteBitIndex;
-
-    void handleError();
 
     void setLineOutput();
 
@@ -139,37 +133,26 @@ private:
 
     void finishReset();
 
-    void startWriteBit();
+    void startWriteByte();
 
     void continueWriteBit();
 
     void releaseLine();
 
-    void startReadBit();
-
-    void sampleBit();
-
-    void finishReadBit();
+    void nextWriteBit();
 
     static constexpr Transition m_transitions[] = {
             /// Reset
-            {State::Idle,            Event::Start,    State::Reset,           &OW::sendReset},
-            {State::Reset,           Event::Timeout,  State::WaitPresence,    &OW::waitPresence},
-            {State::WaitPresence,    Event::Timeout,  State::PresenceDetect,  &OW::finishReset},
-            {State::PresenceDetect,  Event::Done,     State::Idle,            nullptr},
-            {State::PresenceDetect,  Event::Error,    State::Idle,            nullptr},
-            /// WriteBit
-            {State::Idle,            Event::BitWrite, State::WriteBitInit,    &OW::startWriteBit},
-            {State::WriteBitInit,    Event::Timeout,  State::WriteBitHold,    &OW::continueWriteBit},
-            {State::WriteBitHold,    Event::Timeout,  State::WriteBitRelease, &OW::releaseLine},
-            {State::WriteBitRelease, Event::Timeout,  State::Idle,            nullptr},
-            /// ReadBit
-            {State::Idle,            Event::BitRead,  State::ReadBitInit,     &OW::startReadBit},
-            {State::ReadBitInit,     Event::Timeout,  State::ReadBitSample,   &OW::sampleBit},
-            {State::ReadBitSample,   Event::Timeout,  State::ReadBitDone,     &OW::finishReadBit},
-            {State::ReadBitDone,     Event::Done,     State::Idle,            nullptr},
-            /// Any
-            /// {State::Any,             Event::Timeout,  State::Error,           &OW::handleError}
+            {State::Idle,             Event::Start,        State::Reset,           &OW::sendReset},
+            {State::Reset,            Event::Timeout,      State::WaitPresence,    &OW::waitPresence},
+            {State::WaitPresence,     Event::Timeout,      State::PresenceDetect,  &OW::finishReset},
+            {State::PresenceDetect,   Event::Done,         State::Idle,            nullptr},
+            /// WriteByte
+            {State::Idle,             Event::ByteWrite,    State::WriteByteInit,   &OW::startWriteByte},
+            {State::WriteByteInit,    Event::Timeout,      State::WriteBitHold,    &OW::continueWriteBit},
+            {State::WriteBitHold,     Event::Timeout,      State::WriteBitRelease, &OW::releaseLine},
+            {State::WriteBitRelease,  Event::ContinueByte, State::WriteBitInit,    &OW::nextWriteBit},
+            {State::WriteWaitNextBit, Event::Timeout,      State::WriteBitHold,    &OW::continueWriteBit},
     };
 };
 
@@ -181,11 +164,15 @@ public:
 protected:
     void onDone(bool presence) override {
         if (presence) {
+#if (OW_DEBUG >= 1)
             print_log(DEBUG_LOG, "Presence detected\r\n");
+#endif
             handleEvent(Event::Done);
         } else {
+#if (OW_DEBUG >= 1)
             print_log(DEBUG_LOG, "No presence\r\n");
-            handleEvent(Event::Error);
+#endif
+            handleEvent(Event::Done);
         }
     }
 };

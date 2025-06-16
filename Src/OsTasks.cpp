@@ -164,13 +164,16 @@ void Task4Thread(void *argument) {
 
     ds18s20.init();
     ds18s20.handleEvent(OW::Event::Start);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
+    ds18s20.writeByte(SKIP_ROM);
+
     for (;;) {
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(3000));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
     }
 }
 
 void FreeRTOS_Resources_Init() {
-    UART_CLI_Init();
+    //UART_CLI_Init();
 
     twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
 
@@ -269,7 +272,22 @@ extern "C" int __io_putchar(int ch) {
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == ds18s20.getTimerHandle()) {
-        ds18s20.handleEvent(OW::Event::Timeout);
+        using State = OW::State;
+        switch (ds18s20.getState()) {
+            case State::WriteBitRelease:
+                ds18s20.handleEvent(OW::Event::ContinueByte);
+                break;
+            case State::Reset:
+            case State::WaitPresence:
+            case State::WriteByteInit:
+            case State::WriteBitHold:
+            case State::WriteWaitNextBit:
+            case State::WriteBitInit:
+                ds18s20.handleEvent(OW::Event::Timeout);
+                break;
+            default:
+                break;
+        }
     } else if (htim->Instance == TIM6) {
         HAL_IncTick();
         lv_tick_inc(1);
