@@ -15,7 +15,7 @@
 #define SEARCH_ROM   0xF0
 #define ALARM_SEARCH 0xEC
 
-#define OW_DEBUG 2
+#define OW_DEBUG 0
 
 class OW {
 public:
@@ -85,8 +85,6 @@ public:
 
     State getState() const;
 
-    bool getLastReadBit() const;
-
     explicit OW(GPIO_TypeDef *port, uint16_t pin, TIM_HandleTypeDef *htim);
 
     void init();
@@ -96,14 +94,12 @@ public:
      */
     void handleEvent(OW::Event e);
 
-    void writeBit(bool bit);
-
     void writeByte(uint8_t byte);
 
 protected:
     bool m_presence;
 
-    virtual void onDone(bool presenceDetected) = 0;
+    virtual void resetDone(bool presenceDetected) = 0;
 
 private:
     GPIO_TypeDef *m_port;
@@ -137,22 +133,25 @@ private:
 
     void continueWriteBit();
 
+    void startBitHold();
+
     void releaseLine();
 
     void nextWriteBit();
 
     static constexpr Transition m_transitions[] = {
             /// Reset
-            {State::Idle,             Event::Start,        State::Reset,           &OW::sendReset},
-            {State::Reset,            Event::Timeout,      State::WaitPresence,    &OW::waitPresence},
-            {State::WaitPresence,     Event::Timeout,      State::PresenceDetect,  &OW::finishReset},
-            {State::PresenceDetect,   Event::Done,         State::Idle,            nullptr},
+            {State::Idle,             Event::Start,     State::Reset,            &OW::sendReset},
+            {State::Reset,            Event::Timeout,   State::WaitPresence,     &OW::waitPresence},
+            {State::WaitPresence,     Event::Timeout,   State::PresenceDetect,   &OW::finishReset},
+            {State::PresenceDetect,   Event::Done,      State::Idle,             nullptr},
             /// WriteByte
-            {State::Idle,             Event::ByteWrite,    State::WriteByteInit,   &OW::startWriteByte},
-            {State::WriteByteInit,    Event::Timeout,      State::WriteBitHold,    &OW::continueWriteBit},
-            {State::WriteBitHold,     Event::Timeout,      State::WriteBitRelease, &OW::releaseLine},
-            {State::WriteBitRelease,  Event::ContinueByte, State::WriteBitInit,    &OW::nextWriteBit},
-            {State::WriteWaitNextBit, Event::Timeout,      State::WriteBitHold,    &OW::continueWriteBit},
+            {State::Idle,             Event::ByteWrite, State::WriteByteInit,    &OW::startWriteByte},
+            {State::WriteByteInit,    Event::Timeout,   State::WriteBitInit,     &OW::continueWriteBit},
+            {State::WriteBitInit,     Event::Timeout,   State::WriteBitHold,     &OW::startBitHold},
+            {State::WriteBitHold,     Event::Timeout,   State::WriteBitRelease,  &OW::releaseLine},
+            {State::WriteBitRelease,  Event::Timeout,   State::WriteWaitNextBit, &OW::nextWriteBit},
+            {State::WriteWaitNextBit, Event::Timeout,   State::WriteBitInit,     &OW::continueWriteBit},
     };
 };
 
@@ -162,17 +161,8 @@ public:
             : OW(port, pin, htim) {}
 
 protected:
-    void onDone(bool presence) override {
-        if (presence) {
-#if (OW_DEBUG >= 1)
-            print_log(DEBUG_LOG, "Presence detected\r\n");
-#endif
-            handleEvent(Event::Done);
-        } else {
-#if (OW_DEBUG >= 1)
-            print_log(DEBUG_LOG, "No presence\r\n");
-#endif
-            handleEvent(Event::Done);
-        }
+    void resetDone(bool presence) override {
+        print_log(DEBUG_LOG, presence ? "Presence detected\r\n" : "No presence\r\n");
+        handleEvent(Event::Done);
     }
 };

@@ -272,23 +272,9 @@ extern "C" int __io_putchar(int ch) {
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == ds18s20.getTimerHandle()) {
-        using State = OW::State;
-        switch (ds18s20.getState()) {
-            case State::WriteBitRelease:
-                ds18s20.handleEvent(OW::Event::ContinueByte);
-                break;
-            case State::Reset:
-            case State::WaitPresence:
-            case State::WriteByteInit:
-            case State::WriteBitHold:
-            case State::WriteWaitNextBit:
-            case State::WriteBitInit:
-                ds18s20.handleEvent(OW::Event::Timeout);
-                break;
-            default:
-                break;
-        }
-    } else if (htim->Instance == TIM6) {
+        ds18s20.handleEvent(OW::Event::Timeout);
+    }
+    if (htim->Instance == TIM6) {
         HAL_IncTick();
         lv_tick_inc(1);
     }

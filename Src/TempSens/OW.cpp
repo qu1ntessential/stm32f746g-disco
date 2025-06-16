@@ -71,26 +71,12 @@ void OW::stopTimer() {
 void OW::handleEvent(OW::Event e) {
     for (const auto &t: m_transitions) {
         if (t.current == m_state && t.event == e) {
-
-#if (OW_DEBUG >= 2)
-            print_log(DEBUG_LOG, "%s -> %s\r\n",
-                      state_names[static_cast<int>(t.current)],
-                      state_names[static_cast<int>(t.next)]);
-#endif
-
             m_state = t.next;
             if (t.action)
                 (this->*t.action)();
             return;
         }
     }
-
-#if (OW_DEBUG >= 2)
-    print_log(ERROR_LOG,
-              "FSM: No transition for state=%s, event=%s\r\n",
-              state_names[static_cast<int>(m_state)],
-              event_names[static_cast<int>(e)]);
-#endif
 }
 
 void OW::sendReset() {
@@ -109,54 +95,10 @@ void OW::finishReset() {
     stopTimer();
     setLineInput();
     m_presence = !readLine();
-    onDone(m_presence);
+    resetDone(m_presence);
 }
 
 /// Idle -> WriteBitInit -> WriteBitHold -> WriteBitRelease
-
-void OW::startWriteByte() {
-    setLineOutput();
-    writeLine(false);
-    if (m_currentBit) {
-        startTimerUs(5);
-    } else {
-        startTimerUs(60);
-    }
-}
-
-void OW::continueWriteBit() {
-    writeLine(true);
-    if (m_currentBit) {
-        startTimerUs(60);
-    } else {
-        startTimerUs(5);
-    }
-}
-
-void OW::releaseLine() {
-    writeLine(true);
-    startTimerUs(10);
-}
-
-void OW::nextWriteBit() {
-    writeLine(true);
-    startTimerUs(20);
-
-    m_byteBitIndex++;
-
-    if (m_byteBitIndex < 8) {
-        m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
-    } else {
-        m_state = State::Idle;
-        onDone(true);
-    }
-}
-
-void OW::writeBit(bool bit) {
-    if (m_state != State::Idle) return;
-    m_currentBit = bit;
-    handleEvent(Event::BitWrite);
-}
 
 void OW::writeByte(uint8_t byte) {
     if (m_state != State::Idle) return;
@@ -167,3 +109,57 @@ void OW::writeByte(uint8_t byte) {
 
     handleEvent(Event::ByteWrite);
 }
+
+void OW::startWriteByte() {
+    m_byteBitIndex = 0;
+    m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
+    handleEvent(Event::Timeout);
+}
+
+void OW::continueWriteBit() {
+    stopTimer();
+
+    setLineOutput();
+    writeLine(false);
+
+    startTimerUs(2);
+}
+
+void OW::startBitHold() {
+    stopTimer();
+
+    if (m_currentBit) {
+
+        writeLine(true);
+        setLineInput();
+        startTimerUs(60);
+    } else {
+
+        startTimerUs(60);
+    }
+}
+
+void OW::releaseLine() {
+    stopTimer();
+
+    if (!m_currentBit) {
+        writeLine(true);
+        setLineInput();
+    }
+
+    startTimerUs(5);
+}
+
+void OW::nextWriteBit() {
+    stopTimer();
+
+    m_byteBitIndex++;
+    if (m_byteBitIndex < 8) {
+        m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
+        handleEvent(Event::Timeout);
+    } else {
+        m_state = State::Idle;
+        resetDone(true);
+    }
+}
+
