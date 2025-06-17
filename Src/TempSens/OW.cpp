@@ -88,7 +88,7 @@ void OW::sendReset() {
 void OW::waitPresence() {
     stopTimer();
     writeLine(true);
-    startTimerUs(40); ///< Более правильно читать линию по прерыванию
+    startTimerUs(60); ///< Более правильно читать линию по прерыванию
 }
 
 void OW::finishReset() {
@@ -98,15 +98,14 @@ void OW::finishReset() {
     resetDone(m_presence);
 }
 
-/// Idle -> WriteBitInit -> WriteBitHold -> WriteBitRelease
+/** @name Action functions */
+///@{
 
 void OW::writeByte(uint8_t byte) {
     if (m_state != State::Idle) return;
-
     m_currentByte = byte;
     m_byteBitIndex = 0;
     m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
-
     handleEvent(Event::ByteWrite);
 }
 
@@ -118,41 +117,33 @@ void OW::startWriteByte() {
 
 void OW::continueWriteBit() {
     stopTimer();
-
     setLineOutput();
     writeLine(false);
-
     startTimerUs(2);
 }
 
 void OW::startBitHold() {
     stopTimer();
-
     if (m_currentBit) {
-
         writeLine(true);
         setLineInput();
         startTimerUs(60);
     } else {
-
         startTimerUs(60);
     }
 }
 
 void OW::releaseLine() {
     stopTimer();
-
     if (!m_currentBit) {
         writeLine(true);
         setLineInput();
     }
-
     startTimerUs(5);
 }
 
 void OW::nextWriteBit() {
     stopTimer();
-
     m_byteBitIndex++;
     if (m_byteBitIndex < 8) {
         m_currentBit = (m_currentByte >> m_byteBitIndex) & 0x01;
@@ -163,3 +154,4 @@ void OW::nextWriteBit() {
     }
 }
 
+///@}

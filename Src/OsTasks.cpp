@@ -161,19 +161,17 @@ void TwiThread(void *argument) {
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-
     ds18s20.init();
     ds18s20.handleEvent(OW::Event::Start);
     vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
-    ds18s20.writeByte(SKIP_ROM);
-
     for (;;) {
+        ds18s20.writeByte(SKIP_ROM);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
     }
 }
 
 void FreeRTOS_Resources_Init() {
-    //UART_CLI_Init();
+    UART_CLI_Init();
 
     twiSemaphore = xSemaphoreCreateBinaryStatic(&twiSemaphoreBuffer);
 
