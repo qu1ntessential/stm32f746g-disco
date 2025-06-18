@@ -23,6 +23,7 @@
 #include "adc.h"
 #include "crc.h"
 #include "dcmi.h"
+#include "dma.h"
 #include "eth.h"
 #include "i2c.h"
 #include "iwdg.h"
@@ -177,7 +178,7 @@ void PeriphCommonClock_Config(void)
   * @param  htim : TIM handle
   * @retval None
   */
-__weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
 
