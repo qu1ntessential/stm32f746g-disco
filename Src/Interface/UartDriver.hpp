@@ -8,18 +8,29 @@
  * @tparam RxBufSize
  */
 template<uint16_t TxBufSize = 256, uint16_t RxBufSize = 256>
-class UartDriver {
+class UartDmaDriver {
+    RingBuffer<uint8_t, TxBufSize> txBuffer;
+    RingBuffer<uint8_t, RxBufSize> rxBuffer;
+
+    UART_HandleTypeDef *m_huart;
+    bool txInProgress = false;
+    //uint8_t dmaRxBuffer[RxBufSize];
 public:
-    UartDriver() = default;
+    explicit UartDmaDriver(UART_HandleTypeDef *huart) : m_huart(huart) {}
 
-    /// Инициализация UART — абстрактный метод, зависит от реализации
-    virtual void init() = 0;
+    void init() {
+        HAL_UART_Receive_DMA(m_huart, rxBuffer, RxBufSize);
+    }
 
-    /// Отправить один байт (поместить в txBuffer и запустить передачу)
     bool sendByte(uint8_t byte) {
-        bool wasEmpty = txBuffer.isEmpty();
-        if (!txBuffer.push(byte)) return false;
-        if (wasEmpty) startTransmission();
+        if (txBuffer.isFull()) return false;
+
+        bool startTx = txBuffer.isEmpty() && !txInProgress;
+        txBuffer.push(byte);
+
+        if (startTx) {
+            startTransmission();
+        }
         return true;
     }
 
@@ -53,8 +64,6 @@ public:
     }
 
 protected:
-    RingBuffer<uint8_t, TxBufSize> txBuffer;
-    RingBuffer<uint8_t, RxBufSize> rxBuffer;
 
     /// Запуск передачи (если включена передача прерыванием)
     void startTransmission() {

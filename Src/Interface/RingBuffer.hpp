@@ -5,6 +5,11 @@
 
 #include "stm32f7xx.h"
 
+/**
+ * @brief Шаблонный класс кольцевого буфера
+ * @tparam T Тип элементов, хранящихсяв буфере
+ * @tparam Size Размер кольцевого буфера
+ */
 template<typename T, size_t Size>
 class RingBuffer {
     static_assert((Size & (Size - 1)) == 0, "Size must be power of 2");
@@ -51,5 +56,24 @@ public:
 
     inline void reset() {
         m_head = m_tail = 0;
+    }
+
+    inline void skip(uint16_t count) {
+        m_tail = (m_tail + count) % Size;
+    }
+
+    const T *getContiguousBlock(uint16_t &count) {
+        if (isEmpty()) {
+            count = 0;
+            return nullptr;
+        }
+
+        if (m_head > m_tail) {
+            count = m_head - m_tail;
+            return &m_buffer[m_tail];
+        } else {
+            count = Size - m_tail;
+            return &m_buffer[m_tail];
+        }
     }
 };

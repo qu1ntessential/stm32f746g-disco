@@ -13,7 +13,6 @@ extern FatFsWrapper uSD;
 
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
-DS18X20 ds18s20(GPIOA, GPIO_PIN_0, &htim5);
 
 TaskHandle_t WatchdogTaskHandle = nullptr;
 TaskHandle_t LvglTaskHandle = nullptr;
@@ -161,11 +160,7 @@ void TwiThread(void *argument) {
 
 void Task4Thread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-    ds18s20.init();
-    ds18s20.handleEvent(OW::Event::Start);
-    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
     for (;;) {
-        ds18s20.writeByte(SKIP_ROM);
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(2000));
     }
 }
@@ -269,9 +264,6 @@ extern "C" int __io_putchar(int ch) {
 }
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim == ds18s20.getTimerHandle()) {
-        ds18s20.handleEvent(OW::Event::Timeout);
-    }
     if (htim->Instance == TIM6) {
         HAL_IncTick();
         lv_tick_inc(1);
