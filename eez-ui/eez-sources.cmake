@@ -35,8 +35,6 @@ foreach(item ${ALL_DIRS})
     endif()
 endforeach()
 
-message(STATUS "INCLUDE_DIRS: ${INCLUDE_DIRS}")
-
 # Добавляем папки в target_include_directories
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         ${INCLUDE_DIRS}

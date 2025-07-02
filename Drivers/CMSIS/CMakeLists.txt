@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(STARTUP_LOCATION Device/ST/STM32F7xx/Source/Templates/gcc/startup_stm32f746xx.s)
-# set(STM32_LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F7xx/Source/Templates/gcc/linker/stm32f746nghx_flash.ld)
-# set(STM32_LINKER_OPTION  )
-
 add_library(cmsis STATIC
-        ${STARTUP_LOCATION}
         Device/ST/STM32F7xx/Source/Templates/system_stm32f7xx.c
 )
 

@@ -15,7 +15,9 @@ add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
 add_subdirectory(Drivers/lvgl-9.2.2)
 
-add_executable(${PROJECT_NAME})
+add_executable(${PROJECT_NAME}
+        ${STARTUP_FILE}
+)
 
 include(Src/app-sources.cmake)
 include(eez-ui/eez-sources.cmake)
