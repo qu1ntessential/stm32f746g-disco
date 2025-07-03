@@ -15,7 +15,6 @@ void DacDriver::bufferDelete() {
     }
 }
 
-
 /**
  * @brief Настройка таймера для нужной частоты обновления DAC
  * @param frequency Частота сигнала в Гц

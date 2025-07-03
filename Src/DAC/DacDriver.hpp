@@ -38,6 +38,34 @@ public:
         bufferDelete();
     }
 
+    inline HAL_StatusTypeDef init() { return HAL_DAC_Init(m_hdac); }
+
+    inline HAL_StatusTypeDef start() { return HAL_DAC_Start(m_hdac, m_channel); }
+
+    inline HAL_StatusTypeDef stop() { return HAL_DAC_Stop(m_hdac, m_channel); }
+
+    /**
+     * @brief Установка значения DAC (12-битное)
+     * @param value Значение от 0 до 4095
+     * @param alignment Выравнивание (DAC_ALIGN_12B_R или DAC_ALIGN_12B_L)
+     * @retval HAL статус
+     */
+    inline HAL_StatusTypeDef setValue(uint32_t value, uint32_t alignment = DAC_ALIGN_12B_R) {
+        if (value > 0xFFF) value = 0xFFF;
+        return HAL_DAC_SetValue(m_hdac, m_channel, alignment, value);
+    }
+
+    /**
+     * @brief Установка выходного напряжения (в милливольтах)
+     * @param voltage_mV Напряжение в милливольтах (0-VREF)
+     * @param vref_mV Опорное напряжение в милливольтах (обычно 3300)
+     * @retval HAL статус
+     */
+    inline HAL_StatusTypeDef setVoltage(uint32_t voltage_mV, uint32_t vref_mV = 3300) {
+        uint32_t value = (voltage_mV * 4095) / vref_mV;
+        return setValue(value);
+    }
+
     /**
      * @brief Остановка генерации сигнала
      */
