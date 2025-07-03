@@ -17,21 +17,12 @@ public:
         CUSTOM
     };
 
-private:
-    DAC_HandleTypeDef *m_hdac;
-    TIM_HandleTypeDef *m_htim;
-    uint32_t m_channel;
-    uint32_t *m_waveformBuffer;
-    size_t m_bufferSize;
-    float m_currentFrequency;
-    WaveformType m_currentWaveform;
-
-    HAL_StatusTypeDef
-    waveformGen(const std::vector<uint32_t> &waveform, float frequency, uint32_t alignment = DAC_ALIGN_12B_R);
-
-    void bufferDelete();
-
-public:
+    /**
+     * @brief Конструктор класса DAC_Controller
+     * @param hdac Указатель на структуру обработчика DAC
+     * @param htim Указатель на обработчик таймера для триггера DAC
+     * @param channel Канал DAC (DAC_CHANNEL_1 или DAC_CHANNEL_2)
+     */
     explicit DacDriver(DAC_HandleTypeDef *hdac,
                        TIM_HandleTypeDef *htim,
                        uint32_t channel) : m_hdac(hdac),
@@ -42,10 +33,25 @@ public:
                                            m_currentFrequency(0.0f),
                                            m_currentWaveform(WaveformType::CUSTOM) {}
 
+    ~DacDriver() {
+        waveformStop();
+        bufferDelete();
+    }
+
     /**
      * @brief Остановка генерации сигнала
      */
     void waveformStop();
+
+    /**
+     * @brief Генерация периодического сигнала по массиву данных
+     * @param waveform Массив данных сигнала (значения от 0 до 4095)
+     * @param frequency Частота сигнала в Гц
+     * @param alignment Выравнивание данных (DAC_ALIGN_12B_R или DAC_ALIGN_12B_L)
+     * @retval HAL-статус
+     */
+    HAL_StatusTypeDef
+    waveformGen(const std::vector<uint32_t> &waveform, float frequency, uint32_t alignment = DAC_ALIGN_12B_R);
 
     /**
      * @brief Генерация синусоидального сигнала
@@ -66,4 +72,17 @@ public:
      * @retval HAL-статус
      */
     HAL_StatusTypeDef triangleWaveGen(uint32_t amplitude, uint32_t offset, float frequency, uint32_t points = 100);
+
+private:
+    DAC_HandleTypeDef *m_hdac;
+    TIM_HandleTypeDef *m_htim;
+    uint32_t m_channel;
+    uint32_t *m_waveformBuffer;
+    size_t m_bufferSize;
+    float m_currentFrequency;
+    WaveformType m_currentWaveform;
+
+    void bufferDelete();
+
+    bool timerConfigForFreq(float frequency, uint32_t points);
 };
