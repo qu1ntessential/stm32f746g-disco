@@ -13,6 +13,7 @@ extern FatFsWrapper uSD;
 
 extern QSPI_HandleTypeDef QSPIHandle;
 QSPI extFlash(&QSPIHandle);
+DacDriver dacController(&hdac);
 
 TaskHandle_t WatchdogTaskHandle = nullptr;
 TaskHandle_t LvglTaskHandle = nullptr;
@@ -126,7 +127,7 @@ void WatchdogThread(void *argument) {
  */
 void LvglThread(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
-    //uSD.Init();
+    uSD.Init();
     //extFlash.Init();
     //lv_fs_fatfs_init();
     while (1) {

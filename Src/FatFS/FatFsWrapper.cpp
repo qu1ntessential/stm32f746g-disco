@@ -236,6 +236,11 @@ FatFsWrapper::Result FatFsWrapper::mount(uint8_t drive) {
     return m_lastError;
 }
 
+/**
+ * @brief
+ * @param newDrive
+ * @return
+ */
 FatFsWrapper::Result FatFsWrapper::remount(uint8_t newDrive) {
     Result res = unmount();
     if (res != Result::OK) return res;
@@ -262,7 +267,7 @@ FatFsWrapper::Result FatFsWrapper::unmount() {
 /**
  * @brief Открытие файла
  * @param path Путь к файлу
- * @param mode Режим открытия (по умолчанию FA_READ | FA_WRITE | FA_OPEN_ALWAYS)
+ * @param mode Режим открытия (по-умолчанию FA_READ | FA_WRITE | FA_OPEN_ALWAYS)
  * @return Результат операции
  */
 FatFsWrapper::Result FatFsWrapper::open(const std::string &path, uint8_t mode) {

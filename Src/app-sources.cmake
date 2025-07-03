@@ -6,6 +6,7 @@ file(GLOB_RECURSE SOURCES
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/main.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/stm32f7xx_it.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/dma.c
+        ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/dac.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/usart.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/i2c.c
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/tim.c

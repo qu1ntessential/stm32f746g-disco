@@ -24,6 +24,7 @@ int main() {
     MX_USART1_UART_Init();
     MX_USART6_UART_Init();
     MX_I2C1_Init();
+    MX_DAC_Init();
     twi1.Init();
 
     lv_init();
