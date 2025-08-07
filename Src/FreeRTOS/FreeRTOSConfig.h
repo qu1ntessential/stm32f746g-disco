@@ -31,7 +31,7 @@ extern uint32_t SystemCoreClock;
 /* Memory allocation */
 #define configSUPPORT_STATIC_ALLOCATION          1  ///< Поддержка статического выделения памяти
 #define configSUPPORT_DYNAMIC_ALLOCATION         1  ///< Поддержка динамического выделения памяти
-#define configTOTAL_HEAP_SIZE                    ((size_t)32 * 1024)  ///< Общий размер кучи (байт)
+#define configTOTAL_HEAP_SIZE                    ((size_t)512)  ///< Общий размер кучи (байт)
 
 /* Queue registry */
 #define configQUEUE_REGISTRY_SIZE                8  ///< Для vQueueAddToRegistry() (назначение имён очередям/семафорам)
@@ -39,9 +39,9 @@ extern uint32_t SystemCoreClock;
 /******************************************************************************/
 /* Hook and callback function related definitions. ****************************/
 /******************************************************************************/
-#define configUSE_IDLE_HOOK                      0  ///< 1: Включить vApplicationIdleHook() для фоновых операций
-#define configUSE_TICK_HOOK                      0  ///< 1: Включить vApplicationTickHook() (вызывается в прерывании)
-#define configUSE_MALLOC_FAILED_HOOK             0  ///< 1: Включить vApplicationMallocFailedHook()
+#define configUSE_IDLE_HOOK                      1  ///< 1: Включить vApplicationIdleHook() для фоновых операций
+#define configUSE_TICK_HOOK                      1  ///< 1: Включить vApplicationTickHook() (вызывается в прерывании)
+#define configUSE_MALLOC_FAILED_HOOK             1  ///< 1: Включить vApplicationMallocFailedHook()
 #define configCHECK_FOR_STACK_OVERFLOW           2  ///< 0: Отключено, 1: Быстрая проверка, 2: Точная проверка
 
 /******************************************************************************/
@@ -63,12 +63,12 @@ extern uint32_t GetRuntimeCounterValue(void);
 /******************************************************************************/
 /* Software timer related definitions. ****************************************/
 /******************************************************************************/
-/*
+
 #define configUSE_TIMERS                         1  ///< Включить программные таймеры
 #define configTIMER_TASK_PRIORITY                (configMAX_PRIORITIES - 1)  ///< Приоритет задачи таймеров
 #define configTIMER_TASK_STACK_DEPTH             configMINIMAL_STACK_SIZE    ///< Размер стека задачи таймеров
 #define configTIMER_QUEUE_LENGTH                 10  ///< Длина очереди команд таймеров
-*/
+
 /******************************************************************************/
 /* Co-routine definitions. ***************************************************/
 /******************************************************************************/
@@ -94,40 +94,40 @@ extern uint32_t GetRuntimeCounterValue(void);
 #define configASSERT(x) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );}
 
 /* Маппинг обработчиков прерываний FreeRTOS на CMSIS */
-#define vPortSVCHandler    SVC_Handler
-#define xPortPendSVHandler PendSV_Handler
-#define xPortSysTickHandler SysTick_Handler  ///< Закомментировать для CubeMX, если SysTick обрабатывается HAL
+#define vPortSVCHandler     SVC_Handler
+#define xPortPendSVHandler  PendSV_Handler
+#define xPortSysTickHandler SysTick_Handler ///< Закомментировать для CubeMX, если SysTick обрабатывается HAL
 
 /******************************************************************************/
 /* Additional features from FreeRTOS V11. ************************************/
 /******************************************************************************/
-#define configUSE_TASK_NOTIFICATIONS           1  ///< Включить уведомления задач
-#define configUSE_MUTEXES                      1  ///< Включить мьютексы
-#define configUSE_RECURSIVE_MUTEXES            1  ///< Включить рекурсивные мьютексы
-#define configUSE_COUNTING_SEMAPHORES          1  ///< Включить счётчиковые семафоры
-#define configUSE_EVENT_GROUPS                 1  ///< Включить группы событий
-#define configUSE_STREAM_BUFFERS               1  ///< Включить потоковые буферы
+#define configUSE_TASK_NOTIFICATIONS           1 ///< Включить уведомления задач
+#define configUSE_MUTEXES                      1 ///< Включить мьютексы
+#define configUSE_RECURSIVE_MUTEXES            1 ///< Включить рекурсивные мьютексы
+#define configUSE_COUNTING_SEMAPHORES          1 ///< Включить счётчиковые семафоры
+#define configUSE_EVENT_GROUPS                 1 ///< Включить группы событий
+#define configUSE_STREAM_BUFFERS               1 ///< Включить потоковые буферы
 
 /* API includes */
-#define INCLUDE_vTaskPrioritySet               1
-#define INCLUDE_uxTaskPriorityGet              1
-#define INCLUDE_vTaskDelete                    1
-#define INCLUDE_vTaskSuspend                   1
-#define INCLUDE_xResumeFromISR                 1
-#define INCLUDE_vTaskDelayUntil                1
-#define INCLUDE_vTaskDelay                     1
-#define INCLUDE_xTaskGetSchedulerState         1
-#define INCLUDE_xTaskGetCurrentTaskHandle      1
-#define INCLUDE_xEventGroupSetBitFromISR       1
-#define INCLUDE_xTaskResumeFromISR             1
+#define INCLUDE_vTaskPrioritySet               1 ///< Разрешает использование vTaskPrioritySet() — изменяет приоритет задачи
+#define INCLUDE_uxTaskPriorityGet              1 ///< Разрешает использование uxTaskPriorityGet() — возвращает приоритет задачи
+#define INCLUDE_vTaskDelete                    1 ///< Разрешает использование vTaskDelete() — удаляет задачу
+#define INCLUDE_vTaskSuspend                   1 ///< Разрешает использование vTaskSuspend() — приостанавливает выполнение задачи
+#define INCLUDE_xResumeFromISR                 1 ///< Разрешает использование xResumeFromISR() — возобновляет задачу из обработчика прерывания (устаревшее, используйте xTaskResumeFromISR)
+#define INCLUDE_vTaskDelayUntil                1 ///< Разрешает использование vTaskDelayUntil() — задержка до определённого времени (tick-ориентированная задержка)
+#define INCLUDE_vTaskDelay                     1 ///< Разрешает использование vTaskDelay() — задержка на заданное количество тиков
+#define INCLUDE_xTaskGetSchedulerState         1 ///< Разрешает использование xTaskGetSchedulerState() — возвращает состояние планировщика (запущен/остановлен)
+#define INCLUDE_xTaskGetCurrentTaskHandle      1 ///< Разрешает использование xTaskGetCurrentTaskHandle() — возвращает дескриптор текущей задачи
+#define INCLUDE_xEventGroupSetBitFromISR       1 ///< Разрешает использование xEventGroupSetBitFromISR() — установка флага события из ISR
+#define INCLUDE_xTaskResumeFromISR             1 ///< Разрешает использование xTaskResumeFromISR() — возобновляет задачу из ISR
 
 /* Отключенные API (для экономии места) */
-#define INCLUDE_uxTaskGetStackHighWaterMark    0
-#define INCLUDE_xTaskGetIdleTaskHandle         0
-#define INCLUDE_eTaskGetState                  0
-#define INCLUDE_xTimerPendFunctionCall         0
-#define INCLUDE_xTaskAbortDelay                0
-#define INCLUDE_xTaskGetHandle                 1
+#define INCLUDE_uxTaskGetStackHighWaterMark    1 ///< Отключает uxTaskGetStackHighWaterMark() — возвращает минимальный запас стека задачи (для отладки)
+#define INCLUDE_xTaskGetIdleTaskHandle         0 ///< Отключает xTaskGetIdleTaskHandle() — возвращает дескриптор задачи простаивания (idle task)
+#define INCLUDE_eTaskGetState                  0 ///< Отключает eTaskGetState() — возвращает состояние задачи (Running, Ready, Blocked и т.д.)
+#define INCLUDE_xTimerPendFunctionCall         0 ///< Отключает xTimerPendFunctionCall() — отложенный вызов функции из ISR в контексте задачи таймера
+#define INCLUDE_xTaskAbortDelay                0 ///< Отключает xTaskAbortDelay() — прерывает задержку задачи (например, vTaskDelay)
+#define INCLUDE_xTaskGetHandle                 1 ///< Разрешает использование xTaskGetHandle() — получение дескриптора задачи по имени
 
 #define configCOMMAND_INT_MAX_OUTPUT_SIZE 512
 #define configAPPLICATION_PROVIDES_cOutputBuffer 0

@@ -1,4 +1,4 @@
-#include "OsTasks.h"
+#include "Main.hpp"
 
 extern "C" void SystemClock_Config(void);
 extern "C" void PeriphCommonClock_Config(void);
@@ -37,6 +37,13 @@ int main() {
     vTaskStartScheduler();
 
     while (1) {}
+}
+
+extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM6) {
+        HAL_IncTick();
+        lv_tick_inc(1);
+    }
 }
 
 void ConfigureTimerForRunTimeStats(void) {

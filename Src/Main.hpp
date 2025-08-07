@@ -1,5 +1,4 @@
-#ifndef OSTASKS_H
-#define OSTASKS_H
+#pragma once
 
 #include "stm32f7xx.h"
 
@@ -77,5 +76,3 @@ void Task4Thread(void *argument);
  * @param argument
  */
 void cliThread(void *argument);
-
-#endif // OSTASKS_H

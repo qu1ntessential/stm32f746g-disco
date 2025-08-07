@@ -22,6 +22,7 @@ file(GLOB_RECURSE SOURCES
 set(EXCLUDE_FILES
         # ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
         ${CMAKE_CURRENT_LIST_DIR}/QSPI/sine_table.c
+        ${CMAKE_CURRENT_LIST_DIR}/DAC/DacDriver.cpp
 )
 
 foreach (file ${EXCLUDE_FILES})

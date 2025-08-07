@@ -2,7 +2,6 @@
   "navigation": {
     "selectedUserPageObject": "[gui.eez-project]:/userPages/0",
     "selectedStyleObject": "[gui.eez-project]:/lvglStyles/styles/0",
-    "selectedBitmapObject": "[gui.eez-project]:/bitmaps/-1",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -192,10 +191,22 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 52.095059412132585,
-              "selected": -1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
-              "children": []
+              "children": [
+                {
+                  "type": "tab",
+                  "id": "#a9c27aa7-61bd-4bf0-93af-09dca812e124",
+                  "name": "Main",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[gui.eez-project]:/userPages/0",
+                    "permanent": false
+                  },
+                  "icon": "svg:page"
+                }
+              ],
+              "active": true
             },
             {
               "type": "tabset",

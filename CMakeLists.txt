@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-include(toolchain/gcc-arm-none-eabi.cmake)
 
-# set(CMAKE_VERBOSE_MAKEFILE OFF CACHE BOOL "" FORCE)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 project(stm32f746g-disco LANGUAGES C CXX ASM)
@@ -27,9 +25,8 @@ set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel-11.1.0")
 
 add_library(freertos_config INTERFACE)
 
-target_include_directories(freertos_config
-        INTERFACE
-        "Src"
+target_include_directories(freertos_config INTERFACE
+        "Src/FreeRTOS"
 )
 
 if (DEFINED FREERTOS_SMP_EXAMPLE AND FREERTOS_SMP_EXAMPLE STREQUAL "1")
