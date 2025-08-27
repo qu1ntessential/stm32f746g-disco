@@ -37,44 +37,7 @@
 #include "actions.h"
  */
 
-extern TaskHandle_t WatchdogTaskHandle;
-extern TaskHandle_t LvglTaskHandle;
-extern TaskHandle_t UartTaskHandle;
-extern TaskHandle_t TwiTaskHandle;
-extern TaskHandle_t Task4Handle;
-
 /**
  * @brief Функция инициализации FreeRTOS ресурсов (заадчи, очереди, семафоры и т.д.)
  */
 void FreeRTOS_Resources_Init();
-
-/**
- * @brief Поток для обработки UI
- * @note Все изменения интерфейса должны осуществляться в этом потоке!
- * @param argument
- */
-void LvglThread(void *argument);
-
-/**
- * @brief Поток для печати отладочных сообщений в UART (используя очередь FreeRTOS)
- * @param argument
- */
-void UartThread(void *argument);
-
-/**
- * @brief
- * @param argument
- */
-void TwiThread(void *argument);
-
-/**
- * @brief
- * @param argument
- */
-void Task4Thread(void *argument);
-
-/**
- * @brief
- * @param argument
- */
-void cliThread(void *argument);
