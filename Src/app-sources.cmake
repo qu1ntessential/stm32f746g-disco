@@ -23,6 +23,8 @@ set(EXCLUDE_FILES
         # ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
         ${CMAKE_CURRENT_LIST_DIR}/QSPI/sine_table.c
         ${CMAKE_CURRENT_LIST_DIR}/DAC/DacDriver.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/lvgl_port/lvgl_port_tft.c
+        ${CMAKE_CURRENT_LIST_DIR}/lvgl_port/lvgl_port_touchpad.c
 )
 
 foreach (file ${EXCLUDE_FILES})

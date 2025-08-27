@@ -11,14 +11,14 @@ add_subdirectory(Drivers/CMSIS)
 add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
-add_subdirectory(Drivers/lvgl-9.2.2)
+# add_subdirectory(Drivers/lvgl-9.2.2)
 
 add_executable(${PROJECT_NAME}
         ${STARTUP_FILE}
 )
 
 include(Src/app-sources.cmake)
-include(eez-ui/eez-sources.cmake)
+# include(eez-ui/eez-sources.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
 set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel-11.1.0")
@@ -47,7 +47,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         bsp
         freertos_kernel
         fatfs
-        lvgl
+        # lvgl
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

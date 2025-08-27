@@ -52,11 +52,6 @@ extern uint32_t SystemCoreClock;
 #define configUSE_STATS_FORMATTING_FUNCTIONS     1  ///< Включить vTaskList() и vTaskGetRunTimeStats()
 #define configRECORD_STACK_HIGH_ADDRESS          1  ///< Запись верхнего адреса стека для отладки
 
-/* Функции для сбора статистики времени выполнения */
-extern void ConfigureTimerForRunTimeStats(void);
-
-extern uint32_t GetRuntimeCounterValue(void);
-
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() ConfigureTimerForRunTimeStats()
 #define portGET_RUN_TIME_COUNTER_VALUE()         GetRuntimeCounterValue()
 
