@@ -51,7 +51,6 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern PCD_HandleTypeDef hpcd;
 extern SD_HandleTypeDef uSdHandle;
 /* USER CODE END 0 */
 
@@ -285,10 +284,6 @@ void DMA2_Stream6_IRQHandler(void) {
 */
 void DMA2_Stream3_IRQHandler(void) {
     HAL_DMA_IRQHandler(uSdHandle.hdmarx);
-}
-
-void OTG_FS_IRQHandler(void) {
-    HAL_PCD_IRQHandler(&hpcd);
 }
 
 __attribute__((naked)) void HardFault_Handler(void) {

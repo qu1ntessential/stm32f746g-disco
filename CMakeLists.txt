@@ -12,7 +12,7 @@ add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
 # add_subdirectory(Drivers/lvgl-9.2.2)
-add_subdirectory(Drivers/STM32_USB_Device_Library)
+# add_subdirectory(Drivers/STM32_USB_Device_Library)
 
 add_executable(${PROJECT_NAME}
         ${STARTUP_FILE}
@@ -45,11 +45,10 @@ add_subdirectory(${FREERTOS_KERNEL_PATH} FreeRTOS-Kernel)
 # ---------------------------------------------------------------------------------------------------------------------
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-        # bsp
-        # freertos_kernel
+        bsp
+        freertos_kernel
         fatfs
-        # lvgl
-        usb_device_msc
+        lvgl
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
