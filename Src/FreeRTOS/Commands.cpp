@@ -1,5 +1,7 @@
 #include "Commands.hpp"
 
+#include <stdlib.h>
+
 TaskHandle_t UartCliTaskHandle = NULL;
 static StaticTask_t UartCliTaskBuffer;
 static StackType_t UartCliTaskStack[UART_CLI_TASK_STACK_SIZE];
@@ -128,39 +130,56 @@ static BaseType_t prvResetCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
 }
 
 static BaseType_t prvGpioCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
-    BaseType_t xParameterStringLength;
+    BaseType_t xParameterStringLength = 0;
     const char *pcPortParam = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
-    const char *pcPinParam = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
-    const char *pcStateParam = FreeRTOS_CLIGetParameter(pcCommandString, 3, &xParameterStringLength);
-
-    if (!pcPortParam || !pcPinParam || !pcStateParam) {
-        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Missing parameters.\r\n");
+    
+    if (!pcPortParam) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Missing port parameter.\r\n");
         return pdFALSE;
     }
 
-    // Port
+    // Port validation
     char portChar = pcPortParam[0];
     GPIO_TypeDef *GPIOx = get_gpio_port(portChar);
     if (!GPIOx) {
-        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Invalid GPIO port '%c'\r\n", portChar);
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Invalid GPIO port '%c'. Use A-I.\r\n", portChar);
         return pdFALSE;
     }
 
-    // Pin
+    // Pin parameter
+    xParameterStringLength = 0;
+    const char *pcPinParam = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
+    if (!pcPinParam || xParameterStringLength == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Missing pin parameter.\r\n");
+        return pdFALSE;
+    }
+    
     char pinStr[4] = {0};
-    strncpy(pinStr, pcPinParam, xParameterStringLength > 3 ? 3 : xParameterStringLength);
-    auto pin = (uint32_t) atoi(pinStr);
-    if (pin > 15) {
-        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Invalid GPIO pin '%u'\r\n", pin);
+    size_t pinLen = xParameterStringLength < 3 ? xParameterStringLength : 3;
+    strncpy(pinStr, pcPinParam, pinLen);
+    pinStr[pinLen] = '\0';
+    
+    char *endptr = NULL;
+    long pin = strtol(pinStr, &endptr, 10);
+    if (*endptr != '\0' || pin < 0 || pin > 15) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Invalid GPIO pin. Use 0-15.\r\n");
         return pdFALSE;
     }
 
-    uint32_t pinMask = (1 << pin);
+    uint32_t pinMask = (1U << pin);
 
-    // State
-    char action[10] = {0};
-    strncpy(action, pcStateParam, xParameterStringLength > 9 ? 9 : xParameterStringLength);
-    action[xParameterStringLength] = '\0';
+    // State parameter
+    xParameterStringLength = 0;
+    const char *pcStateParam = FreeRTOS_CLIGetParameter(pcCommandString, 3, &xParameterStringLength);
+    if (!pcStateParam || xParameterStringLength == 0) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Missing action parameter (set/reset/read).\r\n");
+        return pdFALSE;
+    }
+    
+    char action[8] = {0};
+    size_t actionLen = xParameterStringLength < 7 ? xParameterStringLength : 7;
+    strncpy(action, pcStateParam, actionLen);
+    action[actionLen] = '\0';
 
     if (strcasecmp(action, "set") == 0) {
         HAL_GPIO_WritePin(GPIOx, pinMask, GPIO_PIN_SET);
@@ -181,22 +200,30 @@ static BaseType_t prvGpioCommand(char *pcWriteBuffer, size_t xWriteBufferLen, co
 
 static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
     // Временный буфер для сырых данных
-    static char rawBuffer[2048];  // Достаточно большой буфер
+    static char rawBuffer[2048];
+    static bool tasksStarted = false;
+    static const char *currentLine = NULL;
 
-    // Получаем список задач
-    vTaskList(rawBuffer);
+    // Первый вызов: инициализация
+    if (!tasksStarted) {
+        vTaskList(rawBuffer);
+        currentLine = rawBuffer;
+        tasksStarted = true;
+        
+        // Заголовок
+        size_t len = snprintf(pcWriteBuffer, xWriteBufferLen,
+                              "Name             State    Prio  Stack  Time\r\n"
+                              "-------------------------------------------\r\n");
+        if (len >= xWriteBufferLen)
+            return pdFALSE;
+        return pdTRUE;
+    }
 
-    // Заголовок
-    size_t len = snprintf(pcWriteBuffer, xWriteBufferLen,
-                          "Name             State    Prio  Stack  Time\r\n"
-                          "-------------------------------------------\r\n");
-    if (len >= xWriteBufferLen)
-        return pdFALSE;
+    // Пошаговый вывод строк
+    const char *line = currentLine;
+    size_t bytesWritten = 0;
 
-    char *writePtr = pcWriteBuffer + len;
-    const char *line = rawBuffer;
-
-    while (*line) {
+    while (*line && bytesWritten < xWriteBufferLen) {
         // Найдём конец строки
         const char *nextLine = strpbrk(line, "\r\n");
 
@@ -209,10 +236,11 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
             continue;
         }
 
-        // Скопируем строку во временный буфер
-        char tmp[128] = {0};
-        strncpy(tmp, line, lineLen);
-        tmp[lineLen] = '\0';
+        // Безопасное копирование строки
+        char tmp[96] = {0};
+        size_t copyLen = lineLen < 95 ? lineLen : 95;
+        strncpy(tmp, line, copyLen);
+        tmp[copyLen] = '\0';
 
         // Распознать строку
         char name[20] = {0};
@@ -242,14 +270,15 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
                     break;
             }
 
-            int written = snprintf(writePtr, xWriteBufferLen - (writePtr - pcWriteBuffer),
+            int written = snprintf(pcWriteBuffer + bytesWritten,
+                                   xWriteBufferLen - bytesWritten,
                                    "%-16s %-8s %-5u %-6u %-3u%%\r\n",
                                    name, state_str, prio, stack, time);
 
-            if (written < 0 || (writePtr - pcWriteBuffer + written) >= xWriteBufferLen)
+            if (written < 0 || (size_t)written >= (xWriteBufferLen - bytesWritten))
                 break;
 
-            writePtr += written;
+            bytesWritten += written;
         }
 
         // Переходим к следующей строке
@@ -262,7 +291,15 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
         while (*line == '\r' || *line == '\n') line++;
     }
 
-    return pdFALSE;
+    currentLine = line;
+
+    if (*line == '\0') {
+        // Закончили вывод
+        tasksStarted = false;
+        return pdFALSE;
+    }
+
+    return pdTRUE;  // Продолжить вызовы
 }
 
 static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
@@ -281,7 +318,7 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, con
     // SubCommand play
     if (strncmp(pcSubCmd, "play", xParameterStringLength) == 0) {
         const char *trackNumStr;
-        BaseType_t trackNumLen;
+        BaseType_t trackNumLen = 0;
         int trackNum;
 
         trackNumStr = FreeRTOS_CLIGetParameter(pcCommandString, 2, &trackNumLen);
@@ -293,7 +330,13 @@ static BaseType_t prvDfpCommand(char *pcWriteBuffer, size_t xWriteBufferLen, con
         trackNum = atoi(trackNumStr);
         snprintf(pcWriteBuffer, xWriteBufferLen, "Playing track %d\r\n", trackNum);
     } else if (strncmp(pcSubCmd, "volume", xParameterStringLength) == 0) {
-        snprintf(pcWriteBuffer, xWriteBufferLen, "Skipping to next track\r\n");
+        const char *volStr = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
+        if (volStr == NULL) {
+            snprintf(pcWriteBuffer, xWriteBufferLen, "ERROR: 'volume' requires level (0-30)\r\n");
+            return pdFALSE;
+        }
+        int vol = atoi(volStr);
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Volume set to %d\r\n", vol);
     } else if (strncmp(pcSubCmd, "next", xParameterStringLength) == 0) {
         snprintf(pcWriteBuffer, xWriteBufferLen, "Skipping to next track\r\n");
     } else if (strncmp(pcSubCmd, "prev", xParameterStringLength) == 0) {
@@ -315,15 +358,28 @@ static BaseType_t prvFileSystemCommand(char *pcWriteBuffer,
     static std::vector<std::string> files;
     static size_t currentIndex = 0;
     static bool listingActive = false;
+    static StaticSemaphore_t xMutexBuffer;
+    static SemaphoreHandle_t xMutex = NULL;
+    
+    // Создаём мьютекс в первый раз
+    if (xMutex == NULL) {
+        xMutex = xSemaphoreCreateMutexStatic(&xMutexBuffer);
+    }
 
     BaseType_t xParameterStringLength;
     const char *pcSubCmd = FreeRTOS_CLIGetParameter(pcCommandString,
                                                     1,
                                                     &xParameterStringLength);
 
+    if (xSemaphoreTake(xMutex, portMAX_DELAY) != pdTRUE) {
+        snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Mutex timeout\r\n");
+        return pdFALSE;
+    }
+
     // Первый вызов: инициализация
     if (!listingActive) {
         if (pcSubCmd == NULL) {
+            xSemaphoreGive(xMutex);
             snprintf(pcWriteBuffer, xWriteBufferLen,
                      "Error: Missing parameters.\r\n");
             return pdFALSE;
@@ -346,12 +402,14 @@ static BaseType_t prvFileSystemCommand(char *pcWriteBuffer,
             currentIndex = 0;
 
             if (uSD.ls(pathStr.c_str(), files) != FatFsWrapper::Result::OK) {
+                xSemaphoreGive(xMutex);
                 snprintf(pcWriteBuffer, xWriteBufferLen,
                          "ERROR: ls failed on path '%s'\r\n", pathStr.c_str());
                 return pdFALSE;
             }
 
             if (files.empty()) {
+                xSemaphoreGive(xMutex);
                 snprintf(pcWriteBuffer, xWriteBufferLen,
                          "Directory is empty.\r\n");
                 return pdFALSE;
@@ -379,16 +437,18 @@ static BaseType_t prvFileSystemCommand(char *pcWriteBuffer,
     if (currentIndex >= files.size()) {
         // Закончили вывод
         listingActive = false;
+        xSemaphoreGive(xMutex);
         return pdFALSE;
     }
 
+    xSemaphoreGive(xMutex);
     return pdTRUE; // Продолжить вызовы
 }
 
 void UartCliThread(void *argument) {
     char input_buffer[128] = {0};
     char output_buffer[configCOMMAND_INT_MAX_OUTPUT_SIZE] = {0};
-    uint8_t input_index = 0;
+    size_t input_index = 0;
     uint8_t echo = 1;
 
     iprintf("\r\nFreeRTOS CLI v1.0\r\nType 'help' for commands\r\n\n> ");
@@ -397,12 +457,10 @@ void UartCliThread(void *argument) {
     while (1) {
         uint8_t c;
         if (HAL_UART_Receive(&huart1, &c, 1, 100) == HAL_OK) {
+            // Отправляем полученный символ обратно (echo)
             if (echo && isprint(c)) {
                 iprintf("%c", c);
                 fflush(stdout);
-
-                // Явно передаем процессорное время другим задачам
-                taskYIELD();  // Отдаем процессорное время Idle задаче
             }
 
             // Backspace или Delete
@@ -440,18 +498,27 @@ void UartCliThread(void *argument) {
 
                 iprintf("> ");
                 fflush(stdout);
-
-                // После завершения обработки команды, тоже можно отдать процессорное время
-                taskYIELD();  // Отдаем процессорное время Idle задаче
                 continue;
             }
 
-            // Добавление печатных символов
+            // Добавление печатных символов с проверкой переполнения буфера
             if (isprint(c) && input_index < sizeof(input_buffer) - 1) {
                 input_buffer[input_index++] = c;
+            } else if (!isprint(c)) {
+                // Игнорируем управляющие символы
+                continue;
+            } else if (input_index >= sizeof(input_buffer) - 1) {
+                // Буфер полон
+                iprintf("\r\n[Buffer full]\r\n> ");
+                fflush(stdout);
+                memset(input_buffer, 0, sizeof(input_buffer));
+                input_index = 0;
             }
         }
         UartCliAlive = 1;
+        
+        // Отдаём процессорное время один раз за итерацию цикла
+        taskYIELD();
     }
 }
 
