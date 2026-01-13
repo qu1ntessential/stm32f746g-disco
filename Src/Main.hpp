@@ -27,7 +27,6 @@
 #include "stm32746g_discovery_sd.h"
 #include "stm32746g_discovery_audio.h"
 
-/*
 #include "lvgl.h"
 #include "lvgl_port_tft.h"
 #include "lvgl_port_touchpad.h"
@@ -35,7 +34,6 @@
 #include "ui.h"
 #include "vars.h"
 #include "actions.h"
- */
 
 /**
  * @brief Функция инициализации FreeRTOS ресурсов (заадчи, очереди, семафоры и т.д.)

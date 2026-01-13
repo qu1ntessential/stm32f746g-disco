@@ -32,8 +32,8 @@ void Thread1(void *argument) {
     portTickType xLastWakeTime = xTaskGetTickCount();
     uSD.Init();
     while (true) {
-        //lv_task_handler();
-        //ui_tick();
+        lv_task_handler();
+        ui_tick();
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
     }
 }

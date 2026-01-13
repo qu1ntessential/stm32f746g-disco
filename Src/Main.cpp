@@ -37,12 +37,10 @@ int main() {
     MX_DAC_Init();
     twi1.Init();
 
-    /*
     lv_init();
     tft_init();
     touchpad_init();
     ui_init();
-    */
 
     ConfigureTimerForRunTimeStats();
     FreeRTOS_Resources_Init();
@@ -54,6 +52,6 @@ int main() {
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM6) {
         HAL_IncTick();
-        //lv_tick_inc(1);
+        lv_tick_inc(1);
     }
 }
