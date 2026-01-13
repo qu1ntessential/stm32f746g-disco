@@ -13,6 +13,10 @@ add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
 add_subdirectory(Drivers/lvgl-9.2.2)
 
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(NO_STL ON CACHE BOOL "" FORCE)   # Важно для embedded!
+add_subdirectory(Drivers/etl EXCLUDE_FROM_ALL)
+
 add_executable(${PROJECT_NAME}
         ${STARTUP_FILE}
 )
@@ -48,6 +52,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         freertos_kernel
         fatfs
         lvgl
+        etl::etl
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
