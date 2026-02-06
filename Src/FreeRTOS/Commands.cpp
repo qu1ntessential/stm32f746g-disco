@@ -199,13 +199,20 @@ static BaseType_t prvGpioCommand(char *pcWriteBuffer, size_t xWriteBufferLen, co
 }
 
 static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
-    // Временный буфер для сырых данных
-    static char rawBuffer[2048];
+    // Локальные переменные вместо static для экономии RAM
     static bool tasksStarted = false;
     static const char *currentLine = NULL;
+    char *rawBuffer = NULL;
 
     // Первый вызов: инициализация
     if (!tasksStarted) {
+        // Выделяем буфер динамически вместо static
+        rawBuffer = (char *)pvPortMalloc(2048);
+        if (rawBuffer == NULL) {
+            snprintf(pcWriteBuffer, xWriteBufferLen, "Error: Not enough memory for task list\r\n");
+            return pdFALSE;
+        }
+        
         vTaskList(rawBuffer);
         currentLine = rawBuffer;
         tasksStarted = true;
@@ -294,8 +301,12 @@ static BaseType_t prvTasksCommand(char *pcWriteBuffer, size_t xWriteBufferLen, c
     currentLine = line;
 
     if (*line == '\0') {
-        // Закончили вывод
+        // Закончили вывод - освобождаем память
         tasksStarted = false;
+        if (rawBuffer != NULL) {
+            vPortFree(rawBuffer);
+            rawBuffer = NULL;
+        }
         return pdFALSE;
     }
 

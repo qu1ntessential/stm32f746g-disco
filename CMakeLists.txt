@@ -7,6 +7,11 @@ project(stm32f746g-disco LANGUAGES C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+# Enable Link Time Optimization for reduced binary size
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+string(APPEND CMAKE_C_FLAGS_RELEASE " -flto=auto")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto=auto")
+
 add_subdirectory(Drivers/CMSIS)
 add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)

@@ -28,7 +28,7 @@ extern "C" {
 #define LED_GPIO_Port GPIOI
 #define LED_Pin       GPIO_PIN_13
 
-#define UART_CLI_TASK_STACK_SIZE 1024
+#define UART_CLI_TASK_STACK_SIZE 512
 
 extern TaskHandle_t UartCliTaskHandle;
 extern volatile uint8_t UartCliAlive;

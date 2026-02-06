@@ -124,7 +124,7 @@ extern uint32_t SystemCoreClock;
 #define INCLUDE_xTaskAbortDelay                0 ///< Отключает xTaskAbortDelay() — прерывает задержку задачи (например, vTaskDelay)
 #define INCLUDE_xTaskGetHandle                 1 ///< Разрешает использование xTaskGetHandle() — получение дескриптора задачи по имени
 
-#define configCOMMAND_INT_MAX_OUTPUT_SIZE 512
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE 256
 #define configAPPLICATION_PROVIDES_cOutputBuffer 0
 
 #endif /* FREERTOS_CONFIG_H */

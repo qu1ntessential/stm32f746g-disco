@@ -212,8 +212,8 @@
 /* Definition of the Ethernet driver buffers size and count */
 #define ETH_RX_BUF_SIZE                1524 /* buffer size for receive               */
 #define ETH_TX_BUF_SIZE                ETH_MAX_PACKET_SIZE /* buffer size for transmit              */
-#define ETH_RXBUFNB                    ((uint32_t)4U)       /* 4 Rx buffers of size ETH_RX_BUF_SIZE  */
-#define ETH_TXBUFNB                    ((uint32_t)4U)       /* 4 Tx buffers of size ETH_TX_BUF_SIZE  */
+#define ETH_RXBUFNB                    ((uint32_t)2U)       /* Reduced from 4 to 2 Rx buffers for memory optimization  */
+#define ETH_TXBUFNB                    ((uint32_t)2U)       /* Reduced from 4 to 2 Tx buffers for memory optimization  */
 
 /* Section 2: PHY configuration section */
 
