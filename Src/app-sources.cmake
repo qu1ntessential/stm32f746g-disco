@@ -16,11 +16,9 @@ file(GLOB_RECURSE SOURCES
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Src/stm32f7xx_hal_timebase_tim.c
 )
 
-# Исключаем указанные файлы
-set(EXCLUDE_FILES
-        # ${CMAKE_CURRENT_LIST_DIR}/QSPI/QSPI.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/QSPI/sine_table.c
-        ${CMAKE_CURRENT_LIST_DIR}/DAC/DacDriver.cpp
+# Исключаем указанные файлы (все файлы, расположенные на два уровня ниже Legacy)
+file(GLOB_RECURSE EXCLUDE_FILES
+        ${CMAKE_CURRENT_LIST_DIR}/Legacy/*/*.*
 )
 
 foreach (file ${EXCLUDE_FILES})
@@ -44,8 +42,17 @@ foreach (item ${ALL_DIRS})
     endif ()
 endforeach ()
 
-# Добавляем папки в target_include_directories
+# Убираем директории внутри Src/Legacy из списка include-путей
+set(FILTERED_INCLUDE_DIRS "")
+foreach (dir ${INCLUDE_DIRS})
+    string(FIND "${dir}" "${CMAKE_CURRENT_LIST_DIR}/Legacy" _pos)
+    if(_pos EQUAL -1)
+        list(APPEND FILTERED_INCLUDE_DIRS ${dir})
+    endif()
+endforeach()
+
+# Добавляем папки в target_include_directories (без Legacy)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
-        ${INCLUDE_DIRS}
+        ${FILTERED_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/CoGen/Core/Inc/
 )

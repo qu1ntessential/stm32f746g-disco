@@ -6,8 +6,6 @@ extern "C" void PeriphCommonClock_Config(void);
 extern const Diskio_drvTypeDef SD_Driver;
 FatFsWrapper uSD(&SD_Driver);
 
-I2C twi1(&hi2c1);
-
 /* Функции для сбора статистики времени выполнения */
 extern "C" void ConfigureTimerForRunTimeStats(void) {
     MX_TIM2_Init();
@@ -35,7 +33,6 @@ int main() {
     MX_USART6_UART_Init();
     MX_I2C1_Init();
     MX_DAC_Init();
-    twi1.Init();
 
     lv_init();
     tft_init();
@@ -46,7 +43,7 @@ int main() {
     FreeRTOS_Resources_Init();
     vTaskStartScheduler();
 
-    while (1) {}
+    while (true) {}
 }
 
 extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {

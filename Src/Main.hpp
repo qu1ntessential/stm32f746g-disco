@@ -15,10 +15,7 @@
 #include "semphr.h"
 #include "timers.h"
 
-#include "I2C.hpp"
 #include "FatFsWrapper.hpp"
-#include "QSPI.hpp"
-#include "DacDriver.hpp"
 
 #include "FreeRTOS_CLI.h"
 #include "Commands.hpp"
