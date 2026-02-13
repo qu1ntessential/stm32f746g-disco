@@ -7,8 +7,6 @@
 extern "C" {
 #endif
 
-extern void action_test_sd(lv_event_t * e);
-extern void action_test_flash(lv_event_t * e);
 
 #ifdef __cplusplus
 }
