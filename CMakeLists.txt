@@ -20,7 +20,10 @@ add_subdirectory(Drivers/lvgl-9.2.2)
 
 set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(NO_STL ON CACHE BOOL "" FORCE)   # Важно для embedded!
+# Подавляю warning,связанный с include(GNUInstallDirs) в embedded проекте
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE INTERNAL "")
 add_subdirectory(Drivers/etl EXCLUDE_FROM_ALL)
+unset(CMAKE_SUPPRESS_DEVELOPER_WARNINGS)
 
 add_executable(${PROJECT_NAME}
         ${STARTUP_FILE}
