@@ -16,7 +16,13 @@ add_subdirectory(Drivers/CMSIS)
 add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Drivers/BSP)
 add_subdirectory(Drivers/FatFs)
-add_subdirectory(Drivers/lvgl-9.2.2)
+
+set(LV_BUILD_CONF_PATH "${CMAKE_SOURCE_DIR}/Src/lv_conf.h" CACHE STRING "" FORCE)
+add_subdirectory(Drivers/lvgl)
+
+# Add the lv_conf.h path as a compiler definition so LVGL can find it during compilation
+# Note: No quotes - let __LV_TO_STR() stringify the path to avoid escaped quotes in the macro
+add_compile_definitions(LV_CONF_PATH=${CMAKE_SOURCE_DIR}/Src/lv_conf.h)
 
 set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(NO_STL ON CACHE BOOL "" FORCE)   # Важно для embedded!
@@ -33,7 +39,7 @@ include(Src/app-sources.cmake)
 include(eez-ui/eez-sources.cmake)
 
 # ---------------------------------------------------------------------------------------------------------------------
-set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel-11.1.0")
+set(FREERTOS_KERNEL_PATH "Drivers/FreeRTOS-Kernel")
 
 add_library(freertos_config INTERFACE)
 

@@ -1,3 +1,9 @@
 [submodule "Drivers/etl"]
 	path = Drivers/etl
 	url = git@github.com:ETLCPP/etl.git
+[submodule "Drivers/FreeRTOS-Kernel"]
+	path = Drivers/FreeRTOS-Kernel
+	url = git@github.com:FreeRTOS/FreeRTOS-Kernel.git
+[submodule "Drivers/lvgl"]
+	path = Drivers/lvgl
+	url = git@github.com:lvgl/lvgl.git
